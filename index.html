@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>TitleCraft — Premium CTR Titles & Thumbnails</title>
+  <meta name="color-scheme" content="dark light" />
+  <style>
+    /* =================== THEME & TOKENS =================== */
+    :root{
+      --bg: #0b0d12;
+      --panel: #101522e6;          /* slightly more solid for mobile readability */
+      --card:#0e1423cc;
+      --muted:#9aa7bd;
+      --text:#e8edf6;
+      --text-weak:#c7d0dd;
+      --brand:#86a0ff;             /* primary */
+      --brand-2:#6ee7ff;           /* accent */
+      --ok:#67f3a2;
+      --warn:#ffb85c;
+      --err:#ff6b6b;
+      --glass: blur(10px) saturate(120%);
+      --r-lg: 16px; --r-sm: 12px;
+      --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
+      --focus: 0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent);
+      --gap: 16px;
+      --tap: 44px;                 /* min mobile target */
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f6f7fb; --panel:#ffffffee; --card:#ffffffee; --text:#0a0d14; --text-weak:#1b2230; --muted:#475569; --shadow:0 8px 24px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.6); }
+    }
+
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; background: radial-gradient(1200px 800px at 85% -10%, #172033 0%, transparent 64%),
+                           radial-gradient(1200px 800px at -10% 120%, #111a2b 0%, transparent 55%), var(--bg);
+      color:var(--text); font:500 16px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "SF Pro Text", Arial;
+      overflow-x:hidden;
+    }
+    a{ color:inherit }
+
+    /* =================== LAYOUT (MOBILE FIRST) =================== */
+    .app{ max-width:1180px; margin-inline:auto; padding:18px 14px 24px; }
+    header{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
+    .brand{ display:flex; align-items:center; gap:10px; }
+    .logo{ width:36px; height:36px; border-radius:10px; display:block; object-fit:cover; background:none; box-shadow:0 8px 22px rgba(124,147,255,.35); border:1px solid rgba(255,255,255,.12) }
+    h1{ margin:0; font-size: clamp(18px, 4.5vw, 22px); font-weight:800 }
+    .status{ color:var(--muted); font-size:12px }
+
+    .grid{ display:grid; grid-template-columns: 1fr; gap: var(--gap); }
+    /* desktop+ */
+    @media (min-width: 960px){ .grid{ grid-template-columns: 360px 1fr; } }
+
+    .panel{ background: var(--panel); border:1px solid rgba(255,255,255,.08); border-radius: var(--r-lg); box-shadow: var(--shadow); backdrop-filter: var(--glass); }
+
+    /* Inputs */
+    .inputs{ padding:12px; position:relative }
+    @media (min-width:960px){ .inputs{ position:sticky; top:14px } }
+    .cards{ display:flex; flex-direction:column; gap:12px }
+    .card{ background: var(--card); border:1px solid rgba(255,255,255,.08); border-radius: var(--r-sm); padding:12px; }
+    .card h3{ margin:0 0 8px; font-size:12px; letter-spacing:.3px; color:var(--text-weak); font-weight:800; text-transform:uppercase }
+
+    .field{ display:flex; align-items:center; gap:8px; background:#0f1526; border:1px solid #1f2a44; border-radius:12px; padding:12px; }
+    textarea,input{ all:unset; color:var(--text); font:inherit; width:100%; caret-color: var(--brand); }
+    .field:focus-within{ box-shadow: var(--focus) }
+
+    .btn{
+      --h: 48px; display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      height:var(--h); width:100%; border-radius: calc(var(--h)/2);
+      border:1px solid rgba(255,255,255,.09); color:#0a0d14; font-weight:900; letter-spacing:.3px;
+      background: linear-gradient(180deg, #c9d0ff, #86a0ff 65%, #6ee7ff 100%);
+      box-shadow: 0 10px 30px rgba(124,147,255,.35), inset 0 1px 0 rgba(255,255,255,.7);
+      cursor:pointer; user-select:none; transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+    }
+    .btn:hover{ transform: translateY(-1px) }
+    .btn:active{ transform: translateY(0) scale(.98) }
+    .btn[aria-busy="true"]{ filter:saturate(.7); cursor:progress }
+    .spinner{ width:16px; height:16px; border-radius:50%; border:2.5px solid rgba(0,0,0,.2); border-top-color:#0a0d14; animation:spin 1s linear infinite }
+    @keyframes spin{ to{ transform:rotate(360deg) } }
+
+    /* Results */
+    .results{ padding:12px }
+    .session{ padding:12px; border:1px solid rgba(255,255,255,.08); border-radius:14px; background:linear-gradient(180deg, #0f1420b8, #0b0f1ab8); margin-bottom:12px; }
+    /* header/meta removed per request — keep clean mobile view */
+
+    .audience{ color:var(--text); background:#0f1522; border:1px solid #1e2a42; border-radius:12px; padding:12px; margin:6px 0 12px; font-size:14px }
+
+    .controls-row{ display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 10px }
+    .chip{ height:36px; padding:0 12px; border-radius:12px; background:#0e1627; border:1px solid #2a3a5f; color:#d6e4ff; font-weight:800; cursor:pointer }
+    .chip:active{ transform: translateY(1px) }
+
+    .list{ display:flex; flex-direction:column; gap:10px }
+    .row{ position:relative; display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:start; background:#0b1221; border:1px solid #1b2847; border-radius:12px; padding:10px; }
+
+    /* top pick style — no overlay to avoid blocking copy button */
+    .row.top{ border-color:transparent; background-image:
+      linear-gradient(#0b1221,#0b1221),
+      radial-gradient(120px 50px at 12px 12px, #98aaff80, transparent 60%),
+      linear-gradient(120deg, #8ea2ff, #6ee7ff);
+      background-origin: padding-box, border-box, border-box; background-clip: padding-box, padding-box, border-box;
+      box-shadow: 0 0 0 4px rgba(124,147,255,.10);
+    }
+
+    .num{ display:flex; align-items:center; gap:8px; }
+    .badge{ min-width:32px; height:32px; border-radius:10px; display:grid; place-items:center; font-weight:900; color:#cfe3ff; background:linear-gradient(180deg,#233153,#121b2f); border:1px solid #2a3a5f }
+    .star{ font-size:14px; color:#ffd76a; margin-left:2px }
+
+    .pair{ display:flex; flex-direction:column; gap:8px }
+    .line{ display:grid; grid-template-columns: auto 1fr; align-items:start; gap:8px; padding:6px 8px; border-radius:10px; background:#0e172a; border:1px dashed #203156 }
+    .label{ font-size:12px; color:#a9b7d0; letter-spacing:.2px; align-self:center }
+    .txt{ color:var(--text); word-break:break-word; font-size:15px }
+
+    .actions{ display:flex; align-items:center; justify-content:flex-end; gap:8px }
+    .copy{ min-width:var(--tap); height:var(--tap); display:grid; place-items:center; border-radius:10px; border:1px solid #2a3a5f; background:#0e1627; cursor:pointer }
+    .copy svg{ width:18px; height:18px; fill:#cfe3ff }
+    .copy:active{ transform: translateY(1px) }
+
+    .toast{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(16px); background:linear-gradient(90deg,#20df92,#6ee7ff); color:#03141a; font-weight:900; font-size:12px; padding:10px 14px; border-radius:999px; box-shadow:0 10px 24px rgba(110,231,255,.25); opacity:0; pointer-events:none }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); transition:.25s ease }
+
+    .results-tools{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin:6px 0 8px }
+    .chip.danger{ border-color:#5f2a2a; background:#1a0f12; color:#ffc7c7 }
+    .chip.danger:hover{ border-color:#8a3a3a }
+    .chip.danger:active{ transform:translateY(1px) }
+
+    /* skeleton */
+    .skeleton{ border:1px dashed #263a6b; background:#0b1020; border-radius:12px; padding:12px }
+    .pulse{ height:12px; margin:8px 0; border-radius:6px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05)); background-size:200% 100%; animation: shimmer 1.2s linear infinite }
+    @keyframes shimmer{ to{ background-position:-200% 0 } }
+
+    :focus-visible{ outline: 3px solid color-mix(in srgb, var(--brand) 50%, transparent); outline-offset:2px }
+
+    /* FX: disable on small screens for perf */
+    #fx{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.28 }
+    @media (max-width: 767px){ #fx{ display:none } }
+  </style>
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="app">
+  <header>
+    <div class="brand">
+      <img class="logo" src="https://i.imgur.com/Q7CqyWC.jpeg" alt="TitleCraft logo" width="36" height="36" decoding="async" loading="lazy" />
+      <h1>TitleCraft</h1>
+    </div>
+    <div id="status" class="status" role="status" aria-live="polite">Ready</div>
+  </header>
+
+  <div class="grid">
+    <!-- Inputs: simplified, mobile-first, removed extra hints/notes -->
+    <section class="panel inputs" aria-labelledby="inputs-title">
+      <h2 id="inputs-title" class="sr-only">Inputs</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Video topic <span class="req" aria-hidden="true">*</span></h3>
+          <div class="field"><textarea id="topic" rows="3" placeholder="What’s the video about?" aria-required="true"></textarea></div>
+        </div>
+        <div class="card">
+          <h3>Format (optional)</h3>
+          <div class="field"><input id="format" placeholder="Documentary, Review, Investigation..." /></div>
+        </div>
+        <div class="card">
+          <h3>Target audience (optional)</h3>
+          <div class="field"><input id="audience" placeholder="Niche, age range, region..." /></div>
+        </div>
+        <button id="send" class="btn" aria-busy="false">
+          <svg class="spark" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2l1.8 4.6L18 8l-4.2 1.4L12 14l-1.8-4.6L6 8l4.2-1.4L12 2z"/></svg>
+          <span>Send</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Results: clean, no timestamp/topic/top-2 rationale blocks, no raw text -->
+    <section class="panel results" aria-labelledby="results-title">
+      <h2 id="results-title" class="sr-only">Results</h2>
+      <div class="results-tools"><button class="chip danger" id="clear-history" title="Clear all generations" aria-label="Clear all generations"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="vertical-align:-2px;margin-right:6px"><path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 8h2v7h-2v-7zm4 0h2v7h-2v-7zM7 11h2v7H7v-7z"/></svg>Clear history</button></div>
+      <div id="stream"></div>
+    </section>
+  </div>
+</div>
+
+<!-- Toast for copy confirmations -->
+<div id="toast" class="toast" aria-hidden="true">Copied</div>
+
+<script>
+/***************** CONFIG *****************/
+const API_KEY = "AIzaSyDkowFTxiuya3AKjX4yaoA4XaTEK13OXx8";
+const MODEL   = "gemini-2.5-pro";
+const MAX_CHARS_TOPIC = 800, MAX_CHARS_FORMAT = 300, MAX_CHARS_AUDIENCE = 300;
+const CUSTOM_PROMPT = `{{CUSTOM_PROMPT_TO_GEMINI}}`;
+
+/***************** STORAGE *****************/
+const store = {
+  saveInputs(topic, format, audience){ localStorage.setItem("tc_inputs", JSON.stringify({topic, format, audience})); },
+  loadInputs(){ try{ return JSON.parse(localStorage.getItem("tc_inputs"))||{} }catch{ return {} } },
+  addSession(s){ const all = store.loadSessions(); all.unshift(s); localStorage.setItem("tc_sessions", JSON.stringify(all)); },
+  clearSessions(){ localStorage.setItem("tc_sessions", JSON.stringify([])); },
+  loadSessions(){ try{ return JSON.parse(localStorage.getItem("tc_sessions"))||[] }catch{ return [] } },
+};
+
+/***************** UTIL *****************/
+const $ = s => document.querySelector(s);
+const status = m => { const el = $("#status"); if(el) el.textContent = m };
+const clampStr = (s,n)=> (s||"").trim().slice(0,n);
+const nowStr = ()=> new Date().toLocaleString('en-GB', { hour12:false, timeZone:'Europe/London' });
+const showToast = (msg="Copied")=>{ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=> t.classList.remove('show'), 1100) };
+const escapeForPrompt = s => (s||"").replace(/[<>]/g, m => ({'<':'&lt;','>':'&gt;'}[m]));
+function safeParseJSON(m){ if(!m) return null; try{ return JSON.parse(m) }catch{} const a=m.indexOf("{"); const b=m.lastIndexOf("}"); if(a>=0&&b>a){ try{ return JSON.parse(m.slice(a,b+1)) }catch{} } return null }
+
+/***************** PROMPT *****************/
+function buildSystemInstruction(){
+  return `You are a YouTube title & thumbnail copywriter focused on CTR. Return concise, high-impact options. Never reveal chain-of-thought. Avoid clickbait lies; promise real, specific value. Strictly: 10 options; Title<=100; Thumbnail Text<=50, 1–5 words, no colons; Auto language; Provide 2 top picks with a one-sentence rationale each (but do not include rationales in the final output; only use them to select the top picks).`;
+}
+function buildUserBlock({topic, format, audience}){
+  const langHint = "auto-detect (fallback: English)";
+  const lines = [
+    `VIDEO TOPIC: ${escapeForPrompt(topic)}`,
+    `FORMAT: ${escapeForPrompt(format || "(not specified)")}`,
+    `TARGET AUDIENCE: ${escapeForPrompt(audience || "(not specified)")}`,
+    `LANGUAGE: ${langHint}`,
+    `OUTPUT SPEC:\n• Audience Profile (3–6 sentences; concrete, merit-oriented).\n• Top-10 options (1..10). Each: Title (<=100; intrigue + value) / Thumbnail Text (<=50; 1–5 words; NO colons)\n• Pick Top-2 (but DO NOT output their rationales).\n• Style: click-worthy, clear benefits, avoid clickbait lies.`
+  ];
+  const extra = (CUSTOM_PROMPT && !/^\{\{CUSTOM_PROMPT_TO_GEMINI\}\}$/.test(CUSTOM_PROMPT.trim())) ? `\n\n---\nCUSTOM PROMPT:\n${CUSTOM_PROMPT.trim()}` : "";
+  return lines.join("\n") + extra;
+}
+
+function responseSchema(){
+  return {
+    type: "OBJECT",
+    properties: {
+      audienceProfile: { type: "STRING" },
+      options: { type: "ARRAY", items: { type: "OBJECT", properties: { title:{type:"STRING"}, thumbnailText:{type:"STRING"} }, required:["title","thumbnailText"] } },
+      topPicks: { type: "ARRAY", items: { type: "OBJECT", properties: { index:{type:"INTEGER"} }, required:["index"] } }
+    },
+    required: ["audienceProfile","options","topPicks"]
+  };
+}
+
+/***************** API *****************/
+async function callGemini(payload, tries=3){
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(API_KEY)}`;
+  let lastErr;
+  for(let i=0;i<tries;i++){
+    try{
+      const res = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload) });
+      if(!res.ok){ const txt = await res.text().catch(()=>""); throw new Error(`HTTP ${res.status}: ${txt||res.statusText}`) }
+      return await res.json();
+    }catch(err){ lastErr=err; await new Promise(r=> setTimeout(r, 600*Math.pow(2,i) + Math.random()*240)); }
+  }
+  throw lastErr;
+}
+
+/***************** RENDER *****************/
+function skeletonCard(){
+  const wrap = document.createElement('div');
+  wrap.className = 'session';
+  wrap.innerHTML = `<div class="skeleton"><div class="pulse"></div><div class="pulse"></div><div class="pulse"></div></div>`;
+  return wrap;
+}
+
+function rowHTML(i, opt, topSet){
+  const n = i+1; const isTop = topSet.has(n);
+  return `
+  <div class="row${isTop? ' top':''}" data-idx="${n}">
+    <div class="num">
+      <div class="badge" aria-hidden="true">${n}</div>${isTop? '<span class="star" aria-label="Top pick" title="Top pick">★</span>':''}
+    </div>
+    <div class="pair">
+      <div class="line"><div class="label">Title</div><div class="txt" data-kind="title">${opt.title||''}</div></div>
+      <div class="line"><div class="label">Thumbnail</div><div class="txt" data-kind="thumb">${(opt.thumbnailText||'').replace(/:/g,'')}</div></div>
+    </div>
+    <div class="actions">
+      <button class="copy" title="Copy title" aria-label="Copy title" data-copy="title">${iconCopy()}</button>
+      <button class="copy" title="Copy thumbnail" aria-label="Copy thumbnail" data-copy="thumb">${iconCopy()}</button>
+    </div>
+  </div>`;
+}
+
+function sessionHTML(session){
+  const { output } = session;
+  const topSet = new Set((output.topPicks||[]).map(x=> x.index));
+  const list = (output.options||[]).slice(0,10).map((o,i)=> rowHTML(i,o,topSet)).join('');
+  return `
+  <article class="session" role="region" aria-label="Result session">
+    <div class="audience">${output.audienceProfile||''}</div>
+    <div class="controls-row">
+      <button class="chip" data-copy-bulk="titles">Copy 10 titles</button>
+      <button class="chip" data-copy-bulk="thumbs">Copy 10 thumbnails</button>
+    </div>
+    <div class="list">${list}</div>
+  </article>`;
+}
+
+function iconCopy(){ return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' }
+
+function renderAll(){ const c = $('#stream'); c.innerHTML=''; store.loadSessions().forEach(s=>{ const w=document.createElement('div'); w.innerHTML=sessionHTML(s); c.appendChild(w) }) }
+
+/***************** FLOW *****************/
+async function generate(){
+  const topic = clampStr($('#topic').value, MAX_CHARS_TOPIC);
+  const format = clampStr($('#format').value, MAX_CHARS_FORMAT);
+  const audience = clampStr($('#audience').value, MAX_CHARS_AUDIENCE);
+  if(!topic){ status('Topic is required'); $('#topic').focus(); return }
+  store.saveInputs(topic,format,audience);
+
+  const btn = $('#send'); btn.setAttribute('aria-busy','true'); btn.disabled=true; status('Sending…');
+  const stream = $('#stream'); const skel = skeletonCard(); stream.prepend(skel);
+
+  const payload = {
+    systemInstruction:{ parts:[{ text: buildSystemInstruction() }] },
+    contents:[{ role:'user', parts:[{ text: buildUserBlock({topic,format,audience}) }] }],
+    generationConfig:{ temperature:0.8, topP:0.95, maxOutputTokens:2048, responseMimeType:'application/json', responseSchema: responseSchema(), thinkingConfig:{ includeThoughts:false, thinkingBudget: 1024 } }
+  };
+
+  try{
+    const json = await callGemini(payload);
+    const parts = (((json||{}).candidates||[])[0]||{}).content?.parts || [];
+    const text = parts.map(p=> p.text).filter(Boolean).join('') || '';
+    const parsed = safeParseJSON(text);
+    if(!parsed || !Array.isArray(parsed.options)) throw new Error('Invalid model response');
+
+    const normalized = normalizeOutput(parsed);
+    const session = { createdAt: nowStr(), input:{topic,format,audience}, output: normalized };
+    store.addSession(session);
+
+    const cardWrap = document.createElement('div'); cardWrap.innerHTML = sessionHTML(session);
+    stream.replaceChild(cardWrap, skel);
+    attachCopyHandlers(cardWrap);
+    status('Done');
+  }catch(err){
+    skel.innerHTML = `<div class="skeleton" role="alert" style="border:1px solid #3e2c2c; background:#1a0f12; color:#ffc7c7">
+      <div><strong>Request failed.</strong> ${truncate(err?.message||'Unknown error',260)}</div>
+      <div style="margin-top:8px; display:flex; gap:8px"><button class="chip retry" aria-label="Retry">Retry</button></div>
+    </div>`;
+    skel.querySelector('.retry')?.addEventListener('click', generate, { once:true });
+    status('Error');
+  }finally{ btn.setAttribute('aria-busy','false'); btn.disabled=false }
+}
+
+function normalizeOutput(o){
+  const options = (o.options||[]).slice(0,10).map(x=> ({ title:(x.title||'').trim().slice(0,100), thumbnailText:(x.thumbnailText||'').replace(/:/g,'').trim().slice(0,50) }));
+  while(options.length<10) options.push({ title:'', thumbnailText:'' });
+  const tp = (o.topPicks||[]).slice(0,2).map(x=> ({ index: Math.max(1, Math.min(10, parseInt(x.index||1,10))) }));
+  while(tp.length<2) tp.push({ index: tp.length+1 });
+  return { audienceProfile:(o.audienceProfile||'').trim(), options, topPicks:tp };
+}
+
+function truncate(s,n){ return s.length>n ? s.slice(0,n-1)+'…' : s }
+
+/***************** COPY HANDLERS (no raw textareas) *****************/
+function attachCopyHandlers(scope=document){
+  scope.querySelectorAll('.copy').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const row = btn.closest('.row'); const kind=btn.dataset.copy;
+      const text = row.querySelector(`.txt[data-kind="${kind==='title'?'title':'thumb'}"]`)?.textContent || '';
+      navigator.clipboard.writeText(text).then(()=> showToast('Copied')).catch(()=> showToast('Copy failed'));
+    })
+  });
+  scope.querySelectorAll('[data-copy-bulk]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const wrap = btn.closest('.session');
+      const wantTitles = btn.dataset.copyBulk === 'titles';
+      const items = [...wrap.querySelectorAll(`.txt[data-kind="${wantTitles?'title':'thumb'}"]`)].map(n=> n.textContent.trim()).join('\n');
+      navigator.clipboard.writeText(items).then(()=> showToast('Copied')).catch(()=> showToast('Copy failed'));
+    })
+  })
+}
+
+/***************** INIT *****************/
+function bindUI(){
+  const inputs = store.loadInputs();
+  if(inputs.topic) $('#topic').value=inputs.topic;
+  if(inputs.format) $('#format').value=inputs.format;
+  if(inputs.audience) $('#audience').value=inputs.audience;
+
+  $('#send').addEventListener('click', generate);
+  // Mobile-first: no Enter hint, but keep Enter submit
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && ['topic','format','audience'].includes(document.activeElement?.id)){ e.preventDefault(); generate(); } });
+
+  const ch = document.getElementById("clear-history");
+  if(ch){ ch.addEventListener("click", ()=>{
+    if(confirm("Clear all saved generations? This cannot be undone.")){
+      if(typeof store.clearSessions === "function") store.clearSessions();
+      else localStorage.setItem("tc_sessions", JSON.stringify([]));
+      renderAll();
+      showToast("History cleared");
+    }
+  }); }
+
+  renderAll();
+  attachCopyHandlers(document);
+}
+
+/* Light particle FX; disabled on <=767px */
+function runFX(){ if(innerWidth<=767 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c = document.getElementById('fx'); const ctx = c.getContext('2d');
+  const resize=()=>{ c.width=innerWidth; c.height=innerHeight }; resize(); addEventListener('resize', resize);
+  const dots = Array.from({length:42}, ()=> ({ x:Math.random()*c.width, y:Math.random()*c.height, r:0.9+Math.random()*1.2, vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25 }));
+  const frame=()=>{ ctx.clearRect(0,0,c.width,c.height); for(const d of dots){ d.x+=d.vx; d.y+=d.vy; if(d.x<0||d.x>c.width) d.vx*=-1; if(d.y<0||d.y>c.height) d.vy*=-1; ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2); ctx.fillStyle='rgba(130,170,255,.12)'; ctx.fill(); } requestAnimationFrame(frame) };
+  frame();
+}
+
+bindUI();
+runFX();
+</script>
+</body>
+</html>
