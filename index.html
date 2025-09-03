@@ -1,1958 +1,682 @@
-<!DOCTYPE html> 
-<html lang="es">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CTR Studio — Diseño que convierte clics en clientes</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>TitleCraft — Premium CTR Titles & Thumbnails</title>
+  <meta name="color-scheme" content="dark light" />
   <style>
-    :root {
-      --primary: #0057ff;
-      --primary-rgb: 0, 87, 255;
-      --primary-dark: #0038a3;
-      --primary-light: #5e8eff;
-      
-      --accent: #ffc700;
-      --accent-rgb: 255, 199, 0;
-      --accent-glow: rgba(255, 199, 0, 0.3);
-      
-      --dark-bg: #0a0b11;
-      --dark-surface: #13141A;
-      --dark-lighter: #1A1B20;
-      
-      --light-bg: #f4f6f8;
-      --light-surface: #ffffff;
-      
-      --text-dark: #E0E0E0;
-      --text-secondary-dark: rgba(255,255,255,0.7);
-      --text-light: #181818;
-      --text-secondary-light: rgba(0,0,0,0.7);
-      
-      --glass-dark: rgba(255,255,255,0.08);
-      --glass-light: rgba(0,0,0,0.03);
-      
-      --border-dark: rgba(255,255,255,0.1);
-      --border-light: rgba(0,0,0,0.1);
-      
-      --shadow-dark: 0 10px 30px rgba(0,0,0,0.4);
-      --shadow-light: 0 10px 30px rgba(0,0,0,0.1);
-      
-      --gradient-blue: linear-gradient(135deg, #0057ff, #00a3ff);
-      --gradient-accent: linear-gradient(135deg, #ffc700, #ff7b00);
-      
-      --current-bg: var(--dark-bg);
-      --current-surface: var(--dark-surface);
-      --current-lighter: var(--dark-lighter);
-      --current-text: var(--text-dark);
-      --current-text-secondary: var(--text-secondary-dark);
-      --current-glass: var(--glass-dark);
-      --current-border: var(--border-dark);
-      --current-shadow: var(--shadow-dark);
-      
-      --border-radius-sm: 8px;
-      --border-radius: 16px;
-      --border-radius-lg: 24px;
-      --border-radius-xl: 32px;
-      
-      --transition-fast: 0.2s ease;
-      --transition-medium: 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
-      --transition-slow: 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      background: var(--current-bg);
-      color: var(--current-text);
-      font-family: 'Inter', sans-serif;
-      overflow-x: hidden;
-      line-height: 1.6;
-      font-weight: 400;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    body.theme-light {
-      --current-bg: var(--light-bg);
-      --current-surface: var(--light-surface);
-      --current-lighter: var(--light-surface);
-      --current-text: var(--text-light);
-      --current-text-secondary: var(--text-secondary-light);
-      --current-glass: var(--glass-light);
-      --current-border: var(--border-light);
-      --current-shadow: var(--shadow-light);
-    }
-
-    h1, h2, h3, h4, h5, h6 {
-      font-weight: 700;
-      line-height: 1.2;
-    }
-
-    .section-pad {
-      padding: 120px 0;
-      position: relative;
-    }
-
-    @media (max-width: 768px) {
-      .section-pad {
-        padding: 80px 0;
-      }
-    }
-
-    .display-1 {
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 900;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-    }
-
-    .lead {
-      font-size: calc(1.1rem + 0.3vw);
-      font-weight: 400;
-      line-height: 1.5;
-    }
-
-    .section-title {
-      position: relative;
-      margin-bottom: 4rem;
-      text-align: center;
-      overflow: hidden;
-      font-weight: 800;
-    }
-
-    .section-title:after {
-      content: '';
-      position: absolute;
-      width: 80px;
-      height: 4px;
-      background: var(--gradient-accent);
-      bottom: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-radius: 2px;
-    }
-
-    .text-highlight, .highlight {
-      color: var(--accent);
-      font-weight: 700;
-      position: relative;
-      display: inline-block;
-    }
-
-    .text-gradient {
-      background: var(--gradient-accent);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .text-primary-gradient {
-      background: var(--gradient-blue);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .btn {
-      transition: var(--transition-medium);
-      border-radius: var(--border-radius);
-      padding: 12px 28px;
-      font-weight: 600;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      letter-spacing: 0.01em;
-    }
-
-    .btn-cta {
-      background: linear-gradient(135deg, var(--accent) 0%, #ff9d00 100%);
-      color: #111;
-      font-weight: 700;
-      border-radius: 50px;
-      padding: 16px 36px;
-      border: none;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.3), 0 1px 3px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background 0.3s ease;
-      transform-origin: center;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn-cta:hover {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 8px 30px rgba(var(--accent-rgb), 0.4), 0 2px 5px rgba(0,0,0,0.15);
-      background: linear-gradient(135deg, #ffcf20 0%, #ff9d00 100%);
-      color: #111;
-    }
-
-    .btn-cta:active {
-      transform: translateY(0) scale(0.98);
-    }
-
-    .btn-cta:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: rgba(255,255,255,0.2);
-      transform: skewX(-20deg);
-      transition: var(--transition-fast);
-      z-index: -1;
-    }
-
-    .btn-cta:hover:before {
-      left: 100%;
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--current-text);
-      border: 2px solid rgba(255,255,255,0.15);
-      border-radius: 50px;
-      padding: 14px 34px;
-      font-weight: 600;
-      transition: var(--transition-medium);
-      position: relative;
-      overflow: hidden;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn-outline:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-      box-shadow: 0 4px 15px rgba(0,87,255,0.2);
-    }
-
-    .glass {
-      background: var(--current-glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: var(--border-radius);
-      border: 1px solid var(--current-border);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-      transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .glass-card {
-      padding: 2rem;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transform-style: preserve-3d;
-      transform: perspective(1000px);
-    }
-
-    .glass-card:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(120deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-      z-index: -1;
-      opacity: 0;
-      transition: var(--transition-medium);
-    }
-
-    .glass-card:hover:before {
-      opacity: 1;
-    }
-
-    .interactive-card {
-      padding: 30px;
-      height: 100%;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .interactive-card:before { 
-        content: "";
-        position: absolute;
-        top: 0; left: -100%;
-        width: 50%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-        transition: left 0.5s ease;
-        z-index: 1;
-    }
-    
-    .interactive-card:hover:before {
-        left: 150%;
-    }
-    
-    .interactive-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 15px 40px rgba(var(--primary-rgb), 0.2), 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .card-tilt {
-      transition: var(--transition-medium);
-      transform-style: preserve-3d;
-      cursor: pointer;
-      height: 100%;
-      position: relative;
-      border-radius: var(--border-radius);
-      overflow: hidden;
-    }
-
-    .card-tilt:hover {
-      transform: translateY(-10px);
-      box-shadow: var(--current-shadow);
-    }
-
-    .shine {
-      position: relative;
-      overflow: hidden;
-      transition: var(--transition-medium);
-    }
-
-    .shine:after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -60%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(
-        to right,
-        rgba(255,255,255,0) 0%,
-        rgba(255,255,255,0.1) 50%,
-        rgba(255,255,255,0) 100%
-      );
-      transform: rotate(30deg);
-      transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
-    }
-
-    .shine:hover:after {
-      transform: rotate(30deg) translate(100%, 0%);
-    }
-
-    .hero-canvas-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-    }
-
-    .bg-pattern {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      z-index: -1;
-      opacity: 0.05;
-      background-image: 
-        radial-gradient(circle at 25px 25px, var(--primary) 2%, transparent 2%),
-        radial-gradient(circle at 75px 75px, var(--primary) 2%, transparent 2%);
-      background-size: 100px 100px;
-    }
-
-    .bg-gradient {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      z-index: -2;
-      background: radial-gradient(circle at 50% 50%, var(--current-lighter), var(--current-bg));
-    }
-
-    .glow-element {
-      position: absolute;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      background: var(--primary);
-      filter: blur(200px);
-      opacity: 0.15;
-      z-index: -1;
-    }
-
-    header.hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      text-align: center;
-      overflow: hidden;
-      padding: 120px 0;
-    }
-
-    header .content {
-      position: relative;
-      z-index: 1;
-    }
-
-    .navbar {
-      position: fixed;
-      width: 100%;
-      z-index: 1000;
-      padding: 20px 0;
-      transition: var(--transition-medium);
-    }
-
-    .navbar.scrolled {
-      background: rgba(10,11,17,0.8);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 12px 0;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-
-    body.theme-light .navbar.scrolled {
-      background: rgba(255,255,255,0.8);
-    }
-
-    .nav-link {
-      font-weight: 500;
-      color: var(--current-text);
-      margin: 0 15px;
-      padding: 8px 0;
-      position: relative;
-      transition: var(--transition-fast);
-    }
-
-    .nav-link:after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 2px;
-      background: var(--accent);
-      bottom: 0;
-      left: 0;
-      transition: var(--transition-fast);
-    }
-
-    .nav-link:hover {
-      color: var(--accent);
-    }
-
-    .nav-link:hover:after {
-      width: 100%;
-    }
-
-    #portfolio { background-color: var(--current-surface); }
-    
-    .portfolio-item {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--border-radius);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .portfolio-item img {
-      width: 100%;
-      height: auto;
-      display: block;
-      transition: transform 0.4s ease;
-    }
-    
-    .portfolio-item:hover img {
-      transform: scale(1.05);
-    }
-    
-    .portfolio-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(to top, rgba(var(--primary-rgb), 0.95), rgba(var(--primary-rgb), 0.7));
-      color: #fff;
-      padding: 20px;
-      transform: translateY(100%);
-      transition: transform 0.4s ease-in-out;
-      text-align: left;
-    }
-    
-    .portfolio-item:hover .portfolio-overlay {
-      transform: translateY(0);
-    }
-    
-    .portfolio-overlay h5 { margin-bottom: 5px; font-weight: bold; }
-    .portfolio-overlay p { font-size: 0.9em; margin-bottom: 10px; opacity: 0.9; }
-    .portfolio-overlay .ctr-badge {
-      background-color: var(--accent);
-      color: #111;
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 0.8em;
-      font-weight: bold;
-      display: inline-block;
-    }
-
-    .portfolio-comparison {
-      display: flex;
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      position: relative;
-      box-shadow: var(--current-shadow);
-    }
-
-    .portfolio-before,
-    .portfolio-after {
-      flex: 1;
-      transition: var(--transition-medium);
-    }
-
-    .portfolio-before img,
-    .portfolio-after img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .portfolio-label {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      background: var(--current-bg);
-      color: var(--current-text);
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .portfolio-after .portfolio-label {
-      left: auto;
-      right: 10px;
-      background: var(--accent);
-      color: var(--dark-bg);
-    }
-
-    .testimonial {
-      position: relative;
-      overflow: hidden;
-      padding: 2rem;
-      height: 100%;
-    }
-
-    .testimonial-content {
-      position: relative;
-      z-index: 2;
-    }
-
-    .testimonial-quote {
-      font-size: 4rem;
-      color: var(--primary);
-      opacity: 0.2;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-    }
-
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      margin-top: 1.5rem;
-    }
-
-    .testimonial-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      overflow: hidden;
-      margin-right: 1rem;
-      border: 2px solid var(--primary);
-    }
-
-    .testimonial-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .testimonial-metrics {
-      display: inline-block;
-      margin-top: 0.5rem;
-      padding: 5px 10px;
-      background: rgba(0,87,255,0.1);
-      border-radius: 4px;
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    #team { background-color: var(--current-surface); }
-    
-    .team-card {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--border-radius);
-      transition: var(--transition-medium);
-    }
-
-    .team-img-container {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--border-radius) var(--border-radius) 0 0;
-    }
-
-    .team-img {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-      transition: var(--transition-medium);
-    }
-
-    .team-card:hover .team-img {
-      transform: scale(1.05);
-    }
-
-    .team-info {
-      padding: 1.5rem;
-      position: relative;
-      z-index: 2;
-    }
-
-    .team-social {
-      display: flex;
-      gap: 10px;
-      margin-top: 1rem;
-    }
-
-    .team-social-icon {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.1);
-      color: var(--current-text);
-      border-radius: 50%;
-      transition: var(--transition-fast);
-    }
-
-    .team-social-icon:hover {
-      background: var(--primary);
-      color: white;
-      transform: translateY(-3px);
-    }
-
-    .team-expertise {
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      color: var(--current-text-secondary);
-    }
-
-    .pricing-card {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--border-radius);
-      padding: 2.5rem 2rem;
-      height: 100%;
-      transition: var(--transition-medium);
-    }
-
-    .pricing-card.featured {
-      border: 2px solid var(--accent);
-      transform: scale(1.05);
-      box-shadow: 0 10px 40px rgba(var(--accent-rgb),0.25), 0 0 0 5px rgba(var(--accent-rgb),0.1);
-    }
-
-    .pricing-card:hover {
-      transform: translateY(-10px);
-      box-shadow: var(--current-shadow);
-    }
-
-    .pricing-card.featured:hover {
-      transform: translateY(-10px) scale(1.05);
-    }
-
-    .pricing-badge {
-      position: absolute;
-      top: 0;
-      right: 0;
-      background: var(--accent);
-      color: var(--dark-bg);
-      padding: 5px 15px;
-      font-weight: 600;
-      font-size: 0.8rem;
-      border-radius: 0 0 0 var(--border-radius-sm);
-    }
-
-    .pricing-header {
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--current-border);
-    }
-
-    .pricing-price {
-      font-size: 3rem;
-      font-weight: 800;
-      color: var(--current-text);
-      margin: 1rem 0;
-    }
-
-    .pricing-price span {
-      font-size: 1rem;
-      color: var(--current-text-secondary);
-      font-weight: 400;
-    }
-
-    .pricing-features {
-      margin: 2rem 0;
-      padding: 0;
-      list-style-type: none;
-    }
-
-    .pricing-features li {
-      margin-bottom: 1rem;
-      padding-left: 1.5rem;
-      position: relative;
-    }
-
-    .pricing-features li:before {
-      content: '✓';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-      font-weight: bold;
-    }
-
-    .pricing-cta {
-      margin-top: auto;
-    }
-
-    .client-logo img {
-      max-width: 150px;
-      height: auto;
-      filter: grayscale(100%) opacity(0.6);
-      transition: filter 0.3s ease;
-    }
-    
-    .client-logo:hover img {
-      filter: grayscale(0%) opacity(1);
-    }
-    
-    body.theme-light .client-logo img {
-      filter: grayscale(100%) opacity(0.5);
-    }
-    
-    body.theme-light .client-logo:hover img {
-      filter: grayscale(0%) opacity(1);
-    }
-
-    .stat-item {
-      text-align: center;
-      padding: 1.5rem 0;
-    }
-
-    .stat-number {
-      font-size: 3.5rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
-      font-size: 1.1rem;
-      color: var(--current-text-secondary);
-    }
-
-    .contact-form {
-      position: relative;
-      background: var(--current-glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: var(--border-radius);
-      padding: 3rem;
-      border: 1px solid var(--current-border);
-      overflow: hidden;
-    }
-
-    .form-control {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--current-border);
-      border-radius: var(--border-radius-sm);
-      color: var(--current-text);
-      padding: 12px 15px;
-      transition: var(--transition-fast);
-    }
-
-    .form-control:focus {
-      background: rgba(255,255,255,0.08);
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(0,87,255,0.2);
-    }
-
-    .form-control::placeholder {
-      color: rgba(255,255,255,0.5);
-    }
-
-    body.theme-light .form-control::placeholder {
-      color: rgba(0,0,0,0.5);
-    }
-
-    .form-label {
-      color: var(--current-text-secondary);
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
-
-    .form-floating {
-      position: relative;
-      margin-bottom: 1.5rem;
-    }
-
-    .form-floating label {
-      position: absolute;
-      top: 0;
-      left: 12px;
-      height: 100%;
-      padding: 12px 15px;
-      pointer-events: none;
-      border: 1px solid transparent;
-      transform-origin: 0 0;
-      transition: var(--transition-fast);
-      color: rgba(255,255,255,0.5);
-    }
-
-    body.theme-light .form-floating label {
-      color: rgba(0,0,0,0.5);
-    }
-
-    .form-floating .form-control:focus ~ label,
-    .form-floating .form-control:not(:placeholder-shown) ~ label {
-      opacity: 0.8;
-      transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
-    }
-
-    .form-floating .form-control:focus ~ label {
-      color: var(--primary);
-    }
-
-    footer {
-      background: var(--dark-bg);
-      padding: 5rem 0 2rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    body.theme-light footer {
-      background: #111;
-      color: #fff;
-    }
-
-    .footer-heading {
-      color: var(--text-dark);
-      margin-bottom: 1.5rem;
-      font-weight: 700;
-    }
-
-    .footer-link {
-      color: var(--text-secondary-dark);
-      text-decoration: none;
-      margin-bottom: 0.8rem;
-      display: block;
-      transition: var(--transition-fast);
-    }
-
-    .footer-link:hover {
-      color: var(--accent);
-      transform: translateX(5px);
-    }
-
-    .footer-bottom {
-      padding-top: 2rem;
-      margin-top: 3rem;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      font-size: 0.9rem;
-      color: var(--text-secondary-dark);
-    }
-
-    .footer-social {
-      display: flex;
-      gap: 15px;
-    }
-
-    .footer-social-icon {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.05);
-      color: var(--text-dark);
-      border-radius: 50%;
-      transition: var(--transition-fast);
-    }
-
-    .footer-social-icon:hover {
-      background: var(--primary);
-      color: white;
-      transform: translateY(-3px);
-    }
-
-    .custom-cursor {
-      position: fixed;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.3);
-      pointer-events: none;
-      mix-blend-mode: difference;
-      z-index: 9999;
-      transform: translate(-50%, -50%);
-      transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
-    }
-
-    .cursor-expanded {
-      width: 50px;
-      height: 50px;
-      background: rgba(255,255,255,0.2);
-    }
-
-    .theme-switch {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 999;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: rgba(10,11,17,0.7);
-      border: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: var(--transition-medium);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-
-    .theme-switch:hover {
-      transform: scale(1.1);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    }
-
-    .char { 
-      display: inline-block; 
-      opacity: 0; 
-      transform: translateY(20px); 
-    }
-
-    .word {
-      display: inline-block;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.3s ease;
-    }
-
-    .gsap-reveal { 
-      opacity: 0; 
-      transform: translateY(50px); 
-    }
-    
-    .scramble-text-wrapper { 
-      display: inline-block; 
-    }
-
-    @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-15px); }
-      100% { transform: translateY(0px); }
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.05); opacity: 0.8; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .float {
-      animation: float 5s ease-in-out infinite;
-    }
-
-    .pulse {
-      animation: pulse 3s ease-in-out infinite;
-    }
-
-    .gradient-bg {
-      background: linear-gradient(-45deg, #0057ff, #00a3ff, #0038a3, #5e8eff);
-      background-size: 400% 400%;
-      animation: gradient 15s ease infinite;
-    }
-
-    @media (max-width: 992px) {
-      .section-pad {
-        padding: 100px 0;
-      }
-      
-      .pricing-card.featured {
-        transform: scale(1);
-      }
-      
-      .pricing-card.featured:hover {
-        transform: translateY(-10px);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .section-pad {
-        padding: 80px 0;
-      }
-      
-      .contact-form {
-        padding: 2rem;
-      }
-      
-      .btn-cta {
-        padding: 14px 28px;
-      }
-    }
-
-    @media (max-width: 576px) {
-      .section-pad {
-        padding: 60px 0;
-      }
-      
-      .lead {
-        font-size: 1rem;
-      }
-      
-      .contact-form {
-        padding: 1.5rem;
-      }
-    }
-
-    .z-index-1 { z-index: 1; position: relative; }
-    .overflow-hidden { overflow: hidden; }
-    .text-accent { color: var(--accent); }
-    .text-primary-color { color: var(--primary); }
-    .bg-dark-lighter { background: var(--current-lighter); }
-    .rounded { border-radius: var(--border-radius); }
-    .rounded-lg { border-radius: var(--border-radius-lg); }
-    .shadow-sm { box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-    .shadow-md { box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
-    .shadow-lg { box-shadow: var(--current-shadow); }
-    .border-accent { border: 2px solid var(--accent); }
-    .border-primary { border: 2px solid var(--primary); }
+    :root{
+      --bg: #0b0d12;
+      --panel: #0f1420cc;
+      --panel-strong:#0f1420f2;
+      --card:#111827cc;
+      --muted:#98a2b3;
+      --text:#e6e9ef;
+      --text-weak:#c7d0dd;
+      --brand:#7c93ff;
+      --brand-2:#6ee7ff;
+      --ok:#67f3a2;
+      --warn:#ffb85c;
+      --err:#ff6b6b;
+      --glass: blur(10px) saturate(120%);
+      --radius: 16px;
+      --radius-sm: 12px;
+      --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
+      --shadow-2: 0 20px 60px rgba(0,0,0,.55);
+      --focus: 0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent);
+      --grid-gap: 18px;
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f6f7fb; --panel:#ffffffcc; --panel-strong:#ffffffff; --card:#ffffffcc; --text:#0a0d14; --text-weak:#1b2230; --muted:#475569; --shadow:0 8px 24px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.6); --shadow-2:0 18px 48px rgba(0,0,0,.12);}
+    }
+    @media (prefers-reduced-motion: no-preference){
+      html{scroll-behavior:smooth}
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background: radial-gradient(1200px 800px at 80% -10%, #172033 0%, transparent 65%),
+                 radial-gradient(1200px 800px at -10% 120%, #111a2b 0%, transparent 55%), var(--bg);
+      color:var(--text); font:500 16px/1.45 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "SF Pro Text", "Helvetica Neue", Arial, Apple Color Emoji, Segoe UI Emoji;
+      overflow-x:hidden;
+    }
+    .app{
+      position:relative;
+      padding:28px clamp(14px, 3vw, 40px) 40px;
+      max-width:1200px; margin-inline:auto;
+    }
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:22px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; letter-spacing:.2px;
+    }
+    .logo{
+      width:42px; height:42px; border-radius:12px;
+      background:
+        conic-gradient(from 220deg at 50% 50%, color-mix(in srgb, var(--brand) 85%, #fff 0%) 0 25%, color-mix(in srgb, var(--brand-2) 85%, #fff 0%) 0 50%, #8892ff 0 75%, #38bdf8 0 100%);
+      box-shadow: 0 12px 30px rgba(92,119,255,.35), inset 0 1px 0 rgba(255,255,255,.35);
+      position:relative; isolation:isolate;
+    }
+    .logo::after{content:""; position:absolute; inset:2px; border-radius:10px; backdrop-filter:var(--glass); background: #0a0d14aa; }
+    h1{margin:0; font-size: clamp(18px, 2.4vw, 24px); font-weight:800}
+    .sub{color:var(--muted); font-size:13px; margin-top:2px}
+    .grid{
+      display:grid; grid-template-columns: 380px 1fr; gap: var(--grid-gap);
+    }
+    @media (max-width: 1040px){ .grid{ grid-template-columns: 1fr; } }
+    .panel{
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: var(--glass);
+    }
+    .inputs{ padding:18px; position:sticky; top:18px; z-index:2 }
+    .cards{ display:flex; flex-direction:column; gap:14px; }
+    .card{
+      background: var(--card); border:1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius-sm); padding:14px; box-shadow: var(--shadow);
+    }
+    .card h3{ margin:0 0 8px; font-size:13px; letter-spacing:.3px; color:var(--text-weak); font-weight:700; text-transform:uppercase }
+    .hint{color:var(--muted); font-size:12px; margin-top:6px}
+    label{display:block; font-size:13px; color:var(--text-weak); margin:0 0 8px 2px}
+    .field{
+      display:flex; align-items:center; gap:8px; background:#0f1522; border:1px solid #1f2a44;
+      border-radius:12px; padding:10px 12px; transition:.25s border-color ease, .25s box-shadow ease;
+    }
+    textarea,input{ all:unset; color:var(--text); font:inherit; width:100%; caret-color: var(--brand); }
+    .field:focus-within{ border-color: color-mix(in srgb, var(--brand) 55%, #fff 0%); box-shadow: var(--focus) }
+    .req{ color: var(--warn); margin-left:6px; font-size:12px }
+    .actions{ display:flex; align-items:center; gap:10px; margin-top:8px }
+    .btn{
+      --h: 48px;
+      position:relative; display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding:0 18px; height:var(--h); min-width:140px; border-radius: calc(var(--h)/2);
+      border:1px solid rgba(255,255,255,.09); color:#0a0d14; font-weight:800; letter-spacing:.3px;
+      background: linear-gradient(180deg, #c9d0ff, #86a0ff 65%, #6ee7ff 100%);
+      box-shadow: 0 10px 30px rgba(124,147,255,.35), inset 0 1px 0 rgba(255,255,255,.7);
+      cursor:pointer; transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+      user-select:none;
+    }
+    .btn:focus-visible{ outline:none; box-shadow: var(--focus), 0 10px 30px rgba(124,147,255,.35), inset 0 1px 0 rgba(255,255,255,.7) }
+    .btn:hover{ transform: translateY(-1px) }
+    .btn:active{ transform: translateY(0) scale(.98) }
+    .spark{ width:18px; height:18px; }
+    .btn[aria-busy="true"]{ cursor:progress; filter:saturate(.7); }
+    .btn .spinner{
+      width:16px;height:16px;border-radius:50%;
+      border:2.5px solid rgba(0,0,0,.2); border-top-color:#0a0d14; animation:spin 1s linear infinite;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg) } }
+
+    .results{ padding:18px; }
+    .session{ padding:16px; border:1px solid rgba(255,255,255,.08); border-radius:16px; background:linear-gradient(180deg, #0f1420b8, #0b0f1ab8); margin-bottom:16px; box-shadow: var(--shadow) }
+    .session header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 12px }
+    .session .meta{ color:var(--muted); font-size:12px }
+    .audience{ color:var(--text); background:#0f1522; border:1px solid #1e2a42; border-radius:12px; padding:12px; margin:8px 0 14px; }
+    .list{ display:grid; gap:10px; }
+    .row{
+      position:relative;
+      display:grid; grid-template-columns: 42px 1fr auto; gap:10px; align-items:start;
+      background:#0c1321; border:1px solid #1b2847; border-radius:14px; padding:10px 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .badge{
+      width:28px; height:28px; border-radius:9px; display:grid; place-items:center; font-weight:900;
+      color:#cfe3ff; background:linear-gradient(180deg,#233153,#121b2f); border:1px solid #2a3a5f; box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+      margin-top:2px;
+    }
+    .pair{ display:flex; flex-direction:column; gap:8px }
+    .line{
+      display:flex; align-items:center; gap:8px; min-height:28px;
+      padding:6px 8px; border-radius:10px; background:#0e172a; border:1px dashed #203156;
+    }
+    .label{ font-size:12px; color:#a9b7d0; letter-spacing:.2px; width:110px; flex:0 0 auto }
+    .txt{ color:var(--text); word-break:break-word; }
+    .copy{
+      --h: 30px;
+      height:var(--h); width:var(--h); min-width:var(--h);
+      display:grid; place-items:center; border-radius:10px; border:1px solid #2a3a5f; background:#0e1627; cursor:pointer;
+      transition:.15s transform ease, .2s border-color ease, .2s background ease;
+    }
+    .copy:hover{ transform:translateY(-1px); border-color:#3e5aa1 }
+    .copy:active{ transform:translateY(0) scale(.98) }
+    .copy svg{ width:16px; height:16px; fill:#cfe3ff }
+    .copied-chip{
+      position:absolute; right:8px; top:-8px; transform: translateY(-6px);
+      background: linear-gradient(90deg, #20df92, #6ee7ff); color:#03141a; font-weight:800; font-size:11px;
+      border-radius:999px; padding:5px 8px; box-shadow:0 8px 22px rgba(110,231,255,.22); opacity:0; pointer-events:none;
+    }
+    .copied-chip.show{ opacity:1; transform: translateY(0); transition:.25s ease; }
+    .top-pick{
+      border:1px solid transparent; background-image:
+        linear-gradient(#0c1321,#0c1321), linear-gradient(120deg, #8ea2ff, #6ee7ff);
+      background-origin: border-box; background-clip: padding-box, border-box;
+      box-shadow: 0 0 0 6px rgba(124,147,255,.08), var(--shadow);
+    }
+    .top-pick .badge{ background:linear-gradient(180deg, #1f2d55, #1a284a); border-color:#3b5db0; color:#eaf1ff }
+    .top-pick::after{
+      content:"TOP\A PICK"; white-space:pre; position:absolute; top:8px; right:8px; font-size:10px; line-height:1;
+      padding:4px 6px; border-radius:8px; font-weight:900; color:#07121b; background:linear-gradient(90deg,#9bb1ff,#79eaff);
+      letter-spacing:.4px; box-shadow:0 6px 18px rgba(121,234,255,.25);
+    }
+    .buttons-row{ display:flex; gap:10px; flex-wrap:wrap; margin:8px 0 6px }
+    .tiny{ height:36px; padding:0 12px; border-radius:10px; background:#0e1627; border:1px solid #2a3a5f; color:#d6e4ff; font-weight:700; cursor:pointer }
+    .tiny:hover{ border-color:#3e5aa1 }
+    .meta-small{ color:var(--muted); font-size:11px; margin-top:6px }
+
+    .skeleton{
+      border:1px dashed #263a6b; background:#0b1020; border-radius:14px; padding:12px; overflow:hidden; position:relative;
+    }
+    .pulse{ height:14px; margin:8px 0; border-radius:7px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
+      background-size:200% 100%; animation: shimmer 1.2s linear infinite;
+    }
+    .pulse.sm{ height:10px; width:65% }
+    .pulse.md{ height:12px; width:80% }
+    @keyframes shimmer{ to{ background-position:-200% 0 } }
+
+    .alert{
+      padding:12px 14px; border:1px solid #3e2c2c; background: #1a0f12; color:#ffc7c7; border-radius:12px; margin-top:10px
+    }
+    .alert .retry{ margin-left:8px }
+
+    :focus-visible{ outline: 3px solid color-mix(in srgb, var(--brand) 50%, transparent); outline-offset:2px }
+
+    #fx{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.35; }
+
+    .sr-live{ position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden }
   </style>
 </head>
 <body>
-  <div class="custom-cursor"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
 
-  <button id="themeSwitch" class="theme-switch" title="Cambiar tema"><span id="themeIcon">🌙</span></button>
-
-  <nav class="navbar navbar-expand-lg">
-    <div class="container">
-      <a class="navbar-brand" href="#">
-        <svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M10 8H30V12H10V8Z" fill="#FFC700"/>
-          <path d="M10 16H30V20H10V16Z" fill="#FFC700"/>
-          <path d="M10 24H30V28H10V24Z" fill="#FFC700"/>
-          <path d="M40 8H50V28H40V8Z" fill="#0057FF"/>
-          <path d="M55 8H115V12H55V8Z" fill="white"/>
-          <path d="M55 16H105V20H55V16Z" fill="white"/>
-          <path d="M55 24H95V28H55V24Z" fill="white"/>
-        </svg>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link" href="#portfolio">Portafolio</a></li>
-          <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
-          <li class="nav-item"><a class="nav-link" href="#testimonios">Testimonios</a></li>
-          <li class="nav-item"><a class="nav-link" href="#team">Equipo</a></li>
-          <li class="nav-item"><a class="nav-link" href="#precios">Precios</a></li>
-          <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
-        </ul>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>TitleCraft</h1>
+        <div class="sub">Premium generator for high-CTR YouTube titles & thumbnail texts</div>
       </div>
     </div>
-  </nav>
-
-  <header class="hero">
-    <canvas id="heroCanvas" class="hero-canvas-bg"></canvas>
-    <div class="glow-element" style="top: 20%; left: 15%;"></div>
-    <div class="glow-element" style="bottom: 10%; right: 10%; background: var(--accent); opacity: 0.1;"></div>
-    <div class="container content">
-      <div class="row justify-content-center">
-        <div class="col-lg-10 text-center">
-          <h1 class="display-1 fw-bold mb-4" id="heroHeading">
-            <span class="text-scramble">Diseño que</span>
-            <span class="text-gradient">convierte</span>
-          </h1>
-          <p class="lead mb-5 text-split">
-            Miniaturas y creativos con garantía de aumento de CTR en <span class="highlight">al menos un 20%</span> 
-            o te devolvemos el dinero. Trabajamos con quienes valoran la eficacia.
-          </p>
-          <div class="d-flex justify-content-center gap-3 cta-buttons">
-            <a href="#portfolio" class="btn-cta btn-lg magnetic">Ver trabajos</a>
-            <a href="#contacto" class="btn-outline btn-lg magnetic">Hablar de tu proyecto</a>
-          </div>
-          <div class="mt-5 clients-trust">
-            <p class="text-uppercase small fw-bold text-secondary mb-3">Confían en nosotros:</p>
-            <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap">
-              <img src="https://i.imgur.com/IMLo8ct.jpeg" alt="Cliente 1" class="img-fluid" width="80">
-              <img src="https://i.imgur.com/QMxkhjd.jpeg" alt="Cliente 2" class="img-fluid" width="80">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="hero-scroll-indicator">
-      <div class="mouse-icon"></div>
-    </div>
+    <div class="sub" id="status" role="status" aria-live="polite">Ready</div>
   </header>
 
-  <section id="portfolio" class="section-pad bg-dark-lighter">
-    <div class="bg-pattern"></div>
-    <div class="container">
-      <h2 class="section-title" data-aos="fade-up">Portafolio que <span class="highlight">funciona</span></h2>
-      <p class="text-center mb-5" data-aos="fade-up" data-aos-delay="100">
-        Cada proyecto está optimizado para máxima conversión y resultados medibles
-      </p>
-      
-      <div class="row g-4">
-        <div class="col-lg-6" data-aos="fade-up">
-          <div class="portfolio-comparison">
-            <div class="portfolio-before">
-              <img src="https://i.imgur.com/7lcT9Dc.jpeg" alt="Antes" class="img-fluid">
-              <div class="portfolio-label">ANTES (CTR 3.2%)</div>
-            </div>
-            <div class="portfolio-after">
-              <img src="https://i.imgur.com/AN0DrBV.jpeg" alt="Después" class="img-fluid">
-              <div class="portfolio-label">DESPUÉS (CTR 7.8%)</div>
-            </div>
-          </div>
-          <div class="mt-3">
-            <h4>Blog de viajes "Mundo Viajero"</h4>
-            <p>Aumento de CTR: <span class="text-accent fw-bold">+144%</span> • Incremento de visualizaciones: <span class="text-accent fw-bold">+89%</span></p>
-          </div>
-        </div>
-        
-        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-          <div class="portfolio-comparison">
-            <div class="portfolio-before">
-              <img src="https://i.imgur.com/tjcMn31.jpeg" alt="Antes" class="img-fluid">
-              <div class="portfolio-label">ANTES (CTR 2.1%)</div>
-            </div>
-            <div class="portfolio-after">
-              <img src="https://i.imgur.com/MKSdns8.jpeg" alt="Después" class="img-fluid">
-              <div class="portfolio-label">DESPUÉS (CTR 5.3%)</div>
-            </div>
-          </div>
-          <div class="mt-3">
-            <h4>Canal educativo "CursosPro"</h4>
-            <p>Aumento de CTR: <span class="text-accent fw-bold">+152%</span> • Conversión a compra: <span class="text-accent fw-bold">+37%</span></p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="row mt-5 g-4">
-        <div class="col-md-4" data-aos="fade-up">
-          <div class="portfolio-item">
-            <img src="https://i.imgur.com/AN0DrBV.jpeg" alt="Trabajo 1" class="img-fluid">
-            <div class="portfolio-overlay">
-              <h5>Miniatura YouTube</h5>
-              <p>Diseño optimizado para canal de tecnología</p>
-              <div class="ctr-badge">CTR +120%</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="portfolio-item">
-            <img src="https://i.imgur.com/7lcT9Dc.jpeg" alt="Trabajo 2" class="img-fluid">
-            <div class="portfolio-overlay">
-              <h5>Creativo para Instagram</h5>
-              <p>Campaña para marca de productos ecológicos</p>
-              <div class="ctr-badge">Engagement +85%</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="portfolio-item">
-            <img src="https://i.imgur.com/MKSdns8.jpeg" alt="Trabajo 3" class="img-fluid">
-            <div class="portfolio-overlay">
-              <h5>Miniatura Curso Online</h5>
-              <p>Diseño para plataforma educativa</p>
-              <div class="ctr-badge">Conversión +45%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="text-center mt-5">
-        <a href="#contacto" class="btn-cta magnetic">Consigue el mismo resultado</a>
-      </div>
-    </div>
-  </section>
+  <div class="grid">
+    <section class="panel inputs" aria-labelledby="inputs-title">
+      <h2 id="inputs-title" class="sr-only">Inputs</h2>
+      <div class="cards">
 
-  <section id="servicios" class="section-pad">
-    <div class="glow-element" style="top: 30%; right: 15%;"></div>
-    <div class="container">
-      <h2 class="section-title" data-aos="fade-up">Nuestros <span class="highlight">Servicios</span></h2>
-      <p class="text-center mb-5" data-aos="fade-up" data-aos-delay="100">
-        Ofrecemos soluciones integrales para el crecimiento de tus métricas y conversión
-      </p>
-      
-      <div class="row g-4">
-        <div class="col-md-6 col-lg-3" data-aos="fade-up">
-          <div class="glass interactive-card">
-            <div class="service-icon mb-4 float">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 16V7.2C21 6.0799 21 5.51984 20.782 5.09202C20.5903 4.71569 20.2843 4.40973 19.908 4.21799C19.4802 4 18.9201 4 17.8 4H6.2C5.07989 4 4.51984 4 4.09202 4.21799C3.71569 4.40973 3.40973 4.71569 3.21799 5.09202C3 5.51984 3 6.0799 3 7.2V16.8C3 17.9201 3 18.4802 3.21799 18.908C3.40973 19.2843 3.71569 19.5903 4.09202 19.782C4.51984 20 5.0799 20 6.2 20H17.8C18.9201 20 19.4802 20 19.908 19.782C20.2843 19.5903 20.5903 19.2843 20.782 18.908C21 18.4802 21 17.9201 21 16.8V16Z" stroke="#FFC700" stroke-width="2"/>
-                <path d="M3 8H21" stroke="#FFC700" stroke-width="2" stroke-linecap="round"/>
-                <path d="M7 12H17" stroke="#0057FF" stroke-width="2" stroke-linecap="round"/>
-                <path d="M7 16H13" stroke="#0057FF" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <h5 class="mb-3">Miniatura Premium</h5>
-            <p class="mb-4">Diseño profesional optimizado para máximo CTR. Ideal para videos importantes.</p>
-            <ul class="list-unstyled">
-              <li class="mb-2">✓ Diseño de conversión</li>
-              <li class="mb-2">✓ Entrega express 48h</li>
-              <li>✓ Adaptación multi-plataforma</li>
-            </ul>
+        <div class="card">
+          <h3>Video topic <span class="req" aria-hidden="true">*</span></h3>
+          <div class="field">
+            <textarea id="topic" rows="3" placeholder="What’s the video about?" aria-required="true"></textarea>
           </div>
+          <div class="hint">Be specific: key event/person, conflict, angle, numbers, time/place.</div>
         </div>
-        
-        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
-          <div class="glass interactive-card">
-            <div class="service-icon mb-4 float">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 20H4V12H10V20Z" stroke="#0057FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M20 20H14V4H20V20Z" stroke="#FFC700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M10 20V8" stroke="#0057FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <h5 class="mb-3">Pack A/B Testing</h5>
-            <p class="mb-4">Creamos dos versiones con enfoques diferentes, probamos y optimizamos la mejor para máxima conversión.</p>
-            <ul class="list-unstyled">
-              <li class="mb-2">✓ 2 versiones diferentes</li>
-              <li class="mb-2">✓ Pruebas e informe</li>
-              <li>✓ Promedio +35% CTR</li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-          <div class="glass interactive-card">
-            <div class="service-icon mb-4 float">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 14H14V21H21V14Z" stroke="#FFC700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M10 14H3V21H10V14Z" stroke="#0057FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M21 3H14V10H21V3Z" stroke="#0057FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M10 3H3V10H10V3Z" stroke="#FFC700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <h5 class="mb-3">Pack Mensual</h5>
-            <p class="mb-4">Servicio integral para creadores regulares. Planificación, análisis y optimización.</p>
-            <ul class="list-unstyled">
-              <li class="mb-2">✓ 8 miniaturas al mes</li>
-              <li class="mb-2">✓ Dashboard de analítica</li>
-              <li>✓ Soporte prioritario</li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-          <div class="glass interactive-card">
-            <div class="service-icon mb-4 float">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="#0057FF" stroke-width="2"/>
-                <path d="M12 8V12L15 15" stroke="#FFC700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <h5 class="mb-3">Creativos Animados</h5>
-            <p class="mb-4">Creativos animados para redes sociales y publicidad. El movimiento atrae más atención y clics.</p>
-            <ul class="list-unstyled">
-              <li class="mb-2">✓ Animación de 15 seg.</li>
-              <li class="mb-2">✓ Múltiples formatos</li>
-              <li>✓ +45% engagement</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <section class="section-pad bg-dark-lighter">
-    <div class="container">
-      <h2 class="section-title" data-aos="fade-up">Cómo <span class="highlight">trabajamos</span></h2>
-      <p class="text-center mb-5" data-aos="fade-up" data-aos-delay="100">
-        Nuestro proceso de creación de materiales efectivos
-      </p>
-      
-      <div class="row g-4">
-        <div class="col-md-3" data-aos="fade-up">
-          <div class="glass p-4 process-step">
-            <div class="process-number mb-3 display-5 fw-bold text-accent">01</div>
-            <h5>Análisis</h5>
-            <p>Estudiamos tu contenido, audiencia y competencia para definir la estrategia</p>
+        <div class="card">
+          <h3>Format (optional)</h3>
+          <div class="field">
+            <input id="format" placeholder="Documentary, News breakdown, Review, Investigation, Meme, Story..." />
           </div>
+          <div class="hint">Free-form. Examples: Investigation, Tech review, History deep-dive, Lifestyle vlog, Podcast.</div>
         </div>
-        
-        <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
-          <div class="glass p-4 process-step">
-            <div class="process-number mb-3 display-5 fw-bold text-accent">02</div>
-            <h5>Diseño</h5>
-            <p>Creamos varios conceptos enfocados en conversión y engagement</p>
-          </div>
-        </div>
-        
-        <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
-          <div class="glass p-4 process-step">
-            <div class="process-number mb-3 display-5 fw-bold text-accent">03</div>
-            <h5>Testeo</h5>
-            <p>Realizamos pruebas A/B para determinar la mejor opción</p>
-          </div>
-        </div>
-        
-        <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
-          <div class="glass p-4 process-step">
-            <div class="process-number mb-3 display-5 fw-bold text-accent">04</div>
-            <h5>Optimización</h5>
-            <p>Mejoramos los resultados basándonos en datos reales de visualizaciones</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <section id="testimonios" class="section-pad">
-    <div class="glow-element" style="bottom: 20%; left: 10%;"></div>
-    <div class="container">
-      <h2 class="section-title" data-aos="fade-up">Lo que dicen nuestros <span class="highlight">clientes</span></h2>
-      <p class="text-center mb-5" data-aos="fade-up" data-aos-delay="100">
-        Resultados medibles que enorgullecen a nuestros clientes
-      </p>
-      
-      <div class="swiper testimonials-swiper">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide">
-            <div class="glass testimonial">
-              <div class="testimonial-quote">❝</div>
-              <div class="testimonial-content">
-                <p class="fs-5 mb-4">Trabajar con CTR Studio fue la mejor decisión para nuestro canal. Después del primer mes, el CTR se duplicó, y con él, los ingresos por publicidad.</p>
-                <div class="testimonial-metrics">CTR: +107% en 10 días</div>
-                <div class="testimonial-author mt-4">
-                  <div class="testimonial-avatar">
-                    <img src="https://source.unsplash.com/100x100/?woman,portrait" alt="María R.">
-                  </div>
-                  <div>
-                    <div class="fw-bold">María R.</div>
-                    <div class="text-muted">Blogger de viajes, 450K suscriptores</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div class="card">
+          <h3>Target audience (optional)</h3>
+          <div class="field">
+            <input id="audience" placeholder="Broad / niche (history fans, gamers), age range, region..." />
           </div>
-          
-          <div class="swiper-slide">
-            <div class="glass testimonial">
-              <div class="testimonial-quote">❝</div>
-              <div class="testimonial-content">
-                <p class="fs-5 mb-4">El dashboard de métricas es increíblemente útil. Vemos el ROI en tiempo real y podemos seguir la efectividad de cada miniatura.</p>
-                <div class="testimonial-metrics">ROI: 320% en creativos publicitarios</div>
-                <div class="testimonial-author mt-4">
-                  <div class="testimonial-avatar">
-                    <img src="https://source.unsplash.com/101x101/?woman,portrait" alt="Elena T.">
-                  </div>
-                  <div>
-                    <div class="fw-bold">Elena T.</div>
-                    <div class="text-muted">CEO de empresa EdTech</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="swiper-slide">
-            <div class="glass testimonial">
-              <div class="testimonial-quote">❝</div>
-              <div class="testimonial-content">
-                <p class="fs-5 mb-4">Con el Pack Mensual nuestra campaña publicitaria mostró un crecimiento increíble. El CTR aumentó de 1.8% a 4.5%, lo que se reflejó directamente en las ventas.</p>
-                <div class="testimonial-metrics">Conversión a ventas: +41%</div>
-                <div class="testimonial-author mt-4">
-                  <div class="testimonial-avatar">
-                    <img src="https://source.unsplash.com/102x102/?man,portrait" alt="Diego S.">
-                  </div>
-                  <div>
-                    <div class="fw-bold">Diego S.</div>
-                    <div class="text-muted">CMO de proyecto e-commerce</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="hint">Describe who should click: niche, interests, age, proficiency level.</div>
         </div>
-        <div class="swiper-pagination mt-4"></div>
-      </div>
-    </div>
-  </section>
 
-  <section id="team" class="section-pad bg-dark-lighter">
-    <div class="bg-pattern"></div>
-    <div class="container">
-      <h2 class="section-title" data-aos="fade-up">Nuestro <span class="highlight">equipo</span></h2>
-      <p class="text-center mb-5" data-aos="fade-up" data-aos-delay="100">
-        Profesionales que crean diseños que realmente funcionan
-      </p>
-      
-      <div class="row g-4 justify-content-center">
-        <div class="col-md-6 col-lg-4" data-aos="fade-up">
-          <div class="glass team-card">
-            <div class="team-img-container">
-              <img src="https://i.imgur.com/rbKwuN7.jpeg" class="team-img">
-            </div>
-            <div class="team-info">
-              <h4>Mykhailo Hryshchenko</h4>
-              <div class="text-accent mb-2">Director Creativo</div>
-              <p class="team-expertise">+10 años en diseño, experto en conversión y psicología de la atención</p>
-              <div class="team-social">
-                <a href="#" class="team-social-icon"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#" class="team-social-icon"><i class="fab fa-dribbble"></i></a>
-                <a href="#" class="team-social-icon"><i class="fab fa-behance"></i></a>
-              </div>
-            </div>
-          </div>
+        <div class="actions">
+          <button id="send" class="btn" aria-busy="false" aria-describedby="send-hint">
+            <svg class="spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.8 4.6L18 8l-4.2 1.4L12 14l-1.8-4.6L6 8l4.2-1.4L12 2zm6 6l.9 2.3L22 11l-3.1 1 .9 2.3L17 12.9 14.2 14l1.1-2.7L14 8.6l2.8.8L18 6zM5 14l1 2.5L9 17l-2.3 1 1 2.5L5 19l-2.7 1.5 1-2.5L1 17l3-.5L5 14z"/></svg>
+            <span>Send</span>
+          </button>
+          <span id="send-hint" class="sub">Press Enter to submit</span>
         </div>
-        
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="glass team-card">
-            <div class="team-img-container">
-              <img src="https://img.freepik.com/free-photo/young-beautiful-woman-looking-camera-trendy-girl-casual-summer-white-t-shirt-jeans-shorts-positive-female-shows-facial-emotions-funny-model-isolated-yellow_158538-15796.jpg" class="team-img">
-            </div>
-            <div class="team-info">
-              <h4>Lucía Fernández</h4>
-              <div class="text-accent mb-2">Head of Marketing</div>
-              <p class="team-expertise">Especialista en pruebas A/B y análisis de comportamiento de audiencia</p>
-              <div class="team-social">
-                <a href="#" class="team-social-icon"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#" class="team-social-icon"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="team-social-icon"><i class="fab fa-medium"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="glass team-card">
-            <div class="team-img-container">
-              <img src="https://img.freepik.com/free-photo/handsome-confident-smiling-man-with-hands-crossed-chest_176420-18743.jpg" class="team-img">
-            </div>
-            <div class="team-info">
-              <h4>Alejandro Pérez</h4>
-              <div class="text-accent mb-2">Motion Designer</div>
-              <p class="team-expertise">Crea creativos animados enfocados en aumentar el CTR</p>
-              <div class="team-social">
-                <a href="#" class="team-social-icon"><i class="fab fa-vimeo-v"></i></a>
-                <a href="#" class="team-social-icon"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="team-social-icon"><i class="fab fa-youtube"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <section class="section-pad">
-    <div class="container">
-      <div class="row g-4 text-center">
-        <div class="col-md-3" data-aos="fade-up">
-          <div class="stat-item">
-            <div class="stat-number text-gradient">98%</div>
-            <div class="stat-label">Clientes satisfechos</div>
-          </div>
-        </div>
-        
-        <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
-          <div class="stat-item">
-            <div class="stat-number text-gradient">+35%</div>
-            <div class="stat-label">Aumento medio de CTR</div>
-          </div>
-        </div>
-        
-        <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
-          <div class="stat-item">
-            <div class="stat-number text-gradient">1000+</div>
-            <div class="stat-label">Proyectos realizados</div>
-          </div>
-        </div>
-        
-        <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
-          <div class="stat-item">
-            <div class="stat-number text-gradient">3.2x</div>
-            <div class="stat-label">ROI promedio</div>
-          </div>
+        <div class="card">
+          <h3>Notes</h3>
+          <div class="hint">Nothing is deleted on new runs. History persists in your browser (localStorage). Keyboard: <kbd>Enter</kbd> to submit. Copy buttons add little confirmations ✅</div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="precios" class="section-pad bg-dark-lighter">
-    <div class="glow-element" style="top: 30%; right: 10%;"></div>
-    <div class="container">
-      <h2 class="section-title" data-aos="fade-up">Tarifas y <span class="highlight">precios</span></h2>
-      <p class="text-center mb-5" data-aos="fade-up" data-aos-delay="100">
-        Precios transparentes con garantía de resultados
-      </p>
-      
-      <div class="row g-4">
-        <div class="col-lg-3 col-md-6" data-aos="fade-up">
-          <div class="glass pricing-card">
-            <div class="pricing-header">
-              <h4>Miniatura Premium</h4>
-              <div class="pricing-price">93 €<span>/ud</span></div>
-              <p>Miniatura individual con enfoque en máximo CTR</p>
-            </div>
-            <ul class="pricing-features">
-              <li>1 miniatura de alta calidad</li>
-              <li>Garantía de aumento de CTR 20%</li>
-              <li>1 ronda de revisiones</li>
-              <li>Entrega express 48h</li>
-              <li>Optimización para todos los dispositivos</li>
-            </ul>
-            <div class="pricing-cta">
-              <a href="#contacto" class="btn-outline w-100 magnetic">Elegir</a>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-          <div class="glass pricing-card">
-            <div class="pricing-header">
-              <h4>Pack A/B Testing</h4>
-              <div class="pricing-price">149 €<span>/proyecto</span></div>
-              <p>Dos variantes de diseño con testeo y selección de la mejor</p>
-            </div>
-            <ul class="pricing-features">
-              <li>2 versiones diferentes de miniatura</li>
-              <li>Testeo A/B</li>
-              <li>Informe de resultados</li>
-              <li>Optimización final</li>
-              <li>Promedio +35% de CTR</li>
-            </ul>
-            <div class="pricing-cta">
-              <a href="#contacto" class="btn-outline w-100 magnetic">Elegir</a>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-          <div class="glass pricing-card featured">
-            <div class="pricing-badge">Popular</div>
-            <div class="pricing-header">
-              <h4>Pack Mensual</h4>
-              <div class="pricing-price">800 €<span>/mes</span></div>
-              <p>Servicio completo para publicaciones regulares</p>
-            </div>
-            <ul class="pricing-features">
-              <li>8 miniaturas Premium al mes</li>
-              <li>Servicio prioritario</li>
-              <li>Dashboard con analítica</li>
-              <li>Revisiones ilimitadas</li>
-              <li>Informe mensual de KPIs</li>
-            </ul>
-            <div class="pricing-cta">
-              <a href="#contacto" class="btn-cta w-100 magnetic">Elegir</a>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-          <div class="glass pricing-card">
-            <div class="pricing-header">
-              <h4>Creativos Animados</h4>
-              <div class="pricing-price">240 €<span>/ud</span></div>
-              <p>Creativos animados para redes sociales y publicidad</p>
-            </div>
-            <ul class="pricing-features">
-              <li>Creativo animado de 15 seg</li>
-              <li>2 formatos a elegir</li>
-              <li>Acompañamiento sonoro</li>
-              <li>Entrega en 5 días</li>
-              <li>+45% de engagement (promedio)</li>
-            </ul>
-            <div class="pricing-cta">
-              <a href="#contacto" class="btn-outline w-100 magnetic">Elegir</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="text-center mt-5">
-        <p>¿Necesitas una solución personalizada? Crearemos una propuesta única para ti.</p>
-        <a href="#contacto" class="btn-cta mt-3 magnetic">Obtener propuesta personalizada</a>
-      </div>
-    </div>
-  </section>
+    <section class="panel results" aria-labelledby="results-title">
+      <h2 id="results-title" class="sr-only">Results</h2>
+      <div id="stream"></div>
+    </section>
+  </div>
+</div>
 
-  <section id="contacto" class="section-pad">
-    <div class="glow-element" style="bottom: 30%; right: 10%;"></div>
-    <div class="container">
-      <h2 class="section-title" data-aos="fade-up">¿Listo para <span class="highlight">aumentar tu CTR</span>?</h2>
-      <p class="text-center mb-5" data-aos="fade-up" data-aos-delay="100">
-        Deja tu solicitud y te contactaremos en 24 horas
-      </p>
-      
-      <div class="row justify-content-center">
-        <div class="col-lg-8">
-          <div class="contact-form" data-aos="fade-up">
-            <form action="https://formspree.io/f/xeqwldra" method="POST">
-              <div class="row g-4">
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <input type="text" class="form-control" id="name" name="name" placeholder="Tu nombre" required>
-                    <label for="name">Tu nombre</label>
-                  </div>
-                </div>
-                
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
-                    <label for="email">Email</label>
-                  </div>
-                </div>
-                
-                <div class="col-12">
-                  <div class="form-floating">
-                    <select class="form-control" id="service" name="service">
-                      <option value="" disabled selected>Elige un servicio</option>
-                      <option value="premium">Miniatura Premium</option>
-                      <option value="ab">Pack A/B Testing</option>
-                      <option value="monthly">Pack Mensual</option>
-                      <option value="animated">Creativos Animados</option>
-                      <option value="custom">Propuesta personalizada</option>
-                    </select>
-                    <label for="service">Servicio de interés</label>
-                  </div>
-                </div>
-                
-                <div class="col-12">
-                  <div class="form-floating">
-                    <textarea class="form-control" id="message" name="message" placeholder="Cuéntanos sobre tu proyecto" style="height: 150px" required></textarea>
-                    <label for="message">Cuéntanos sobre tu proyecto</label>
-                  </div>
-                </div>
-                
-                <div class="col-12 text-center">
-                  <button type="submit" class="btn-cta magnetic">Enviar solicitud</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+<div class="sr-live" id="live" aria-live="polite"></div>
 
-  <footer>
-    <div class="container">
-      <div class="row g-4">
-        <div class="col-lg-4">
-          <svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 8H30V12H10V8Z" fill="#FFC700"/>
-            <path d="M10 16H30V20H10V16Z" fill="#FFC700"/>
-            <path d="M10 24H30V28H10V24Z" fill="#FFC700"/>
-            <path d="M40 8H50V28H40V8Z" fill="#0057FF"/>
-            <path d="M55 8H115V12H55V8Z" fill="white"/>
-            <path d="M55 16H105V20H55V16Z" fill="white"/>
-            <path d="M55 24H95V28H55V24Z" fill="white"/>
-          </svg>
-          <p class="mt-4">Diseño de miniaturas y creativos para redes sociales y YouTube, orientados al aumento del CTR y la eficacia.</p>
-          <div class="footer-social mt-4">
-            <a href="#" class="footer-social-icon"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="footer-social-icon"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="footer-social-icon"><i class="fab fa-behance"></i></a>
-            <a href="#" class="footer-social-icon"><i class="fab fa-youtube"></i></a>
-          </div>
-        </div>
-        
-        <div class="col-lg-2 col-md-4">
-          <h5 class="footer-heading">Empresa</h5>
-          <a href="#" class="footer-link">Sobre nosotros</a>
-          <a href="#portfolio" class="footer-link">Portafolio</a>
-          <a href="#team" class="footer-link">Equipo</a>
-          <a href="#" class="footer-link">Empleo</a>
-        </div>
-        
-        <div class="col-lg-2 col-md-4">
-          <h5 class="footer-heading">Servicios</h5>
-          <a href="#servicios" class="footer-link">Miniaturas</a>
-          <a href="#servicios" class="footer-link">A/B Testing</a>
-          <a href="#servicios" class="footer-link">Pack mensual</a>
-          <a href="#servicios" class="footer-link">Creativos animados</a>
-        </div>
-        
-        <div class="col-lg-4 col-md-4">
-          <h5 class="footer-heading">Contacto</h5>
-          <p><i class="fas fa-envelope me-2"></i> hola@ctrstudio.com</p>
-          <p><i class="fas fa-phone me-2"></i> +34 912 456 789</p>
-          <p><i class="fas fa-map-marker-alt me-2"></i> Madrid, Calle Digital, 42</p>
-        </div>
-      </div>
-      
-      <div class="footer-bottom text-center">
-        <p>© 2025 CTR Studio — Todos los derechos reservados</p>
-      </div>
-    </div>
-  </footer>
+<script>
+const API_KEY = "AIzaSyDkowFTxiuya3AKjX4yaoA4XaTEK13OXx8";
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/split-type@0.3.3/umd/index.min.js"></script>
-  
-  <script>
-    AOS.init({
-      duration: 800,
-      easing: 'ease-in-out',
-      once: true,
-      mirror: false
-    });
+const MODEL   = "gemini-2.5-pro";
+const MAX_CHARS_TOPIC = 800, MAX_CHARS_FORMAT = 300, MAX_CHARS_AUDIENCE = 300;
 
-    const testimonialsSwiper = new Swiper('.testimonials-swiper', {
-      slidesPerView: 1,
-      spaceBetween: 30,
-      loop: true,
-      autoplay: {
-        delay: 5000,
-        disableOnInteraction: false,
+const CUSTOM_PROMPT = `{{CUSTOM_PROMPT_TO_GEMINI}}`;
+
+const store = {
+  saveInputs(topic, format, audience){
+    localStorage.setItem("tc_inputs", JSON.stringify({topic, format, audience}));
+  },
+  loadInputs(){
+    try{ return JSON.parse(localStorage.getItem("tc_inputs")) || {}; }catch{ return {}; }
+  },
+  addSession(session){
+    const all = store.loadSessions();
+    all.unshift(session);
+    localStorage.setItem("tc_sessions", JSON.stringify(all));
+  },
+  loadSessions(){
+    try{ return JSON.parse(localStorage.getItem("tc_sessions")) || []; }catch{ return []; }
+  }
+};
+
+const $ = sel => document.querySelector(sel);
+const status = (msg) => { const el = $("#status"); if(el){ el.textContent = msg; } };
+
+function clampStr(s, n){ s = (s||"").trim(); return s.length>n ? s.slice(0, n) : s; }
+
+function nowStr(){ try{ return new Date().toLocaleString('en-GB', { hour12:false, timeZone:'Europe/London' }); }catch{ return new Date().toLocaleString(); } }
+
+function toastCopy(targetBtn, msg="Copied"){
+  const chip = document.createElement("div");
+  chip.className = "copied-chip";
+  chip.textContent = msg;
+  targetBtn.closest(".row")?.appendChild(chip);
+  requestAnimationFrame(()=> chip.classList.add("show"));
+  setTimeout(()=> chip.classList.remove("show"), 1200);
+  setTimeout(()=> chip.remove(), 1500);
+  const live = $("#live"); if(live){ live.textContent = msg; }
+}
+
+async function copyText(text, btn){
+  try{ await navigator.clipboard.writeText(text); toastCopy(btn, "Copied"); }
+  catch{ toastCopy(btn, "Copy failed"); }
+}
+
+function escapeForPrompt(s){ return (s||"").replace(/[<>{}]/g, c => ({'<':'&lt;','>':'&gt;','{':'{','}':'}'}[c])); }
+
+function safeParseJSON(maybe){
+  if(!maybe) return null;
+  try{ return JSON.parse(maybe); }catch(_){}
+  const start = maybe.indexOf("{"); const end = maybe.lastIndexOf("}");
+  if(start>=0 && end>start){ try{ return JSON.parse(maybe.slice(start, end+1)); }catch(_){ } }
+  const aS = maybe.indexOf("["); const aE = maybe.lastIndexOf("]");
+  if(aS>=0 && aE>aS){ try{ return JSON.parse(maybe.slice(aS, aE+1)); }catch(_){ } }
+  return null;
+}
+
+function buildSystemInstruction(){
+  return `You are a YouTube title & thumbnail copywriter focused on CTR.
+Return concise, high-impact options. Never reveal chain-of-thought or internal reasoning.
+Avoid clickbait lies; promise real, specific value. Respect constraints strictly:
+- Produce exactly 10 options.
+- Title: <= 100 chars, strong hook early.
+- Thumbnail Text: <= 50 chars, 1–5 words, no colons, ultra-punchy.
+- Language: Detect from user inputs; fallback to English.
+- Provide 2 top picks with a one-sentence rationale each.`;
+}
+
+function buildUserBlock({topic, format, audience}){
+  const langHint = "auto-detect (fallback: English)";
+  const lines = [
+`VIDEO TOPIC: ${escapeForPrompt(topic)}`,
+`FORMAT: ${escapeForPrompt(format || "(not specified)")}`,
+`TARGET AUDIENCE: ${escapeForPrompt(audience || "(not specified)")}`,
+`LANGUAGE: ${langHint}`,
+`OUTPUT SPEC:
+• Audience Profile (3–6 sentences; concrete, merit-oriented).
+• Top-10 options (1..10). Each:
+   Title (<=100; intrigue + value)
+   Thumbnail Text (<=50; 1–5 words; NO colons)
+• Pick Top-2 with 1-sentence rationale each.
+• Style: click-worthy, clear benefits, avoid clickbait lies.`
+  ];
+  const extra = (CUSTOM_PROMPT && !/^\{\{CUSTOM_PROMPT_TO_GEMINI\}\}$/.test(CUSTOM_PROMPT.trim())) ? `\n\n---\nCUSTOM PROMPT:\n${CUSTOM_PROMPT.trim()}` : "";
+  return lines.join("\n") + extra;
+}
+
+function responseSchema(){
+  return {
+    type: "OBJECT",
+    properties: {
+      audienceProfile: { type: "STRING", description: "3–6 sentences describing the target audience and motives." },
+      options: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            title: { type: "STRING" },
+            thumbnailText: { type: "STRING" }
+          },
+          required: ["title","thumbnailText"],
+          propertyOrdering: ["title","thumbnailText"]
+        }
       },
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-      },
-      breakpoints: {
-        768: { slidesPerView: 2 },
-        1200: { slidesPerView: 3 }
+      topPicks: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            index: { type: "INTEGER" },
+            rationale: { type: "STRING" }
+          },
+          required: ["index","rationale"],
+          propertyOrdering: ["index","rationale"]
+        }
       }
-    });
+    },
+    required: ["audienceProfile","options","topPicks"],
+    propertyOrdering: ["audienceProfile","options","topPicks"]
+  };
+}
 
-    window.addEventListener('scroll', () => {
-      const navbar = document.querySelector('.navbar');
-      navbar.classList.toggle('scrolled', window.scrollY > 50);
-    });
-
-    const themeSwitch = document.getElementById('themeSwitch');
-    const themeIcon = document.getElementById('themeIcon');
-    let isDarkTheme = true;
-
-    themeSwitch.addEventListener('click', () => {
-      document.body.classList.toggle('theme-light', isDarkTheme);
-      themeIcon.textContent = isDarkTheme ? '☀️' : '🌙';
-      isDarkTheme = !isDarkTheme;
-    });
-
-    const cursor = document.querySelector('.custom-cursor');
-    document.addEventListener('mousemove', e => {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top = e.clientY + 'px';
-    });
-    document.addEventListener('mousedown', () => cursor.style.transform = 'translate(-50%, -50%) scale(0.8)');
-    document.addEventListener('mouseup', () => cursor.style.transform = 'translate(-50%, -50%) scale(1)');
-    document.querySelectorAll('a, button, .card-tilt, .btn-cta, .btn-outline, .interactive-card')
-      .forEach(el => {
-        el.addEventListener('mouseenter', () => cursor.classList.add('cursor-expanded'));
-        el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-expanded'));
+async function callGemini(payload, tries=3){
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(API_KEY)}`;
+  let lastErr;
+  for(let i=0;i<tries;i++){
+    try{
+      const res = await fetch(url, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
       });
+      if(!res.ok){
+        const txt = await res.text().catch(()=> "");
+        throw new Error(`HTTP ${res.status}: ${txt || res.statusText}`);
+      }
+      return await res.json();
+    }catch(err){
+      lastErr = err;
+      const delay = 700 * Math.pow(2, i) + Math.random()*250;
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  throw lastErr;
+}
 
-    class TextScramble {
-      constructor(el) {
-        this.el = el;
-        this.chars = '!<>-_\\/[]{}—=+*^?#________';
-        this.update = this.update.bind(this);
-      }
-      setText(newText) {
-        const oldText = this.el.innerText;
-        const length = Math.max(oldText.length, newText.length);
-        const promise = new Promise(resolve => this.resolve = resolve);
-        this.queue = [];
-        for (let i = 0; i < length; i++) {
-          const from = oldText[i] || '';
-          const to = newText[i] || '';
-          const start = Math.floor(Math.random() * 40);
-          const end = start + Math.floor(Math.random() * 40);
-          this.queue.push({ from, to, start, end });
-        }
-        cancelAnimationFrame(this.frameRequest);
-        this.frame = 0;
-        this.update();
-        return promise;
-      }
-      update() {
-        let output = '';
-        let complete = 0;
-        for (let i = 0, n = this.queue.length; i < n; i++) {
-          let { from, to, start, end, char } = this.queue[i];
-          if (this.frame >= end) {
-            complete++; output += to;
-          } else if (this.frame >= start) {
-            if (!char || Math.random() < 0.28) {
-              char = this.randomChar();
-              this.queue[i].char = char;
-            }
-            output += `<span class="dud">${char}</span>`;
-          } else {
-            output += from;
-          }
-        }
-        this.el.innerHTML = output;
-        if (complete === this.queue.length) { this.resolve(); }
-        else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
-      }
-      randomChar() { return this.chars[Math.floor(Math.random() * this.chars.length)]; }
+function skeletonCard(){
+  const wrap = document.createElement("div");
+  wrap.className = "session";
+  wrap.innerHTML = `
+    <header><div class="meta">Generating…</div></header>
+    <div class="skeleton">
+      <div class="pulse md"></div>
+      <div class="pulse"></div>
+      <div class="pulse sm"></div>
+      <div class="pulse"></div>
+      <div class="pulse"></div>
+      <div class="pulse sm"></div>
+      <div class="pulse"></div>
+    </div>
+  `;
+  return wrap;
+}
+
+function rowHTML(i, pair, topIdxSet){
+  const n = i+1;
+  const top = topIdxSet.has(n) ? " top-pick" : "";
+  const title = pair.title || "";
+  const thumb = pair.thumbnailText || "";
+  const tData = btoa(unescape(encodeURIComponent(title)));
+  const thData= btoa(unescape(encodeURIComponent(thumb)));
+  return `
+  <div class="row${top}" data-title="${tData}" data-thumb="${thData}">
+    <div class="badge" aria-hidden="true">${n}</div>
+    <div class="pair">
+      <div class="line">
+        <div class="label">Title</div>
+        <div class="txt">${title}</div>
+      </div>
+      <div class="line">
+        <div class="label">Thumbnail</div>
+        <div class="txt">${thumb}</div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button class="copy" title="Copy title" aria-label="Copy title" data-copy="title">
+        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      </button>
+      <button class="copy" title="Copy thumbnail text" aria-label="Copy thumbnail text" data-copy="thumb">
+        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      </button>
+    </div>
+  </div>`;
+}
+
+function sessionHTML(session){
+  const { createdAt, input, output } = session;
+  const topIdxSet = new Set((output.topPicks||[]).map(x=> x.index));
+  const list = (output.options||[]).slice(0,10).map((opt, i)=> rowHTML(i, opt, topIdxSet)).join("");
+  const titleLines = output.options.map(o => o.title).join("\n");
+  const thumbLines = output.options.map(o => o.thumbnailText).join("\n");
+  const audience = output.audienceProfile || "";
+  const rationaleLines = (output.topPicks||[]).map(tp => `#${tp.index}: ${tp.rationale}`).join("  •  ");
+  return `
+  <article class="session" role="region" aria-label="Result session">
+    <header>
+      <div>
+        <strong>Generation</strong> <span class="meta">• ${createdAt}</span>
+        <div class="meta-small">${inputSummary(input)}</div>
+      </div>
+      <div class="meta">
+        <span>${(output.topPicks||[]).length ? "Top-2: " + rationaleLines : ""}</span>
+      </div>
+    </header>
+
+    <div class="audience" aria-label="Audience profile">${audience}</div>
+
+    <div class="buttons-row">
+      <button class="tiny" data-copy-bulk="titles">Copy all 10 titles</button>
+      <button class="tiny" data-copy-bulk="thumbs">Copy all 10 thumbnail texts</button>
+    </div>
+
+    <div class="list">${list}</div>
+
+    <textarea class="hidden" hidden data-bulk="titles">${titleLines}</textarea>
+    <textarea class="hidden" hidden data-bulk="thumbs">${thumbLines}</textarea>
+  </article>`;
+}
+
+function inputSummary(input){
+  const f = input.format ? ` • Format: ${input.format}` : "";
+  const a = input.audience ? ` • Audience: ${input.audience}` : "";
+  return `Topic: ${input.topic}${f}${a}`;
+}
+
+function renderAll(){
+  const container = $("#stream");
+  container.innerHTML = "";
+  const sessions = store.loadSessions();
+  sessions.forEach(s => {
+    const wrap = document.createElement("div");
+    wrap.innerHTML = sessionHTML(s);
+    container.appendChild(wrap);
+  });
+}
+
+async function generate(){
+  const btn = $("#send");
+  const topic = clampStr($("#topic").value, MAX_CHARS_TOPIC);
+  const format= clampStr($("#format").value, MAX_CHARS_FORMAT);
+  const audience = clampStr($("#audience").value, MAX_CHARS_AUDIENCE);
+
+  if(!topic){
+    status("Topic is required");
+    $("#topic").focus();
+    $("#topic").parentElement.style.borderColor = "var(--warn)";
+    setTimeout(()=> $("#topic").parentElement.style.borderColor = "", 1200);
+    return;
+  }
+
+  store.saveInputs(topic, format, audience);
+
+  btn.setAttribute("aria-busy", "true");
+  btn.disabled = true;
+  $("#status").textContent = "Generating…";
+
+  const stream = $("#stream");
+  const skel = skeletonCard();
+  stream.prepend(skel);
+
+  const payload = {
+    systemInstruction: { parts: [{ text: buildSystemInstruction() }] },
+    contents: [{ role: "user", parts: [{ text: buildUserBlock({topic, format, audience}) }] }],
+    generationConfig: {
+      temperature: 0.8,
+      topP: 0.95,
+      maxOutputTokens: 2048,
+      responseMimeType: "application/json",
+      responseSchema: responseSchema(),
+      thinkingConfig: { includeThoughts: false, thinkingBudget: 1024 }
+    }
+  };
+
+  try{
+    const json = await callGemini(payload);
+    const parts = (((json||{}).candidates||[])[0]||{}).content?.parts || [];
+    const text = parts.map(p=> p.text).filter(Boolean).join("") || "";
+    const parsed = safeParseJSON(text);
+    if(!parsed || !Array.isArray(parsed.options)){
+      throw new Error("Invalid model response");
     }
 
-    const phrases = ['Diseño que', 'Creativos que', 'Miniaturas que', 'Visuales que'];
-    const el = document.querySelector('.text-scramble');
-    const fx = new TextScramble(el);
-    let counter = 0;
-    (function next() {
-      fx.setText(phrases[counter]).then(() => setTimeout(next, 3000));
-      counter = (counter + 1) % phrases.length;
-    })();
+    const session = { createdAt: nowStr(), input: { topic, format, audience }, output: normalizeOutput(parsed) };
+    store.addSession(session);
 
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.text-split').forEach(element => {
-        const splitText = new SplitType(element, { types: 'words' });
-        gsap.from(splitText.words, {
-          opacity: 0, y: 20, duration: 0.7, stagger: 0.05, ease: "power2.out", delay: 0.3
-        });
-      });
+    const cardWrap = document.createElement("div");
+    cardWrap.innerHTML = sessionHTML(session);
+    stream.replaceChild(cardWrap, skel);
+    attachCopyHandlers(cardWrap);
+
+    status("Done");
+  }catch(err){
+    console.error("Generation error:", err?.message || err);
+    skel.innerHTML = `
+      <div class="alert" role="alert">
+        <strong>Request failed.</strong> ${truncate(err?.message||"Unknown error", 260)}
+        <button class="tiny retry" aria-label="Retry">Retry</button>
+      </div>`;
+    skel.querySelector(".retry").addEventListener("click", generate, { once:true });
+    status("Error");
+  }finally{
+    btn.setAttribute("aria-busy","false");
+    btn.disabled = false;
+  }
+}
+
+function normalizeOutput(o){
+  const options = (o.options||[]).slice(0,10).map(x=> ({
+    title: (x.title||"").trim().slice(0, 100),
+    thumbnailText: (x.thumbnailText||"").replace(/:/g,"").trim().slice(0, 50)
+  }));
+  while(options.length<10) options.push({ title:"", thumbnailText:"" });
+
+  const tp = (o.topPicks||[]).slice(0,2).map(x=> ({
+    index: Math.max(1, Math.min(10, parseInt(x.index||0,10) || 1)),
+    rationale: (x.rationale||"").trim()
+  }));
+  while(tp.length<2) tp.push({ index: tp.length+1, rationale:"" });
+
+  return { audienceProfile: (o.audienceProfile||"").trim(), options, topPicks: tp };
+}
+
+function truncate(s, n){ return s.length > n ? s.slice(0, n-1)+"…" : s }
+
+function attachCopyHandlers(scope=document){
+  scope.querySelectorAll(".copy").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const row = btn.closest(".row");
+      const which = btn.dataset.copy;
+      const v = which === "title" ? row.dataset.title : row.dataset.thumb;
+      const text = decodeURIComponent(escape(atob(v||"")));
+      copyText(text, btn);
     });
-
-    document.querySelectorAll('.card-tilt').forEach(card => {
-      card.addEventListener('mousemove', e => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const angleX = (y - centerY) / 20;
-        const angleY = (centerX - x) / 20;
-        card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateZ(10px)`;
-      });
-      card.addEventListener('mouseleave', () => card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)');
+  });
+  scope.querySelectorAll("[data-copy-bulk]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const wrap = btn.closest(".session");
+      const kind = btn.dataset.copyBulk;
+      const ta = wrap.querySelector(`[data-bulk="${kind}"]`);
+      copyText(ta?.value || "", btn);
     });
+  });
+}
 
-    document.querySelectorAll('.magnetic').forEach(button => {
-      button.addEventListener('mousemove', e => {
-        const rect = button.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        button.style.transform = `translate(${x / 10}px, ${y / 10}px)`;
-      });
-      button.addEventListener('mouseleave', () => button.style.transform = 'translate(0, 0)');
+function bindUI(){
+  const inputs = store.loadInputs();
+  if(inputs.topic) $("#topic").value = inputs.topic;
+  if(inputs.format) $("#format").value = inputs.format;
+  if(inputs.audience) $("#audience").value = inputs.audience;
+
+  ["topic","format","audience"].forEach(id=>{
+    const el = $("#"+id);
+    el?.addEventListener("input", ()=>{
+      store.saveInputs($("#topic").value, $("#format").value, $("#audience").value);
     });
+  });
 
-    const initThreeBackground = () => {
-      const canvas = document.getElementById('heroCanvas');
-      if (!canvas) return;
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      const particlesGeometry = new THREE.BufferGeometry();
-      const particlesCount = 2000;
-      const posArray = new Float32Array(particlesCount * 3);
-      const colors = new Float32Array(particlesCount * 3);
-      for (let i = 0; i < particlesCount * 3; i++) {
-        posArray[i] = (Math.random() - 0.5) * 10;
-        if (i % 3 === 0) colors[i] = 0.1 + Math.random() * 0.2;
-        else if (i % 3 === 1) colors[i] = 0.3 + Math.random() * 0.3;
-        else colors[i] = 0.7 + Math.random() * 0.3;
-        if (Math.random() < 0.1) {
-          if (i % 3 === 0) colors[i] = 0.9 + Math.random() * 0.1;
-          else if (i % 3 === 1) colors[i] = 0.8 + Math.random() * 0.2;
-          else colors[i] = 0.1 + Math.random() * 0.1;
+  $("#send").addEventListener("click", generate);
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" && (document.activeElement?.id === "topic" || document.activeElement?.id === "format" || document.activeElement?.id === "audience")){
+      e.preventDefault(); generate();
+    }
+  });
+
+  renderAll();
+  attachCopyHandlers(document);
+}
+
+function runFX(){
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(prefersReduced) return;
+  const c = document.getElementById("fx");
+  const ctx = c.getContext("2d");
+  function resize(){ c.width = innerWidth; c.height = innerHeight; }
+  resize(); addEventListener("resize", resize);
+  const dots = Array.from({length: 48}, ()=> ({
+    x: Math.random()*c.width, y: Math.random()*c.height, r: 0.8 + Math.random()*1.6,
+    vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3
+  }));
+  function frame(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(const d of dots){
+      d.x += d.vx; d.y += d.vy;
+      if(d.x<0||d.x>c.width) d.vx*=-1;
+      if(d.y<0||d.y>c.height) d.vy*=-1;
+      ctx.beginPath();
+      ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+      ctx.fillStyle="rgba(130,170,255,.12)";
+      ctx.fill();
+    }
+    for(let i=0;i<dots.length;i++){
+      for(let j=i+1;j<dots.length;j++){
+        const a=dots[i], b=dots[j];
+        const dx=a.x-b.x, dy=a.y-b.y, dist=Math.hypot(dx,dy);
+        if(dist<120){
+          ctx.strokeStyle=`rgba(130,170,255,${(1-dist/120)*.07})`;
+          ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
         }
       }
-      particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-      particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-      const particlesMaterial = new THREE.PointsMaterial({
-        size: 0.01, sizeAttenuation: true, transparent: true, vertexColors: true, opacity: 0.8
-      });
-      const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-      scene.add(particlesMesh);
-      camera.position.z = 3;
-      const clock = new THREE.Clock();
-      let mouseX = 0, mouseY = 0;
-      document.addEventListener('mousemove', e => {
-        mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-        mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-      });
-      const animate = () => {
-        const elapsedTime = clock.getElapsedTime();
-        particlesMesh.rotation.x = elapsedTime * 0.06 + mouseY * 0.01;
-        particlesMesh.rotation.y = elapsedTime * 0.08 + mouseX * 0.01;
-        renderer.render(scene, camera);
-        requestAnimationFrame(animate);
-      };
-      window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-      animate();
-    };
-    initThreeBackground();
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
 
-    gsap.registerPlugin(ScrollTrigger);
-    gsap.from('#heroHeading', { duration: 1.5, opacity: 0, y: 50, ease: 'power3.out' });
-    gsap.utils.toArray('.section-title').forEach(title => {
-      gsap.from(title, {
-        scrollTrigger: { trigger: title, start: 'top 80%', toggleActions: 'play none none none' },
-        duration: 1, opacity: 0, y: 30, ease: 'power3.out'
-      });
-    });
-    gsap.utils.toArray('.gsap-reveal').forEach(el => {
-      gsap.from(el, {
-        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
-        duration: 1, opacity: 0, y: 50, ease: 'power3.out'
-      });
-    });
-    document.querySelectorAll('.portfolio-comparison').forEach(item => {
-      const before = item.querySelector('.portfolio-before');
-      const after = item.querySelector('.portfolio-after');
-      item.addEventListener('mouseenter', () => {
-        gsap.to(before, { flex: 0.3, duration: 0.5, ease: 'power2.out' });
-        gsap.to(after, { flex: 1.7, duration: 0.5, ease: 'power2.out' });
-      });
-      item.addEventListener('mouseleave', () => {
-        gsap.to([before, after], { flex: 1, duration: 0.5, ease: 'power2.out' });
-      });
-    });
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', e => {
-        e.preventDefault();
-        const target = document.querySelector(anchor.getAttribute('href'));
-        if (target) window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
-      });
-    });
-  </script>
+bindUI();
+runFX();
+</script>
 </body>
 </html>
