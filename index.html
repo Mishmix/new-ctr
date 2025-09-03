@@ -2,345 +2,224 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <title>TitleCraft — Premium CTR Titles & Thumbnails</title>
   <meta name="color-scheme" content="dark light" />
   <style>
+    /* =================== THEME & TOKENS =================== */
     :root{
       --bg: #0b0d12;
-      --panel: #0f1420cc;
-      --panel-strong:#0f1420f2;
-      --card:#111827cc;
-      --muted:#98a2b3;
-      --text:#e6e9ef;
+      --panel: #101522e6;          /* slightly more solid for mobile readability */
+      --card:#0e1423cc;
+      --muted:#9aa7bd;
+      --text:#e8edf6;
       --text-weak:#c7d0dd;
-      --brand:#7c93ff;
-      --brand-2:#6ee7ff;
+      --brand:#86a0ff;             /* primary */
+      --brand-2:#6ee7ff;           /* accent */
       --ok:#67f3a2;
       --warn:#ffb85c;
       --err:#ff6b6b;
       --glass: blur(10px) saturate(120%);
-      --radius: 16px;
-      --radius-sm: 12px;
+      --r-lg: 16px; --r-sm: 12px;
       --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
-      --shadow-2: 0 20px 60px rgba(0,0,0,.55);
       --focus: 0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent);
-      --grid-gap: 18px;
+      --gap: 16px;
+      --tap: 44px;                 /* min mobile target */
     }
     @media (prefers-color-scheme: light){
-      :root{ --bg:#f6f7fb; --panel:#ffffffcc; --panel-strong:#ffffffff; --card:#ffffffcc; --text:#0a0d14; --text-weak:#1b2230; --muted:#475569; --shadow:0 8px 24px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.6); --shadow-2:0 18px 48px rgba(0,0,0,.12);}
+      :root{ --bg:#f6f7fb; --panel:#ffffffee; --card:#ffffffee; --text:#0a0d14; --text-weak:#1b2230; --muted:#475569; --shadow:0 8px 24px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.6); }
     }
-    @media (prefers-reduced-motion: no-preference){
-      html{scroll-behavior:smooth}
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
+
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
     body{
-      margin:0; background: radial-gradient(1200px 800px at 80% -10%, #172033 0%, transparent 65%),
-                 radial-gradient(1200px 800px at -10% 120%, #111a2b 0%, transparent 55%), var(--bg);
-      color:var(--text); font:500 16px/1.45 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "SF Pro Text", "Helvetica Neue", Arial, Apple Color Emoji, Segoe UI Emoji;
+      margin:0; background: radial-gradient(1200px 800px at 85% -10%, #172033 0%, transparent 64%),
+                           radial-gradient(1200px 800px at -10% 120%, #111a2b 0%, transparent 55%), var(--bg);
+      color:var(--text); font:500 16px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "SF Pro Text", Arial;
       overflow-x:hidden;
     }
-    .app{
-      position:relative;
-      padding:28px clamp(14px, 3vw, 40px) 40px;
-      max-width:1200px; margin-inline:auto;
-    }
-    header{
-      display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:22px;
-    }
-    .brand{
-      display:flex; align-items:center; gap:12px; letter-spacing:.2px;
-    }
-    .logo{
-      width:42px; height:42px; border-radius:12px;
-      background:
-        conic-gradient(from 220deg at 50% 50%, color-mix(in srgb, var(--brand) 85%, #fff 0%) 0 25%, color-mix(in srgb, var(--brand-2) 85%, #fff 0%) 0 50%, #8892ff 0 75%, #38bdf8 0 100%);
-      box-shadow: 0 12px 30px rgba(92,119,255,.35), inset 0 1px 0 rgba(255,255,255,.35);
-      position:relative; isolation:isolate;
-    }
-    .logo::after{content:""; position:absolute; inset:2px; border-radius:10px; backdrop-filter:var(--glass); background: #0a0d14aa; }
-    h1{margin:0; font-size: clamp(18px, 2.4vw, 24px); font-weight:800}
-    .sub{color:var(--muted); font-size:13px; margin-top:2px}
-    .grid{
-      display:grid; grid-template-columns: 380px 1fr; gap: var(--grid-gap);
-    }
-    @media (max-width: 1040px){ .grid{ grid-template-columns: 1fr; } }
-    .panel{
-      background: var(--panel);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: var(--glass);
-    }
-    .inputs{ padding:18px; position:sticky; top:18px; z-index:2 }
-    .cards{ display:flex; flex-direction:column; gap:14px; }
-    .card{
-      background: var(--card); border:1px solid rgba(255,255,255,.08);
-      border-radius: var(--radius-sm); padding:14px; box-shadow: var(--shadow);
-    }
-    .card h3{ margin:0 0 8px; font-size:13px; letter-spacing:.3px; color:var(--text-weak); font-weight:700; text-transform:uppercase }
-    .hint{color:var(--muted); font-size:12px; margin-top:6px}
-    label{display:block; font-size:13px; color:var(--text-weak); margin:0 0 8px 2px}
-    .field{
-      display:flex; align-items:center; gap:8px; background:#0f1522; border:1px solid #1f2a44;
-      border-radius:12px; padding:10px 12px; transition:.25s border-color ease, .25s box-shadow ease;
-    }
+    a{ color:inherit }
+
+    /* =================== LAYOUT (MOBILE FIRST) =================== */
+    .app{ max-width:1180px; margin-inline:auto; padding:18px 14px 24px; }
+    header{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
+    .brand{ display:flex; align-items:center; gap:10px; }
+    .logo{ width:36px; height:36px; border-radius:10px; display:block; object-fit:cover; background:none; box-shadow:0 8px 22px rgba(124,147,255,.35); border:1px solid rgba(255,255,255,.12) }
+    h1{ margin:0; font-size: clamp(18px, 4.5vw, 22px); font-weight:800 }
+    .status{ color:var(--muted); font-size:12px }
+
+    .grid{ display:grid; grid-template-columns: 1fr; gap: var(--gap); }
+    /* desktop+ */
+    @media (min-width: 960px){ .grid{ grid-template-columns: 360px 1fr; } }
+
+    .panel{ background: var(--panel); border:1px solid rgba(255,255,255,.08); border-radius: var(--r-lg); box-shadow: var(--shadow); backdrop-filter: var(--glass); }
+
+    /* Inputs */
+    .inputs{ padding:12px; position:relative }
+    @media (min-width:960px){ .inputs{ position:sticky; top:14px } }
+    .cards{ display:flex; flex-direction:column; gap:12px }
+    .card{ background: var(--card); border:1px solid rgba(255,255,255,.08); border-radius: var(--r-sm); padding:12px; }
+    .card h3{ margin:0 0 8px; font-size:12px; letter-spacing:.3px; color:var(--text-weak); font-weight:800; text-transform:uppercase }
+
+    .field{ display:flex; align-items:center; gap:8px; background:#0f1526; border:1px solid #1f2a44; border-radius:12px; padding:12px; }
     textarea,input{ all:unset; color:var(--text); font:inherit; width:100%; caret-color: var(--brand); }
-    .field:focus-within{ border-color: color-mix(in srgb, var(--brand) 55%, #fff 0%); box-shadow: var(--focus) }
-    .req{ color: var(--warn); margin-left:6px; font-size:12px }
-    .actions{ display:flex; align-items:center; gap:10px; margin-top:8px }
+    .field:focus-within{ box-shadow: var(--focus) }
+
     .btn{
-      --h: 48px;
-      position:relative; display:inline-flex; align-items:center; justify-content:center; gap:10px;
-      padding:0 18px; height:var(--h); min-width:140px; border-radius: calc(var(--h)/2);
-      border:1px solid rgba(255,255,255,.09); color:#0a0d14; font-weight:800; letter-spacing:.3px;
+      --h: 48px; display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      height:var(--h); width:100%; border-radius: calc(var(--h)/2);
+      border:1px solid rgba(255,255,255,.09); color:#0a0d14; font-weight:900; letter-spacing:.3px;
       background: linear-gradient(180deg, #c9d0ff, #86a0ff 65%, #6ee7ff 100%);
       box-shadow: 0 10px 30px rgba(124,147,255,.35), inset 0 1px 0 rgba(255,255,255,.7);
-      cursor:pointer; transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
-      user-select:none;
+      cursor:pointer; user-select:none; transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
     }
-    .btn:focus-visible{ outline:none; box-shadow: var(--focus), 0 10px 30px rgba(124,147,255,.35), inset 0 1px 0 rgba(255,255,255,.7) }
     .btn:hover{ transform: translateY(-1px) }
     .btn:active{ transform: translateY(0) scale(.98) }
-    .spark{ width:18px; height:18px; }
-    .btn[aria-busy="true"]{ cursor:progress; filter:saturate(.7); }
-    .btn .spinner{
-      width:16px;height:16px;border-radius:50%;
-      border:2.5px solid rgba(0,0,0,.2); border-top-color:#0a0d14; animation:spin 1s linear infinite;
-    }
+    .btn[aria-busy="true"]{ filter:saturate(.7); cursor:progress }
+    .spinner{ width:16px; height:16px; border-radius:50%; border:2.5px solid rgba(0,0,0,.2); border-top-color:#0a0d14; animation:spin 1s linear infinite }
     @keyframes spin{ to{ transform:rotate(360deg) } }
 
-    .results{ padding:18px; }
-    .session{ padding:16px; border:1px solid rgba(255,255,255,.08); border-radius:16px; background:linear-gradient(180deg, #0f1420b8, #0b0f1ab8); margin-bottom:16px; box-shadow: var(--shadow) }
-    .session header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 12px }
-    .session .meta{ color:var(--muted); font-size:12px }
-    .audience{ color:var(--text); background:#0f1522; border:1px solid #1e2a42; border-radius:12px; padding:12px; margin:8px 0 14px; }
-    .list{ display:grid; gap:10px; }
-    .row{
-      position:relative;
-      display:grid; grid-template-columns: 42px 1fr auto; gap:10px; align-items:start;
-      background:#0c1321; border:1px solid #1b2847; border-radius:14px; padding:10px 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+    /* Results */
+    .results{ padding:12px }
+    .session{ padding:12px; border:1px solid rgba(255,255,255,.08); border-radius:14px; background:linear-gradient(180deg, #0f1420b8, #0b0f1ab8); margin-bottom:12px; }
+    /* header/meta removed per request — keep clean mobile view */
+
+    .audience{ color:var(--text); background:#0f1522; border:1px solid #1e2a42; border-radius:12px; padding:12px; margin:6px 0 12px; font-size:14px }
+
+    .controls-row{ display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 10px }
+    .chip{ height:36px; padding:0 12px; border-radius:12px; background:#0e1627; border:1px solid #2a3a5f; color:#d6e4ff; font-weight:800; cursor:pointer }
+    .chip:active{ transform: translateY(1px) }
+
+    .list{ display:flex; flex-direction:column; gap:10px }
+    .row{ position:relative; display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:start; background:#0b1221; border:1px solid #1b2847; border-radius:12px; padding:10px; }
+
+    /* top pick style — no overlay to avoid blocking copy button */
+    .row.top{ border-color:transparent; background-image:
+      linear-gradient(#0b1221,#0b1221),
+      radial-gradient(120px 50px at 12px 12px, #98aaff80, transparent 60%),
+      linear-gradient(120deg, #8ea2ff, #6ee7ff);
+      background-origin: padding-box, border-box, border-box; background-clip: padding-box, padding-box, border-box;
+      box-shadow: 0 0 0 4px rgba(124,147,255,.10);
     }
-    .badge{
-      width:28px; height:28px; border-radius:9px; display:grid; place-items:center; font-weight:900;
-      color:#cfe3ff; background:linear-gradient(180deg,#233153,#121b2f); border:1px solid #2a3a5f; box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
-      margin-top:2px;
-    }
+
+    .num{ display:flex; align-items:center; gap:8px; }
+    .badge{ min-width:32px; height:32px; border-radius:10px; display:grid; place-items:center; font-weight:900; color:#cfe3ff; background:linear-gradient(180deg,#233153,#121b2f); border:1px solid #2a3a5f }
+    .star{ font-size:14px; color:#ffd76a; margin-left:2px }
+
     .pair{ display:flex; flex-direction:column; gap:8px }
-    .line{
-      display:flex; align-items:center; gap:8px; min-height:28px;
-      padding:6px 8px; border-radius:10px; background:#0e172a; border:1px dashed #203156;
-    }
-    .label{ font-size:12px; color:#a9b7d0; letter-spacing:.2px; width:110px; flex:0 0 auto }
-    .txt{ color:var(--text); word-break:break-word; }
-    .copy{
-      --h: 30px;
-      height:var(--h); width:var(--h); min-width:var(--h);
-      display:grid; place-items:center; border-radius:10px; border:1px solid #2a3a5f; background:#0e1627; cursor:pointer;
-      transition:.15s transform ease, .2s border-color ease, .2s background ease;
-    }
-    .copy:hover{ transform:translateY(-1px); border-color:#3e5aa1 }
-    .copy:active{ transform:translateY(0) scale(.98) }
-    .copy svg{ width:16px; height:16px; fill:#cfe3ff }
-    .copied-chip{
-      position:absolute; right:8px; top:-8px; transform: translateY(-6px);
-      background: linear-gradient(90deg, #20df92, #6ee7ff); color:#03141a; font-weight:800; font-size:11px;
-      border-radius:999px; padding:5px 8px; box-shadow:0 8px 22px rgba(110,231,255,.22); opacity:0; pointer-events:none;
-    }
-    .copied-chip.show{ opacity:1; transform: translateY(0); transition:.25s ease; }
-    .top-pick{
-      border:1px solid transparent; background-image:
-        linear-gradient(#0c1321,#0c1321), linear-gradient(120deg, #8ea2ff, #6ee7ff);
-      background-origin: border-box; background-clip: padding-box, border-box;
-      box-shadow: 0 0 0 6px rgba(124,147,255,.08), var(--shadow);
-    }
-    .top-pick .badge{ background:linear-gradient(180deg, #1f2d55, #1a284a); border-color:#3b5db0; color:#eaf1ff }
-    .top-pick::after{
-      content:"TOP\A PICK"; white-space:pre; position:absolute; top:8px; right:8px; font-size:10px; line-height:1;
-      padding:4px 6px; border-radius:8px; font-weight:900; color:#07121b; background:linear-gradient(90deg,#9bb1ff,#79eaff);
-      letter-spacing:.4px; box-shadow:0 6px 18px rgba(121,234,255,.25);
-    }
-    .buttons-row{ display:flex; gap:10px; flex-wrap:wrap; margin:8px 0 6px }
-    .tiny{ height:36px; padding:0 12px; border-radius:10px; background:#0e1627; border:1px solid #2a3a5f; color:#d6e4ff; font-weight:700; cursor:pointer }
-    .tiny:hover{ border-color:#3e5aa1 }
-    .meta-small{ color:var(--muted); font-size:11px; margin-top:6px }
+    .line{ display:grid; grid-template-columns: auto 1fr; align-items:start; gap:8px; padding:6px 8px; border-radius:10px; background:#0e172a; border:1px dashed #203156 }
+    .label{ font-size:12px; color:#a9b7d0; letter-spacing:.2px; align-self:center }
+    .txt{ color:var(--text); word-break:break-word; font-size:15px }
 
-    .skeleton{
-      border:1px dashed #263a6b; background:#0b1020; border-radius:14px; padding:12px; overflow:hidden; position:relative;
-    }
-    .pulse{ height:14px; margin:8px 0; border-radius:7px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
-      background-size:200% 100%; animation: shimmer 1.2s linear infinite;
-    }
-    .pulse.sm{ height:10px; width:65% }
-    .pulse.md{ height:12px; width:80% }
+    .actions{ display:flex; align-items:center; justify-content:flex-end; gap:8px }
+    .copy{ min-width:var(--tap); height:var(--tap); display:grid; place-items:center; border-radius:10px; border:1px solid #2a3a5f; background:#0e1627; cursor:pointer }
+    .copy svg{ width:18px; height:18px; fill:#cfe3ff }
+    .copy:active{ transform: translateY(1px) }
+
+    .toast{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(16px); background:linear-gradient(90deg,#20df92,#6ee7ff); color:#03141a; font-weight:900; font-size:12px; padding:10px 14px; border-radius:999px; box-shadow:0 10px 24px rgba(110,231,255,.25); opacity:0; pointer-events:none }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); transition:.25s ease }
+
+    .results-tools{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin:6px 0 8px }
+    .chip.danger{ border-color:#5f2a2a; background:#1a0f12; color:#ffc7c7 }
+    .chip.danger:hover{ border-color:#8a3a3a }
+    .chip.danger:active{ transform:translateY(1px) }
+
+    /* skeleton */
+    .skeleton{ border:1px dashed #263a6b; background:#0b1020; border-radius:12px; padding:12px }
+    .pulse{ height:12px; margin:8px 0; border-radius:6px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05)); background-size:200% 100%; animation: shimmer 1.2s linear infinite }
     @keyframes shimmer{ to{ background-position:-200% 0 } }
-
-    .alert{
-      padding:12px 14px; border:1px solid #3e2c2c; background: #1a0f12; color:#ffc7c7; border-radius:12px; margin-top:10px
-    }
-    .alert .retry{ margin-left:8px }
 
     :focus-visible{ outline: 3px solid color-mix(in srgb, var(--brand) 50%, transparent); outline-offset:2px }
 
-    #fx{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.35; }
-
-    .sr-live{ position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden }
+    /* FX: disable on small screens for perf */
+    #fx{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.28 }
+    @media (max-width: 767px){ #fx{ display:none } }
   </style>
 </head>
 <body>
 <canvas id="fx" aria-hidden="true"></canvas>
-
 <div class="app">
   <header>
     <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <div>
-        <h1>TitleCraft</h1>
-        <div class="sub">Premium generator for high-CTR YouTube titles & thumbnail texts</div>
-      </div>
+      <img class="logo" src="https://i.imgur.com/Q7CqyWC.jpeg" alt="TitleCraft logo" width="36" height="36" decoding="async" loading="lazy" />
+      <h1>TitleCraft</h1>
     </div>
-    <div class="sub" id="status" role="status" aria-live="polite">Ready</div>
+    <div id="status" class="status" role="status" aria-live="polite">Ready</div>
   </header>
 
   <div class="grid">
+    <!-- Inputs: simplified, mobile-first, removed extra hints/notes -->
     <section class="panel inputs" aria-labelledby="inputs-title">
       <h2 id="inputs-title" class="sr-only">Inputs</h2>
       <div class="cards">
-
         <div class="card">
           <h3>Video topic <span class="req" aria-hidden="true">*</span></h3>
-          <div class="field">
-            <textarea id="topic" rows="3" placeholder="What’s the video about?" aria-required="true"></textarea>
-          </div>
-          <div class="hint">Be specific: key event/person, conflict, angle, numbers, time/place.</div>
+          <div class="field"><textarea id="topic" rows="3" placeholder="What’s the video about?" aria-required="true"></textarea></div>
         </div>
-
         <div class="card">
           <h3>Format (optional)</h3>
-          <div class="field">
-            <input id="format" placeholder="Documentary, News breakdown, Review, Investigation, Meme, Story..." />
-          </div>
-          <div class="hint">Free-form. Examples: Investigation, Tech review, History deep-dive, Lifestyle vlog, Podcast.</div>
+          <div class="field"><input id="format" placeholder="Documentary, Review, Investigation..." /></div>
         </div>
-
         <div class="card">
           <h3>Target audience (optional)</h3>
-          <div class="field">
-            <input id="audience" placeholder="Broad / niche (history fans, gamers), age range, region..." />
-          </div>
-          <div class="hint">Describe who should click: niche, interests, age, proficiency level.</div>
+          <div class="field"><input id="audience" placeholder="Niche, age range, region..." /></div>
         </div>
-
-        <div class="actions">
-          <button id="send" class="btn" aria-busy="false" aria-describedby="send-hint">
-            <svg class="spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.8 4.6L18 8l-4.2 1.4L12 14l-1.8-4.6L6 8l4.2-1.4L12 2zm6 6l.9 2.3L22 11l-3.1 1 .9 2.3L17 12.9 14.2 14l1.1-2.7L14 8.6l2.8.8L18 6zM5 14l1 2.5L9 17l-2.3 1 1 2.5L5 19l-2.7 1.5 1-2.5L1 17l3-.5L5 14z"/></svg>
-            <span>Send</span>
-          </button>
-          <span id="send-hint" class="sub">Press Enter to submit</span>
-        </div>
-
-        <div class="card">
-          <h3>Notes</h3>
-          <div class="hint">Nothing is deleted on new runs. History persists in your browser (localStorage). Keyboard: <kbd>Enter</kbd> to submit. Copy buttons add little confirmations ✅</div>
-        </div>
+        <button id="send" class="btn" aria-busy="false">
+          <svg class="spark" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2l1.8 4.6L18 8l-4.2 1.4L12 14l-1.8-4.6L6 8l4.2-1.4L12 2z"/></svg>
+          <span>Send</span>
+        </button>
       </div>
     </section>
 
+    <!-- Results: clean, no timestamp/topic/top-2 rationale blocks, no raw text -->
     <section class="panel results" aria-labelledby="results-title">
       <h2 id="results-title" class="sr-only">Results</h2>
+      <div class="results-tools"><button class="chip danger" id="clear-history" title="Clear all generations" aria-label="Clear all generations"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="vertical-align:-2px;margin-right:6px"><path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 8h2v7h-2v-7zm4 0h2v7h-2v-7zM7 11h2v7H7v-7z"/></svg>Clear history</button></div>
       <div id="stream"></div>
     </section>
   </div>
 </div>
 
-<div class="sr-live" id="live" aria-live="polite"></div>
+<!-- Toast for copy confirmations -->
+<div id="toast" class="toast" aria-hidden="true">Copied</div>
 
 <script>
+/***************** CONFIG *****************/
 const API_KEY = "AIzaSyDkowFTxiuya3AKjX4yaoA4XaTEK13OXx8";
-
 const MODEL   = "gemini-2.5-pro";
 const MAX_CHARS_TOPIC = 800, MAX_CHARS_FORMAT = 300, MAX_CHARS_AUDIENCE = 300;
-
 const CUSTOM_PROMPT = `{{CUSTOM_PROMPT_TO_GEMINI}}`;
 
+/***************** STORAGE *****************/
 const store = {
-  saveInputs(topic, format, audience){
-    localStorage.setItem("tc_inputs", JSON.stringify({topic, format, audience}));
-  },
-  loadInputs(){
-    try{ return JSON.parse(localStorage.getItem("tc_inputs")) || {}; }catch{ return {}; }
-  },
-  addSession(session){
-    const all = store.loadSessions();
-    all.unshift(session);
-    localStorage.setItem("tc_sessions", JSON.stringify(all));
-  },
-  loadSessions(){
-    try{ return JSON.parse(localStorage.getItem("tc_sessions")) || []; }catch{ return []; }
-  }
+  saveInputs(topic, format, audience){ localStorage.setItem("tc_inputs", JSON.stringify({topic, format, audience})); },
+  loadInputs(){ try{ return JSON.parse(localStorage.getItem("tc_inputs"))||{} }catch{ return {} } },
+  addSession(s){ const all = store.loadSessions(); all.unshift(s); localStorage.setItem("tc_sessions", JSON.stringify(all)); },
+  clearSessions(){ localStorage.setItem("tc_sessions", JSON.stringify([])); },
+  loadSessions(){ try{ return JSON.parse(localStorage.getItem("tc_sessions"))||[] }catch{ return [] } },
 };
 
-const $ = sel => document.querySelector(sel);
-const status = (msg) => { const el = $("#status"); if(el){ el.textContent = msg; } };
+/***************** UTIL *****************/
+const $ = s => document.querySelector(s);
+const status = m => { const el = $("#status"); if(el) el.textContent = m };
+const clampStr = (s,n)=> (s||"").trim().slice(0,n);
+const nowStr = ()=> new Date().toLocaleString('en-GB', { hour12:false, timeZone:'Europe/London' });
+const showToast = (msg="Copied")=>{ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=> t.classList.remove('show'), 1100) };
+const escapeForPrompt = s => (s||"").replace(/[<>]/g, m => ({'<':'&lt;','>':'&gt;'}[m]));
+function safeParseJSON(m){ if(!m) return null; try{ return JSON.parse(m) }catch{} const a=m.indexOf("{"); const b=m.lastIndexOf("}"); if(a>=0&&b>a){ try{ return JSON.parse(m.slice(a,b+1)) }catch{} } return null }
 
-function clampStr(s, n){ s = (s||"").trim(); return s.length>n ? s.slice(0, n) : s; }
-
-function nowStr(){ try{ return new Date().toLocaleString('en-GB', { hour12:false, timeZone:'Europe/London' }); }catch{ return new Date().toLocaleString(); } }
-
-function toastCopy(targetBtn, msg="Copied"){
-  const chip = document.createElement("div");
-  chip.className = "copied-chip";
-  chip.textContent = msg;
-  targetBtn.closest(".row")?.appendChild(chip);
-  requestAnimationFrame(()=> chip.classList.add("show"));
-  setTimeout(()=> chip.classList.remove("show"), 1200);
-  setTimeout(()=> chip.remove(), 1500);
-  const live = $("#live"); if(live){ live.textContent = msg; }
-}
-
-async function copyText(text, btn){
-  try{ await navigator.clipboard.writeText(text); toastCopy(btn, "Copied"); }
-  catch{ toastCopy(btn, "Copy failed"); }
-}
-
-function escapeForPrompt(s){ return (s||"").replace(/[<>{}]/g, c => ({'<':'&lt;','>':'&gt;','{':'{','}':'}'}[c])); }
-
-function safeParseJSON(maybe){
-  if(!maybe) return null;
-  try{ return JSON.parse(maybe); }catch(_){}
-  const start = maybe.indexOf("{"); const end = maybe.lastIndexOf("}");
-  if(start>=0 && end>start){ try{ return JSON.parse(maybe.slice(start, end+1)); }catch(_){ } }
-  const aS = maybe.indexOf("["); const aE = maybe.lastIndexOf("]");
-  if(aS>=0 && aE>aS){ try{ return JSON.parse(maybe.slice(aS, aE+1)); }catch(_){ } }
-  return null;
-}
-
+/***************** PROMPT *****************/
 function buildSystemInstruction(){
-  return `You are a YouTube title & thumbnail copywriter focused on CTR.
-Return concise, high-impact options. Never reveal chain-of-thought or internal reasoning.
-Avoid clickbait lies; promise real, specific value. Respect constraints strictly:
-- Produce exactly 10 options.
-- Title: <= 100 chars, strong hook early.
-- Thumbnail Text: <= 50 chars, 1–5 words, no colons, ultra-punchy.
-- Language: Detect from user inputs; fallback to English.
-- Provide 2 top picks with a one-sentence rationale each.`;
+  return `You are a YouTube title & thumbnail copywriter focused on CTR. Return concise, high-impact options. Never reveal chain-of-thought. Avoid clickbait lies; promise real, specific value. Strictly: 10 options; Title<=100; Thumbnail Text<=50, 1–5 words, no colons; Auto language; Provide 2 top picks with a one-sentence rationale each (but do not include rationales in the final output; only use them to select the top picks).`;
 }
-
 function buildUserBlock({topic, format, audience}){
   const langHint = "auto-detect (fallback: English)";
   const lines = [
-`VIDEO TOPIC: ${escapeForPrompt(topic)}`,
-`FORMAT: ${escapeForPrompt(format || "(not specified)")}`,
-`TARGET AUDIENCE: ${escapeForPrompt(audience || "(not specified)")}`,
-`LANGUAGE: ${langHint}`,
-`OUTPUT SPEC:
-• Audience Profile (3–6 sentences; concrete, merit-oriented).
-• Top-10 options (1..10). Each:
-   Title (<=100; intrigue + value)
-   Thumbnail Text (<=50; 1–5 words; NO colons)
-• Pick Top-2 with 1-sentence rationale each.
-• Style: click-worthy, clear benefits, avoid clickbait lies.`
+    `VIDEO TOPIC: ${escapeForPrompt(topic)}`,
+    `FORMAT: ${escapeForPrompt(format || "(not specified)")}`,
+    `TARGET AUDIENCE: ${escapeForPrompt(audience || "(not specified)")}`,
+    `LANGUAGE: ${langHint}`,
+    `OUTPUT SPEC:\n• Audience Profile (3–6 sentences; concrete, merit-oriented).\n• Top-10 options (1..10). Each: Title (<=100; intrigue + value) / Thumbnail Text (<=50; 1–5 words; NO colons)\n• Pick Top-2 (but DO NOT output their rationales).\n• Style: click-worthy, clear benefits, avoid clickbait lies.`
   ];
   const extra = (CUSTOM_PROMPT && !/^\{\{CUSTOM_PROMPT_TO_GEMINI\}\}$/.test(CUSTOM_PROMPT.trim())) ? `\n\n---\nCUSTOM PROMPT:\n${CUSTOM_PROMPT.trim()}` : "";
   return lines.join("\n") + extra;
@@ -350,328 +229,175 @@ function responseSchema(){
   return {
     type: "OBJECT",
     properties: {
-      audienceProfile: { type: "STRING", description: "3–6 sentences describing the target audience and motives." },
-      options: {
-        type: "ARRAY",
-        items: {
-          type: "OBJECT",
-          properties: {
-            title: { type: "STRING" },
-            thumbnailText: { type: "STRING" }
-          },
-          required: ["title","thumbnailText"],
-          propertyOrdering: ["title","thumbnailText"]
-        }
-      },
-      topPicks: {
-        type: "ARRAY",
-        items: {
-          type: "OBJECT",
-          properties: {
-            index: { type: "INTEGER" },
-            rationale: { type: "STRING" }
-          },
-          required: ["index","rationale"],
-          propertyOrdering: ["index","rationale"]
-        }
-      }
+      audienceProfile: { type: "STRING" },
+      options: { type: "ARRAY", items: { type: "OBJECT", properties: { title:{type:"STRING"}, thumbnailText:{type:"STRING"} }, required:["title","thumbnailText"] } },
+      topPicks: { type: "ARRAY", items: { type: "OBJECT", properties: { index:{type:"INTEGER"} }, required:["index"] } }
     },
-    required: ["audienceProfile","options","topPicks"],
-    propertyOrdering: ["audienceProfile","options","topPicks"]
+    required: ["audienceProfile","options","topPicks"]
   };
 }
 
+/***************** API *****************/
 async function callGemini(payload, tries=3){
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(API_KEY)}`;
   let lastErr;
   for(let i=0;i<tries;i++){
     try{
-      const res = await fetch(url, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      });
-      if(!res.ok){
-        const txt = await res.text().catch(()=> "");
-        throw new Error(`HTTP ${res.status}: ${txt || res.statusText}`);
-      }
+      const res = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload) });
+      if(!res.ok){ const txt = await res.text().catch(()=>""); throw new Error(`HTTP ${res.status}: ${txt||res.statusText}`) }
       return await res.json();
-    }catch(err){
-      lastErr = err;
-      const delay = 700 * Math.pow(2, i) + Math.random()*250;
-      await new Promise(r => setTimeout(r, delay));
-    }
+    }catch(err){ lastErr=err; await new Promise(r=> setTimeout(r, 600*Math.pow(2,i) + Math.random()*240)); }
   }
   throw lastErr;
 }
 
+/***************** RENDER *****************/
 function skeletonCard(){
-  const wrap = document.createElement("div");
-  wrap.className = "session";
-  wrap.innerHTML = `
-    <header><div class="meta">Generating…</div></header>
-    <div class="skeleton">
-      <div class="pulse md"></div>
-      <div class="pulse"></div>
-      <div class="pulse sm"></div>
-      <div class="pulse"></div>
-      <div class="pulse"></div>
-      <div class="pulse sm"></div>
-      <div class="pulse"></div>
-    </div>
-  `;
+  const wrap = document.createElement('div');
+  wrap.className = 'session';
+  wrap.innerHTML = `<div class="skeleton"><div class="pulse"></div><div class="pulse"></div><div class="pulse"></div></div>`;
   return wrap;
 }
 
-function rowHTML(i, pair, topIdxSet){
-  const n = i+1;
-  const top = topIdxSet.has(n) ? " top-pick" : "";
-  const title = pair.title || "";
-  const thumb = pair.thumbnailText || "";
-  const tData = btoa(unescape(encodeURIComponent(title)));
-  const thData= btoa(unescape(encodeURIComponent(thumb)));
+function rowHTML(i, opt, topSet){
+  const n = i+1; const isTop = topSet.has(n);
   return `
-  <div class="row${top}" data-title="${tData}" data-thumb="${thData}">
-    <div class="badge" aria-hidden="true">${n}</div>
-    <div class="pair">
-      <div class="line">
-        <div class="label">Title</div>
-        <div class="txt">${title}</div>
-      </div>
-      <div class="line">
-        <div class="label">Thumbnail</div>
-        <div class="txt">${thumb}</div>
-      </div>
+  <div class="row${isTop? ' top':''}" data-idx="${n}">
+    <div class="num">
+      <div class="badge" aria-hidden="true">${n}</div>${isTop? '<span class="star" aria-label="Top pick" title="Top pick">★</span>':''}
     </div>
-    <div style="display:flex; flex-direction:column; gap:8px;">
-      <button class="copy" title="Copy title" aria-label="Copy title" data-copy="title">
-        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-      </button>
-      <button class="copy" title="Copy thumbnail text" aria-label="Copy thumbnail text" data-copy="thumb">
-        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-      </button>
+    <div class="pair">
+      <div class="line"><div class="label">Title</div><div class="txt" data-kind="title">${opt.title||''}</div></div>
+      <div class="line"><div class="label">Thumbnail</div><div class="txt" data-kind="thumb">${(opt.thumbnailText||'').replace(/:/g,'')}</div></div>
+    </div>
+    <div class="actions">
+      <button class="copy" title="Copy title" aria-label="Copy title" data-copy="title">${iconCopy()}</button>
+      <button class="copy" title="Copy thumbnail" aria-label="Copy thumbnail" data-copy="thumb">${iconCopy()}</button>
     </div>
   </div>`;
 }
 
 function sessionHTML(session){
-  const { createdAt, input, output } = session;
-  const topIdxSet = new Set((output.topPicks||[]).map(x=> x.index));
-  const list = (output.options||[]).slice(0,10).map((opt, i)=> rowHTML(i, opt, topIdxSet)).join("");
-  const titleLines = output.options.map(o => o.title).join("\n");
-  const thumbLines = output.options.map(o => o.thumbnailText).join("\n");
-  const audience = output.audienceProfile || "";
-  const rationaleLines = (output.topPicks||[]).map(tp => `#${tp.index}: ${tp.rationale}`).join("  •  ");
+  const { output } = session;
+  const topSet = new Set((output.topPicks||[]).map(x=> x.index));
+  const list = (output.options||[]).slice(0,10).map((o,i)=> rowHTML(i,o,topSet)).join('');
   return `
   <article class="session" role="region" aria-label="Result session">
-    <header>
-      <div>
-        <strong>Generation</strong> <span class="meta">• ${createdAt}</span>
-        <div class="meta-small">${inputSummary(input)}</div>
-      </div>
-      <div class="meta">
-        <span>${(output.topPicks||[]).length ? "Top-2: " + rationaleLines : ""}</span>
-      </div>
-    </header>
-
-    <div class="audience" aria-label="Audience profile">${audience}</div>
-
-    <div class="buttons-row">
-      <button class="tiny" data-copy-bulk="titles">Copy all 10 titles</button>
-      <button class="tiny" data-copy-bulk="thumbs">Copy all 10 thumbnail texts</button>
+    <div class="audience">${output.audienceProfile||''}</div>
+    <div class="controls-row">
+      <button class="chip" data-copy-bulk="titles">Copy 10 titles</button>
+      <button class="chip" data-copy-bulk="thumbs">Copy 10 thumbnails</button>
     </div>
-
     <div class="list">${list}</div>
-
-    <textarea class="hidden" hidden data-bulk="titles">${titleLines}</textarea>
-    <textarea class="hidden" hidden data-bulk="thumbs">${thumbLines}</textarea>
   </article>`;
 }
 
-function inputSummary(input){
-  const f = input.format ? ` • Format: ${input.format}` : "";
-  const a = input.audience ? ` • Audience: ${input.audience}` : "";
-  return `Topic: ${input.topic}${f}${a}`;
-}
+function iconCopy(){ return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' }
 
-function renderAll(){
-  const container = $("#stream");
-  container.innerHTML = "";
-  const sessions = store.loadSessions();
-  sessions.forEach(s => {
-    const wrap = document.createElement("div");
-    wrap.innerHTML = sessionHTML(s);
-    container.appendChild(wrap);
-  });
-}
+function renderAll(){ const c = $('#stream'); c.innerHTML=''; store.loadSessions().forEach(s=>{ const w=document.createElement('div'); w.innerHTML=sessionHTML(s); c.appendChild(w) }) }
 
+/***************** FLOW *****************/
 async function generate(){
-  const btn = $("#send");
-  const topic = clampStr($("#topic").value, MAX_CHARS_TOPIC);
-  const format= clampStr($("#format").value, MAX_CHARS_FORMAT);
-  const audience = clampStr($("#audience").value, MAX_CHARS_AUDIENCE);
+  const topic = clampStr($('#topic').value, MAX_CHARS_TOPIC);
+  const format = clampStr($('#format').value, MAX_CHARS_FORMAT);
+  const audience = clampStr($('#audience').value, MAX_CHARS_AUDIENCE);
+  if(!topic){ status('Topic is required'); $('#topic').focus(); return }
+  store.saveInputs(topic,format,audience);
 
-  if(!topic){
-    status("Topic is required");
-    $("#topic").focus();
-    $("#topic").parentElement.style.borderColor = "var(--warn)";
-    setTimeout(()=> $("#topic").parentElement.style.borderColor = "", 1200);
-    return;
-  }
-
-  store.saveInputs(topic, format, audience);
-
-  btn.setAttribute("aria-busy", "true");
-  btn.disabled = true;
-  $("#status").textContent = "Generating…";
-
-  const stream = $("#stream");
-  const skel = skeletonCard();
-  stream.prepend(skel);
+  const btn = $('#send'); btn.setAttribute('aria-busy','true'); btn.disabled=true; status('Sending…');
+  const stream = $('#stream'); const skel = skeletonCard(); stream.prepend(skel);
 
   const payload = {
-    systemInstruction: { parts: [{ text: buildSystemInstruction() }] },
-    contents: [{ role: "user", parts: [{ text: buildUserBlock({topic, format, audience}) }] }],
-    generationConfig: {
-      temperature: 0.8,
-      topP: 0.95,
-      maxOutputTokens: 2048,
-      responseMimeType: "application/json",
-      responseSchema: responseSchema(),
-      thinkingConfig: { includeThoughts: false, thinkingBudget: 1024 }
-    }
+    systemInstruction:{ parts:[{ text: buildSystemInstruction() }] },
+    contents:[{ role:'user', parts:[{ text: buildUserBlock({topic,format,audience}) }] }],
+    generationConfig:{ temperature:0.8, topP:0.95, maxOutputTokens:2048, responseMimeType:'application/json', responseSchema: responseSchema(), thinkingConfig:{ includeThoughts:false, thinkingBudget: 1024 } }
   };
 
   try{
     const json = await callGemini(payload);
     const parts = (((json||{}).candidates||[])[0]||{}).content?.parts || [];
-    const text = parts.map(p=> p.text).filter(Boolean).join("") || "";
+    const text = parts.map(p=> p.text).filter(Boolean).join('') || '';
     const parsed = safeParseJSON(text);
-    if(!parsed || !Array.isArray(parsed.options)){
-      throw new Error("Invalid model response");
-    }
+    if(!parsed || !Array.isArray(parsed.options)) throw new Error('Invalid model response');
 
-    const session = { createdAt: nowStr(), input: { topic, format, audience }, output: normalizeOutput(parsed) };
+    const normalized = normalizeOutput(parsed);
+    const session = { createdAt: nowStr(), input:{topic,format,audience}, output: normalized };
     store.addSession(session);
 
-    const cardWrap = document.createElement("div");
-    cardWrap.innerHTML = sessionHTML(session);
+    const cardWrap = document.createElement('div'); cardWrap.innerHTML = sessionHTML(session);
     stream.replaceChild(cardWrap, skel);
     attachCopyHandlers(cardWrap);
-
-    status("Done");
+    status('Done');
   }catch(err){
-    console.error("Generation error:", err?.message || err);
-    skel.innerHTML = `
-      <div class="alert" role="alert">
-        <strong>Request failed.</strong> ${truncate(err?.message||"Unknown error", 260)}
-        <button class="tiny retry" aria-label="Retry">Retry</button>
-      </div>`;
-    skel.querySelector(".retry").addEventListener("click", generate, { once:true });
-    status("Error");
-  }finally{
-    btn.setAttribute("aria-busy","false");
-    btn.disabled = false;
-  }
+    skel.innerHTML = `<div class="skeleton" role="alert" style="border:1px solid #3e2c2c; background:#1a0f12; color:#ffc7c7">
+      <div><strong>Request failed.</strong> ${truncate(err?.message||'Unknown error',260)}</div>
+      <div style="margin-top:8px; display:flex; gap:8px"><button class="chip retry" aria-label="Retry">Retry</button></div>
+    </div>`;
+    skel.querySelector('.retry')?.addEventListener('click', generate, { once:true });
+    status('Error');
+  }finally{ btn.setAttribute('aria-busy','false'); btn.disabled=false }
 }
 
 function normalizeOutput(o){
-  const options = (o.options||[]).slice(0,10).map(x=> ({
-    title: (x.title||"").trim().slice(0, 100),
-    thumbnailText: (x.thumbnailText||"").replace(/:/g,"").trim().slice(0, 50)
-  }));
-  while(options.length<10) options.push({ title:"", thumbnailText:"" });
-
-  const tp = (o.topPicks||[]).slice(0,2).map(x=> ({
-    index: Math.max(1, Math.min(10, parseInt(x.index||0,10) || 1)),
-    rationale: (x.rationale||"").trim()
-  }));
-  while(tp.length<2) tp.push({ index: tp.length+1, rationale:"" });
-
-  return { audienceProfile: (o.audienceProfile||"").trim(), options, topPicks: tp };
+  const options = (o.options||[]).slice(0,10).map(x=> ({ title:(x.title||'').trim().slice(0,100), thumbnailText:(x.thumbnailText||'').replace(/:/g,'').trim().slice(0,50) }));
+  while(options.length<10) options.push({ title:'', thumbnailText:'' });
+  const tp = (o.topPicks||[]).slice(0,2).map(x=> ({ index: Math.max(1, Math.min(10, parseInt(x.index||1,10))) }));
+  while(tp.length<2) tp.push({ index: tp.length+1 });
+  return { audienceProfile:(o.audienceProfile||'').trim(), options, topPicks:tp };
 }
 
-function truncate(s, n){ return s.length > n ? s.slice(0, n-1)+"…" : s }
+function truncate(s,n){ return s.length>n ? s.slice(0,n-1)+'…' : s }
 
+/***************** COPY HANDLERS (no raw textareas) *****************/
 function attachCopyHandlers(scope=document){
-  scope.querySelectorAll(".copy").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const row = btn.closest(".row");
-      const which = btn.dataset.copy;
-      const v = which === "title" ? row.dataset.title : row.dataset.thumb;
-      const text = decodeURIComponent(escape(atob(v||"")));
-      copyText(text, btn);
-    });
+  scope.querySelectorAll('.copy').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const row = btn.closest('.row'); const kind=btn.dataset.copy;
+      const text = row.querySelector(`.txt[data-kind="${kind==='title'?'title':'thumb'}"]`)?.textContent || '';
+      navigator.clipboard.writeText(text).then(()=> showToast('Copied')).catch(()=> showToast('Copy failed'));
+    })
   });
-  scope.querySelectorAll("[data-copy-bulk]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const wrap = btn.closest(".session");
-      const kind = btn.dataset.copyBulk;
-      const ta = wrap.querySelector(`[data-bulk="${kind}"]`);
-      copyText(ta?.value || "", btn);
-    });
-  });
+  scope.querySelectorAll('[data-copy-bulk]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const wrap = btn.closest('.session');
+      const wantTitles = btn.dataset.copyBulk === 'titles';
+      const items = [...wrap.querySelectorAll(`.txt[data-kind="${wantTitles?'title':'thumb'}"]`)].map(n=> n.textContent.trim()).join('\n');
+      navigator.clipboard.writeText(items).then(()=> showToast('Copied')).catch(()=> showToast('Copy failed'));
+    })
+  })
 }
 
+/***************** INIT *****************/
 function bindUI(){
   const inputs = store.loadInputs();
-  if(inputs.topic) $("#topic").value = inputs.topic;
-  if(inputs.format) $("#format").value = inputs.format;
-  if(inputs.audience) $("#audience").value = inputs.audience;
+  if(inputs.topic) $('#topic').value=inputs.topic;
+  if(inputs.format) $('#format').value=inputs.format;
+  if(inputs.audience) $('#audience').value=inputs.audience;
 
-  ["topic","format","audience"].forEach(id=>{
-    const el = $("#"+id);
-    el?.addEventListener("input", ()=>{
-      store.saveInputs($("#topic").value, $("#format").value, $("#audience").value);
-    });
-  });
+  $('#send').addEventListener('click', generate);
+  // Mobile-first: no Enter hint, but keep Enter submit
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && ['topic','format','audience'].includes(document.activeElement?.id)){ e.preventDefault(); generate(); } });
 
-  $("#send").addEventListener("click", generate);
-  document.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter" && (document.activeElement?.id === "topic" || document.activeElement?.id === "format" || document.activeElement?.id === "audience")){
-      e.preventDefault(); generate();
+  const ch = document.getElementById("clear-history");
+  if(ch){ ch.addEventListener("click", ()=>{
+    if(confirm("Clear all saved generations? This cannot be undone.")){
+      if(typeof store.clearSessions === "function") store.clearSessions();
+      else localStorage.setItem("tc_sessions", JSON.stringify([]));
+      renderAll();
+      showToast("History cleared");
     }
-  });
+  }); }
 
   renderAll();
   attachCopyHandlers(document);
 }
 
-function runFX(){
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(prefersReduced) return;
-  const c = document.getElementById("fx");
-  const ctx = c.getContext("2d");
-  function resize(){ c.width = innerWidth; c.height = innerHeight; }
-  resize(); addEventListener("resize", resize);
-  const dots = Array.from({length: 48}, ()=> ({
-    x: Math.random()*c.width, y: Math.random()*c.height, r: 0.8 + Math.random()*1.6,
-    vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3
-  }));
-  function frame(){
-    ctx.clearRect(0,0,c.width,c.height);
-    for(const d of dots){
-      d.x += d.vx; d.y += d.vy;
-      if(d.x<0||d.x>c.width) d.vx*=-1;
-      if(d.y<0||d.y>c.height) d.vy*=-1;
-      ctx.beginPath();
-      ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
-      ctx.fillStyle="rgba(130,170,255,.12)";
-      ctx.fill();
-    }
-    for(let i=0;i<dots.length;i++){
-      for(let j=i+1;j<dots.length;j++){
-        const a=dots[i], b=dots[j];
-        const dx=a.x-b.x, dy=a.y-b.y, dist=Math.hypot(dx,dy);
-        if(dist<120){
-          ctx.strokeStyle=`rgba(130,170,255,${(1-dist/120)*.07})`;
-          ctx.lineWidth=1;
-          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
-        }
-      }
-    }
-    requestAnimationFrame(frame);
-  }
+/* Light particle FX; disabled on <=767px */
+function runFX(){ if(innerWidth<=767 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c = document.getElementById('fx'); const ctx = c.getContext('2d');
+  const resize=()=>{ c.width=innerWidth; c.height=innerHeight }; resize(); addEventListener('resize', resize);
+  const dots = Array.from({length:42}, ()=> ({ x:Math.random()*c.width, y:Math.random()*c.height, r:0.9+Math.random()*1.2, vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25 }));
+  const frame=()=>{ ctx.clearRect(0,0,c.width,c.height); for(const d of dots){ d.x+=d.vx; d.y+=d.vy; if(d.x<0||d.x>c.width) d.vx*=-1; if(d.y<0||d.y>c.height) d.vy*=-1; ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2); ctx.fillStyle='rgba(130,170,255,.12)'; ctx.fill(); } requestAnimationFrame(frame) };
   frame();
 }
 
