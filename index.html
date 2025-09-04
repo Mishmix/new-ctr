@@ -102,8 +102,8 @@
       border-color: color-mix(in srgb, var(--err) 35%, #253456);
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--err) 18%, transparent);
     }
-    .check:has(input:not(:checked)) .state::before{ content:"OFF" }
-    .check:has(input:checked) .state::before{ content:"ON" }
+    .check:has(input:not(:checked)) .state.data-off::before{ content:attr(data-off) }
+    .check:has(input:checked) .state.data-on::before{ content:attr(data-on) }
 
     .btn{
       --h: 52px; display:inline-flex; align-items:center; justify-content:center; gap:10px;
@@ -147,7 +147,7 @@
       border:1px solid #2a3a5f; box-shadow: 0 0 0 3px rgba(134,160,255,.10);
     }
     .audience::before{
-      content:"Audience Profile"; position:absolute; top:-10px; left:12px; font-size:11px; padding:4px 8px; border-radius:999px;
+      content:attr(data-label); position:absolute; top:-10px; left:12px; font-size:11px; padding:4px 8px; border-radius:999px;
       background:linear-gradient(90deg,#86a0ff33,#6ee7ff33); color:#eaf2ff; border:1px solid #3a4f87; font-weight:900; letter-spacing:.3px
     }
 
@@ -236,35 +236,35 @@
         <h2 id="inputs-title" class="sr-only">Inputs</h2>
         <div class="cards">
           <div class="card">
-            <h3>Video topic <span class="req" aria-hidden="true">*</span></h3>
-            <div class="field"><textarea id="topic" rows="3" placeholder="What's the video about?" aria-required="true"></textarea></div>
+            <h3 data-i18n="videoTopic">Video topic <span class="req" aria-hidden="true">*</span></h3>
+            <div class="field"><textarea id="topic" rows="3" data-i18n-placeholder="topicPlaceholder" placeholder="What's the video about?" aria-required="true"></textarea></div>
           </div>
           <div class="card">
-            <h3>Format (optional)</h3>
-            <div class="field"><input id="format" placeholder="Documentary, Review, Investigation..." /></div>
+            <h3 data-i18n="format">Format (optional)</h3>
+            <div class="field"><input id="format" data-i18n-placeholder="formatPlaceholder" placeholder="Documentary, Review, Investigation..." /></div>
           </div>
           <div class="card">
-            <h3>Target audience (optional)</h3>
-            <div class="field"><input id="audience" placeholder="Niche, age range, region..." /></div>
+            <h3 data-i18n="targetAudience">Target audience (optional)</h3>
+            <div class="field"><input id="audience" data-i18n-placeholder="audiencePlaceholder" placeholder="Niche, age range, region..." /></div>
           </div>
 
           <div class="card">
-            <h3>Components & Count</h3>
+            <h3 data-i18n="componentsCount">Components & Count</h3>
             <div class="checks" role="group" aria-label="Components">
               <label class="check">
                 <input type="checkbox" id="wantTitles" checked aria-describedby="titles-state" />
-                <span class="tag">Titles</span>
-                <span id="titles-state" class="state" aria-hidden="true"></span>
+                <span class="tag" data-i18n="titles">Titles</span>
+                <span id="titles-state" class="state data-on data-off" aria-hidden="true"></span>
               </label>
               <label class="check">
                 <input type="checkbox" id="wantThumbs" checked aria-describedby="thumbs-state" />
-                <span class="tag">Thumbnail texts</span>
-                <span id="thumbs-state" class="state" aria-hidden="true"></span>
+                <span class="tag" data-i18n="thumbnailTexts">Thumbnail texts</span>
+                <span id="thumbs-state" class="state data-on data-off" aria-hidden="true"></span>
               </label>
             </div>
             <div class="controls" style="margin-top:10px">
               <div class="ctrl">
-                <label for="count">Count (5–15)</label>
+                <label for="count" data-i18n="countLabel">Count (5–15)</label>
                 <input 
   type="number" 
   id="count" 
@@ -280,7 +280,7 @@
 
           <button id="send" class="btn" aria-busy="false">
             <svg class="spark" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2l1.8 4.6L18 8l-4.2 1.4L12 14l-1.8-4.6L6 8l4.2-1.4L12 2z"/></svg>
-            <span class="btn-text">Send</span>
+            <span class="btn-text" data-i18n="send">Send</span>
           </button>
         </div>
       </section>
@@ -288,9 +288,9 @@
       <section class="panel results" aria-labelledby="results-title">
         <h2 id="results-title" class="sr-only">Results</h2>
         <div class="tools">
-          <button class="chip danger" id="clear-history">🗑 Clear history</button>
-          <button class="chip" id="copy-all-titles">⧉ Copy all titles</button>
-          <button class="chip" id="copy-all-thumbs">⧉ Copy all thumbnails</button>
+          <button class="chip danger" id="clear-history" data-i18n="clearHistory">🗑 Clear history</button>
+          <button class="chip" id="copy-all-titles" data-i18n="copyAllTitles">⧉ Copy all titles</button>
+          <button class="chip" id="copy-all-thumbs" data-i18n="copyAllThumbs">⧉ Copy all thumbnails</button>
         </div>
         <div id="stream"></div>
       </section>
@@ -300,6 +300,248 @@
   <div id="toast" class="toast" aria-hidden="true">Copied</div>
 
 <script>
+/* ================= TRANSLATIONS ================= */
+const translations = {
+  en: {
+    // Interface
+    videoTopic: 'Video topic <span class="req" aria-hidden="true">*</span>',
+    topicPlaceholder: "What's the video about?",
+    format: 'Format (optional)',
+    formatPlaceholder: 'Documentary, Review, Investigation...',
+    targetAudience: 'Target audience (optional)',
+    audiencePlaceholder: 'Niche, age range, region...',
+    componentsCount: 'Components & Count',
+    titles: 'Titles',
+    thumbnailTexts: 'Thumbnail texts',
+    countLabel: 'Count (5–15)',
+    send: 'Send',
+    clearHistory: '🗑 Clear history',
+    copyAllTitles: '⧉ Copy all titles',
+    copyAllThumbs: '⧉ Copy all thumbnails',
+    
+    // States
+    stateOn: 'ON',
+    stateOff: 'OFF',
+    
+    // Messages
+    copied: 'Copied',
+    copyFailed: 'Copy failed',
+    topicRequired: 'Topic is required',
+    pleaseWait: 'Please wait — processing',
+    working: 'Working',
+    formatting: 'Formatting',
+    polishing: 'Polishing',
+    almostReady: 'Almost ready',
+    historyCleared: 'History cleared',
+    confirmClear: 'Clear all saved generations? This cannot be undone.',
+    requestFailed: 'Request failed.',
+    audienceProfile: 'Audience Profile',
+    titleLabel: 'Title',
+    thumbnailLabel: 'Thumbnail',
+    topPick: 'Top pick',
+    clickToCopy: 'Click to copy',
+    collapseExpand: 'Collapse/Expand',
+    removeResult: 'Remove result',
+    dismiss: 'Dismiss',
+    
+    // Language marker for prompts
+    languageMarker: 'English'
+  },
+  
+  es: {
+    // Interface
+    videoTopic: 'Tema del video <span class="req" aria-hidden="true">*</span>',
+    topicPlaceholder: '¿De qué trata el video?',
+    format: 'Formato (opcional)',
+    formatPlaceholder: 'Documental, Reseña, Investigación...',
+    targetAudience: 'Audiencia objetivo (opcional)',
+    audiencePlaceholder: 'Nicho, rango de edad, región...',
+    componentsCount: 'Componentes y cantidad',
+    titles: 'Títulos',
+    thumbnailTexts: 'Textos de miniatura',
+    countLabel: 'Cantidad (5–15)',
+    send: 'Enviar',
+    clearHistory: '🗑 Borrar historial',
+    copyAllTitles: '⧉ Copiar todos los títulos',
+    copyAllThumbs: '⧉ Copiar todas las miniaturas',
+    
+    // States
+    stateOn: 'SÍ',
+    stateOff: 'NO',
+    
+    // Messages
+    copied: 'Copiado',
+    copyFailed: 'Error al copiar',
+    topicRequired: 'El tema es obligatorio',
+    pleaseWait: 'Por favor espera — procesando',
+    working: 'Trabajando',
+    formatting: 'Formateando',
+    polishing: 'Puliendo',
+    almostReady: 'Casi listo',
+    historyCleared: 'Historial borrado',
+    confirmClear: '¿Borrar todas las generaciones guardadas? Esto no se puede deshacer.',
+    requestFailed: 'Solicitud fallida.',
+    audienceProfile: 'Perfil de audiencia',
+    titleLabel: 'Título',
+    thumbnailLabel: 'Miniatura',
+    topPick: 'Mejor opción',
+    clickToCopy: 'Clic para copiar',
+    collapseExpand: 'Colapsar/Expandir',
+    removeResult: 'Eliminar resultado',
+    dismiss: 'Cerrar',
+    
+    // Language marker for prompts
+    languageMarker: 'Spanish/Español'
+  },
+  
+  ru: {
+    // Interface
+    videoTopic: 'Тема видео <span class="req" aria-hidden="true">*</span>',
+    topicPlaceholder: 'О чём видео?',
+    format: 'Формат (необязательно)',
+    formatPlaceholder: 'Документальный, Обзор, Расследование...',
+    targetAudience: 'Целевая аудитория (необязательно)',
+    audiencePlaceholder: 'Ниша, возраст, регион...',
+    componentsCount: 'Компоненты и количество',
+    titles: 'Заголовки',
+    thumbnailTexts: 'Тексты превью',
+    countLabel: 'Количество (5–15)',
+    send: 'Отправить',
+    clearHistory: '🗑 Очистить историю',
+    copyAllTitles: '⧉ Копировать все заголовки',
+    copyAllThumbs: '⧉ Копировать все превью',
+    
+    // States
+    stateOn: 'ВКЛ',
+    stateOff: 'ВЫКЛ',
+    
+    // Messages
+    copied: 'Скопировано',
+    copyFailed: 'Ошибка копирования',
+    topicRequired: 'Тема обязательна',
+    pleaseWait: 'Пожалуйста, подождите — обработка',
+    working: 'Работаю',
+    formatting: 'Форматирую',
+    polishing: 'Дорабатываю',
+    almostReady: 'Почти готово',
+    historyCleared: 'История очищена',
+    confirmClear: 'Очистить все сохранённые генерации? Это действие нельзя отменить.',
+    requestFailed: 'Запрос не удался.',
+    audienceProfile: 'Профиль аудитории',
+    titleLabel: 'Заголовок',
+    thumbnailLabel: 'Превью',
+    topPick: 'Лучший вариант',
+    clickToCopy: 'Нажмите для копирования',
+    collapseExpand: 'Свернуть/Развернуть',
+    removeResult: 'Удалить результат',
+    dismiss: 'Закрыть',
+    
+    // Language marker for prompts
+    languageMarker: 'Russian/Русский'
+  },
+  
+  uk: {
+    // Interface
+    videoTopic: 'Тема відео <span class="req" aria-hidden="true">*</span>',
+    topicPlaceholder: 'Про що відео?',
+    format: 'Формат (необов\'язково)',
+    formatPlaceholder: 'Документальний, Огляд, Розслідування...',
+    targetAudience: 'Цільова аудиторія (необов\'язково)',
+    audiencePlaceholder: 'Ніша, вік, регіон...',
+    componentsCount: 'Компоненти та кількість',
+    titles: 'Заголовки',
+    thumbnailTexts: 'Тексти прев\'ю',
+    countLabel: 'Кількість (5–15)',
+    send: 'Відправити',
+    clearHistory: '🗑 Очистити історію',
+    copyAllTitles: '⧉ Копіювати всі заголовки',
+    copyAllThumbs: '⧉ Копіювати всі прев\'ю',
+    
+    // States
+    stateOn: 'УВІМК',
+    stateOff: 'ВИМК',
+    
+    // Messages
+    copied: 'Скопійовано',
+    copyFailed: 'Помилка копіювання',
+    topicRequired: 'Тема обов\'язкова',
+    pleaseWait: 'Будь ласка, зачекайте — обробка',
+    working: 'Працюю',
+    formatting: 'Форматую',
+    polishing: 'Доопрацьовую',
+    almostReady: 'Майже готово',
+    historyCleared: 'Історію очищено',
+    confirmClear: 'Очистити всі збережені генерації? Цю дію не можна скасувати.',
+    requestFailed: 'Запит не вдався.',
+    audienceProfile: 'Профіль аудиторії',
+    titleLabel: 'Заголовок',
+    thumbnailLabel: 'Прев\'ю',
+    topPick: 'Найкращий варіант',
+    clickToCopy: 'Натисніть для копіювання',
+    collapseExpand: 'Згорнути/Розгорнути',
+    removeResult: 'Видалити результат',
+    dismiss: 'Закрити',
+    
+    // Language marker for prompts
+    languageMarker: 'Ukrainian/Українська'
+  }
+};
+
+// Detect language
+function detectLanguage() {
+  const browserLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  
+  if (browserLang.startsWith('es')) return 'es';
+  if (browserLang.startsWith('ru')) return 'ru';
+  if (browserLang.startsWith('uk')) return 'uk';
+  return 'en';
+}
+
+// Current language
+let currentLang = detectLanguage();
+let t = translations[currentLang];
+
+// Apply translations
+function applyTranslations() {
+  // Update all elements with data-i18n attribute
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key]) {
+      if (el.tagName === 'BUTTON' && el.querySelector('.btn-text')) {
+        el.querySelector('.btn-text').innerHTML = t[key];
+      } else {
+        el.innerHTML = t[key];
+      }
+    }
+  });
+  
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (t[key]) {
+      el.placeholder = t[key];
+    }
+  });
+  
+  // Update tooltips and aria-labels
+  document.querySelectorAll('[title]').forEach(el => {
+    if (el.title === 'Click to copy') el.title = t.clickToCopy;
+    if (el.title === 'Collapse/Expand') el.title = t.collapseExpand;
+    if (el.title === 'Remove result') el.title = t.removeResult;
+    if (el.title === 'Dismiss') el.title = t.dismiss;
+    if (el.title === 'Top pick') el.title = t.topPick;
+  });
+  
+  // Update state indicators
+  document.querySelectorAll('.state').forEach(el => {
+    el.setAttribute('data-on', t.stateOn);
+    el.setAttribute('data-off', t.stateOff);
+  });
+  
+  // Update document language
+  document.documentElement.lang = currentLang;
+}
+
 /* ================= CONFIG ================= */
 const API_KEY = "AIzaSyDkowFTxiuya3AKjX4yaoA4XaTEK13OXx8";
 const MODEL   = "gemini-2.5-pro";
@@ -309,6 +551,8 @@ const BASE_DELAY = 800;
 /* ================= ENHANCED SYSTEM PROMPT ================= */
 const SYSTEM_PROMPT = `ROLE & MISSION
 You are an expert in viral YouTube titles & thumbnail texts 🔥 with a finely tuned sense for click psychology (hundreds of A/B tests). Your mission: from the user's topic/context, craft options that skyrocket CTR and hold attention.
+
+IMPORTANT: You must respond in the same language as the user's input. If the user writes in Spanish, respond in Spanish. If in Russian, respond in Russian. If in Ukrainian, respond in Ukrainian. Otherwise default to English.
 
 KNOWLEDGE BASE & EXAMPLES (FOR INTERNAL GUIDANCE ONLY — NEVER OUTPUT THIS SECTION)
 • Click Mechanics 🧠
@@ -567,7 +811,7 @@ VARIATION COVERAGE (WHEN TOPIC ALLOWS)
 Across N options include a healthy mix: How-to, Lists/Numbered, Curiosity Gap, VS/Comparison, Personal, Mistakes, Trend/Urgency. Ensure low semantic overlap.
 
 LANGUAGE
-Match the user's input language 1:1 (tone and locale). If unclear, default to the user's current language.
+You MUST respond in the same language as the user's input. Detect the language from the topic text and use it for ALL output including the audienceProfile field. If unclear, default to English.
 
 ==== HARD CONSTRAINTS & OUTPUT CONTRACT (MUST OBEY) ====
 1) STRICT JSON ONLY — NO MARKDOWN, NO LISTS, NO COMMENTARY, NO CHAIN-OF-THOUGHT.
@@ -617,13 +861,14 @@ function buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count}
     `VIDEO TOPIC: ${escapeForPrompt(topic)}`,
     `FORMAT: ${escapeForPrompt(format || "(not specified)")}`,
     `TARGET AUDIENCE: ${escapeForPrompt(audience || "(not specified)")}`,
-    `LANGUAGE: auto-detect from topic (fallback: English)`,
+    `LANGUAGE: auto-detect from topic (current interface language: ${t.languageMarker})`,
     `REQUESTED COMPONENTS: ${comp}`,
     `NUMBER OF VARIANTS: ${count}`,
     `OUTPUT REQUIREMENTS:
 • Return exactly ${count} options with the requested components
 • Include Audience Profile (3-6 sentences about the target viewers)
 • Include Top Picks (2 best options by index)
+• IMPORTANT: Respond in the same language as the topic text
 • Follow all title and thumbnail text constraints from system instructions`
   ];
   return lines.join("\n");
@@ -684,7 +929,7 @@ const $ = s => document.querySelector(s);
 const clamp = (n,min,max)=> Math.max(min, Math.min(max, n));
 const clampStr = (s,n)=> (s||"").trim().slice(0,n);
 const MAX_CHARS_TOPIC=800, MAX_CHARS_FORMAT=300, MAX_CHARS_AUDIENCE=300;
-const toast = (msg="Copied")=>{ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=> t.classList.remove("show"), 1200) };
+const toast = (msg)=>{ const actualMsg = t[msg] || msg || t.copied; const el=$("#toast"); el.textContent=actualMsg; el.classList.add("show"); setTimeout(()=> el.classList.remove("show"), 1200) };
 function escapeForPrompt(s){ return (s||"").replace(/[<>]/g, m => ({'<':'&lt;','>':'&gt;'}[m])) }
 function nowStr(){ try{ return new Date().toLocaleString('en-GB', { hour12:false, timeZone:'Europe/London' }); }catch{ return new Date().toLocaleString(); } }
 function joinParts(parts){ return (parts||[]).map(p=> p.text).filter(Boolean).join("") }
@@ -734,13 +979,13 @@ function rowHTML(i, opt, topSet, showTitle, showThumb){
   const thumbVal = opt.thumbnailText || '';
   const titleHTML = showTitle && titleVal ? `
     <div class="line">
-      <div class="label">Title</div>
-      <div class="txt" data-kind="title" role="button" tabindex="0" title="Click to copy">${titleVal}</div>
+      <div class="label">${t.titleLabel}</div>
+      <div class="txt" data-kind="title" role="button" tabindex="0" title="${t.clickToCopy}">${titleVal}</div>
     </div>` : '';
   const thumbHTML = showThumb && thumbVal ? `
     <div class="line">
-      <div class="label">Thumbnail</div>
-      <div class="txt" data-kind="thumb" role="button" tabindex="0" title="Click to copy">${thumbVal}</div>
+      <div class="label">${t.thumbnailLabel}</div>
+      <div class="txt" data-kind="thumb" role="button" tabindex="0" title="${t.clickToCopy}">${thumbVal}</div>
     </div>` : '';
   
   // Only render if we have content to show
@@ -748,7 +993,7 @@ function rowHTML(i, opt, topSet, showTitle, showThumb){
   
   return `
   <div class="row${isTop? ' top':''}" data-idx="${n}">
-    <div class="badge" aria-hidden="true">${n}</div>${isTop? '<span class="star" aria-label="Top pick" title="Top pick">★</span>':''}
+    <div class="badge" aria-hidden="true">${n}</div>${isTop? `<span class="star" aria-label="${t.topPick}" title="${t.topPick}">★</span>`:''}
     <div class="pair">${titleHTML}${thumbHTML}</div>
   </div>`;
 }
@@ -761,14 +1006,14 @@ function sessionHTML(session){
   return `
   <article class="session" role="region" aria-label="Result session" data-id="${session.id}">
     <div class="session-head">
-      <button class="iconbtn collapse" title="Collapse/Expand" aria-label="Collapse or expand">
+      <button class="iconbtn collapse" title="${t.collapseExpand}" aria-label="${t.collapseExpand}">
         <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
       </button>
-      <button class="iconbtn close" title="Remove result" aria-label="Remove result">
+      <button class="iconbtn close" title="${t.removeResult}" aria-label="${t.removeResult}">
         <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
       </button>
     </div>
-    <div class="audience">${output.audienceProfile||''}</div>
+    <div class="audience" data-label="${t.audienceProfile}">${output.audienceProfile||''}</div>
     <div class="list">${list}</div>
   </article>`;
 }
@@ -778,7 +1023,7 @@ function skeletonCard(){
   wrap.className = 'session';
   wrap.innerHTML = `
     <div class="session-head">
-      <button class="iconbtn sk-close" title="Dismiss" aria-label="Dismiss">
+      <button class="iconbtn sk-close" title="${t.dismiss}" aria-label="${t.dismiss}">
         <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
       </button>
     </div>
@@ -797,8 +1042,8 @@ function attachCopyHandlers(scope=document){
       el.style.boxShadow = '0 0 0 3px rgba(110,231,255,.35) inset';
       el.style.transition = 'box-shadow .35s ease';
       setTimeout(()=>{ el.style.boxShadow = ''; }, 450);
-      toast('Copied');
-    }).catch(()=> toast('Copy failed'));
+      toast('copied');
+    }).catch(()=> toast('copyFailed'));
   }
   scope.querySelectorAll('.txt').forEach(el=>{
     el.addEventListener('click', ()=> copyText(el));
@@ -858,7 +1103,7 @@ let btnMsgTimer=null;
 function setBtnBusy(btn, on){
   if(on){
     btn.setAttribute('aria-busy','true'); btn.classList.add('processing'); btn.disabled=true;
-    const msgs = ['Working','Formatting','Polishing','Almost ready'];
+    const msgs = [t.working, t.formatting, t.polishing, t.almostReady];
     let i=0;
     btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
     clearInterval(btnMsgTimer);
@@ -866,13 +1111,13 @@ function setBtnBusy(btn, on){
   }else{
     btn.setAttribute('aria-busy','false'); btn.classList.remove('processing'); btn.disabled=false;
     clearInterval(btnMsgTimer); btnMsgTimer=null;
-    btn.querySelector('.btn-text').textContent = 'Send';
+    btn.querySelector('.btn-text').textContent = t.send;
   }
 }
 
 async function generate(){
   const btn = $("#send");
-  if(btn.getAttribute('aria-busy')==='true'){ toast('Please wait — processing'); return; }
+  if(btn.getAttribute('aria-busy')==='true'){ toast('pleaseWait'); return; }
 
   const topic = clampStr($("#topic").value, MAX_CHARS_TOPIC);
   const format = clampStr($("#format").value, MAX_CHARS_FORMAT);
@@ -882,7 +1127,7 @@ async function generate(){
   let count = clamp(parseInt($("#count").value||"10",10)||10, 1, 15);
 
   if(!wantTitles && !wantThumbs){ wantTitles = true; }
-  if(!topic){ $("#topic").focus(); toast("Topic is required"); return; }
+  if(!topic){ $("#topic").focus(); toast("topicRequired"); return; }
 
   store.saveInputs({topic, format, audience, wantTitles, wantThumbs, count});
 
@@ -917,12 +1162,12 @@ async function generate(){
   }catch(err){
     const message = err?.message||'Unknown error';
     skel.innerHTML = `<div class="session-head">
-        <button class="iconbtn sk-close" title="Dismiss" aria-label="Dismiss">
+        <button class="iconbtn sk-close" title="${t.dismiss}" aria-label="${t.dismiss}">
           <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
         </button>
       </div>
       <div class="skeleton" role="alert" style="border:1px solid #3e2c2c; background:#1a0f12; color:#ffc7c7">
-        <div><strong>Request failed.</strong> ${truncate(message,260)}</div>
+        <div><strong>${t.requestFailed}</strong> ${truncate(message,260)}</div>
       </div>`;
     attachSessionControls(skel);
   }finally{
@@ -942,6 +1187,9 @@ function renderAll(){
 }
 
 function bindUI(){
+  // Apply translations first
+  applyTranslations();
+  
   setTimeout(()=> {
     const pl = $("#pageloader"); if(pl){ pl.classList.add('hidden'); }
     const app = $("#appRoot"); if(app){ app.removeAttribute('aria-hidden'); }
@@ -966,18 +1214,18 @@ function bindUI(){
   document.addEventListener("keydown", (e)=>{ if(e.key==='Enter' && ['topic','format','audience'].includes(document.activeElement?.id)){ e.preventDefault(); generate(); } });
 
   $("#clear-history").addEventListener("click", ()=>{
-    if(confirm("Clear all saved generations? This cannot be undone.")){
-      store.clearSessions(); renderAll(); toast("History cleared");
+    if(confirm(t.confirmClear)){
+      store.clearSessions(); renderAll(); toast("historyCleared");
     }
   });
 
   $("#copy-all-titles").addEventListener("click", ()=>{
     const items = [...document.querySelectorAll('.txt[data-kind="title"]')].map(n=> n.textContent.trim()).filter(Boolean).join("\n");
-    navigator.clipboard.writeText(items).then(()=> toast("Copied")).catch(()=> toast("Copy failed"));
+    navigator.clipboard.writeText(items).then(()=> toast("copied")).catch(()=> toast("copyFailed"));
   });
   $("#copy-all-thumbs").addEventListener("click", ()=>{
     const items = [...document.querySelectorAll('.txt[data-kind="thumb"]')].map(n=> n.textContent.trim()).filter(Boolean).join("\n");
-    navigator.clipboard.writeText(items).then(()=> toast("Copied")).catch(()=> toast("Copy failed"));
+    navigator.clipboard.writeText(items).then(()=> toast("copied")).catch(()=> toast("copyFailed"));
   });
 
   renderAll();
