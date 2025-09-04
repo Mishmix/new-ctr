@@ -1007,6 +1007,143 @@
   </style>
 </head>
 <body>
+
+
+<!-- SIMPLE ACCESS (visible typing, keep wrong input) — paste right after <body> -->
+<style>
+  @keyframes gate-float-in { from{opacity:0; transform:translateY(20px) scale(.98)} to{opacity:1; transform:translateY(0) scale(1)} }
+  @keyframes gate-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.03)} }
+</style>
+
+<div id="password-screen" style="
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  background: var(--bg, #0b0d12);
+  z-index: 2147483000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <div style="
+    width:min(420px,calc(100% - 40px)); padding:28px 22px; border-radius:20px; text-align:center;
+    background: var(--panel, rgba(16,21,34,.92));
+    border:1px solid rgba(255,255,255,.1);
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+    backdrop-filter: blur(16px) saturate(180%);
+    animation: gate-float-in .5s cubic-bezier(.34,1.56,.64,1)">
+    <div style="
+      width:72px;height:72px;margin:0 auto 18px;border-radius:22px;
+      background:linear-gradient(135deg,#86a0ff,#6ee7ff);
+      display:grid;place-items:center;font-size:32px; animation: gate-pulse 2.2s ease-in-out infinite;">🔐</div>
+
+    <h2 id="pwd-title" style="margin:0 0 8px;color:var(--text,#e8edf6);font-size:22px;font-weight:900">
+      Access Required
+    </h2>
+    <p id="pwd-subtitle" style="margin:0 10px 12px;color:var(--muted,#9aa7bd);font-size:13px">
+      Enter access code to continue
+    </p>
+
+    <input id="pwd-input" type="text" maxlength="64" placeholder="Enter access code" autocomplete="off" inputmode="text"
+      style="width:100%;background:rgba(15,21,38,.8);border:2px solid rgba(31,42,68,.8);border-radius:14px;
+      padding:14px;color:var(--text,#e8edf6);font-size:16px;font-weight:600;margin-bottom:12px;box-sizing:border-box;" />
+
+    <button id="pwd-button" style="
+      width:100%;padding:14px;border:0;border-radius:14px;cursor:pointer;
+      background:linear-gradient(135deg,#86a0ff,#6ee7ff);color:#0a0d14;font-size:16px;font-weight:800;
+      box-shadow:0 12px 30px rgba(134,160,255,.35); transition:transform .18s;">
+      Enter
+    </button>
+
+    <div id="pwd-message" style="min-height:18px;margin-top:10px;font-size:13px;font-weight:700;opacity:0;transition:opacity .25s"></div>
+  </div>
+</div>
+
+<script>
+/* ===== CONFIG ===== */
+const CORRECT_CODE = "boost-ctr";           // ← код для доступа
+const STORAGE_KEY  = "site_access_granted"; // localStorage ключ
+const LOADER_ID    = "pageloader";
+const FIRST_HIDE_DELAY_MS = 700;            // 0.7s
+const REVISIT_FORCE_MS    = 2000;           // 2s
+
+/* ===== i18n ===== */
+const I18N = {
+  en:{t:"Access Required", s:"Enter access code to continue", ph:"Enter access code", b:"Enter", err:"✗ Invalid access code", ok:"✓ Access granted!"},
+  ru:{t:"Требуется доступ", s:"Введите код доступа для продолжения", ph:"Введите код доступа", b:"Войти", err:"✗ Неверный код доступа", ok:"✓ Доступ разрешён!"},
+  uk:{t:"Потрібен доступ", s:"Введіть код доступу для продовження", ph:"Введіть код доступу", b:"Увійти", err:"✗ Невірний код доступу", ok:"✓ Доступ надано!"},
+  es:{t:"Acceso requerido", s:"Ingresa el código para continuar", ph:"Código de acceso", b:"Entrar", err:"✗ Código inválido", ok:"✓ ¡Acceso concedido!"}
+};
+const lang = ((navigator.language||'en').toLowerCase().split('-')[0]);
+const T = I18N[lang] || I18N.en;
+
+/* ===== helpers ===== */
+function $(id){ return document.getElementById(id); }
+function showMsg(text, ok=false){
+  const el=$("pwd-message");
+  el.textContent=text;
+  el.style.color=ok?"#67f3a2":"#ff6b6b";
+  el.style.opacity="1";
+  setTimeout(()=> el.style.opacity="0", 2000);
+}
+function hasAccess(){ return localStorage.getItem(STORAGE_KEY) === "true"; }
+
+function hideLoaderNow(){
+  const pl = document.getElementById(LOADER_ID);
+  if (!pl) return false;
+  pl.classList.add("hidden");
+  setTimeout(()=> pl.remove?.(), 700);
+  return true;
+}
+function hideLoaderRevisit(){
+  setTimeout(() => {
+    if (!hideLoaderNow()){
+      const until = performance.now() + 2000;
+      const iv = setInterval(()=>{
+        if (hideLoaderNow() || performance.now() > until) clearInterval(iv);
+      }, 120);
+    }
+  }, REVISIT_FORCE_MS);
+}
+
+function grantAccess(firstTime){
+  localStorage.setItem(STORAGE_KEY, "true");
+  $("password-screen")?.remove();
+
+  if (firstTime){
+    // первый раз — прячем за 0.7s
+    const t0 = performance.now();
+    const iv = setInterval(()=>{
+      if (hideLoaderNow() || performance.now() - t0 > 2000) clearInterval(iv);
+    }, 80);
+  } else {
+    hideLoaderRevisit();
+  }
+}
+
+/* ===== init ===== */
+(function initGate(){
+  $("pwd-title").textContent = T.t;
+  $("pwd-subtitle").textContent = T.s;
+  $("pwd-input").placeholder = T.ph;
+  $("pwd-button").textContent = T.b;
+
+  if (hasAccess()){
+    grantAccess(false);
+    return;
+  }
+
+  $("pwd-button").addEventListener("click", ()=>{
+    const entered = ($("pwd-input").value||"").trim();
+    if (entered === CORRECT_CODE){
+      showMsg(T.ok, true);
+      setTimeout(()=> grantAccess(true), 100);
+    } else {
+      showMsg(T.err, false);
+      $("pwd-input").focus();          // оставить введённое и выделить
+      $("pwd-input").select();
+    }
+  });
+  $("pwd-input").addEventListener("keydown", (e)=>{ if (e.key === "Enter") $("pwd-button").click(); });
+})();
+</script>
+<!-- /SIMPLE ACCESS -->
+
+
   <!-- Particles Background -->
   <canvas id="particles-bg"></canvas>
   
