@@ -265,6 +265,25 @@
       transform: scale(1.02);
     }
     
+    .field-clear {
+      width: 24px;
+      height: 24px;
+      padding: 4px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .field-clear:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    .field-clear svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--muted);
+    }
+    
     textarea,input{ 
       all:unset; 
       color:var(--text); 
@@ -273,7 +292,7 @@
       caret-color: var(--brand);
       font-size: 16px; /* Prevent zoom on iOS */
     }
-    textarea { min-height: 80px; }
+    textarea { min-height: 80px; resize: vertical; }
 
     /* ===== CONTROLS ===== */
     .controls{ display:grid; grid-template-columns: 1fr; gap:12px; margin-top: 12px; }
@@ -480,42 +499,90 @@
     .dots::after{ content:""; display:inline-block; width:1ch; animation: dots 1.2s steps(3,end) infinite }
     @keyframes dots{ 0%{content:""} 33%{content:"."} 66%{content:".."} 100%{content:"..."} }
 
-    /* ===== ENHANCED SESSIONS ===== */
+    /* ===== 3D SESSIONS ===== */
+    #stream {
+      position: relative;
+      min-height: 400px;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+    }
+    
     .session{
       padding:0; 
       border:2px solid rgba(255,255,255,.12); 
       border-radius:20px;
       background: linear-gradient(135deg, #0f1420cc, #0b0f1acc);
-      margin:20px 0; 
+      margin:0 0 10px 0; 
       box-shadow: 0 20px 40px rgba(0,0,0,.4);
       overflow:hidden;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
       transform-origin: top center;
-      animation: session-appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-style: preserve-3d;
+      position: relative;
+      cursor: pointer;
     }
+    
+    /* 3D Stacked effect when collapsed */
+    .session.collapsed {
+      transform: rotateX(20deg) translateZ(calc(var(--stack-index, 0) * -50px)) translateY(calc(var(--stack-index, 0) * 30px));
+      opacity: calc(1 - var(--stack-index, 0) * 0.15);
+      margin-bottom: -60px;
+    }
+    
+    .session.collapsed:hover {
+      transform: rotateX(20deg) translateZ(calc(var(--stack-index, 0) * -50px + 10px)) translateY(calc(var(--stack-index, 0) * 30px - 5px)) scale(1.02);
+    }
+    
+    /* Expanded state */
+    .session.expanded {
+      transform: rotateX(0) translateZ(0) translateY(0) !important;
+      opacity: 1 !important;
+      margin-bottom: 20px;
+      z-index: 100;
+    }
+    
+    /* Other cards when one is expanded */
+    .session.pushed-down {
+      transform: translateY(100px) scale(0.95);
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
     @keyframes session-appear {
       from { 
         opacity: 0; 
-        transform: scale(0.9) translateY(20px);
+        transform: scale(0.9) translateY(20px) rotateX(40deg);
       }
       to { 
         opacity: 1; 
-        transform: scale(1) translateY(0);
+        transform: scale(1) translateY(0) rotateX(20deg);
       }
-    }
-    .session:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 25px 50px rgba(0,0,0,.5);
     }
     
     .session-head{
       display:flex; 
       align-items:center; 
-      justify-content:flex-end; 
+      justify-content:space-between; 
       gap:10px; 
       padding:10px;
       background:linear-gradient(180deg,#0e1423,#0b1020);
       border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    
+    .session-title {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-weak);
+      padding: 0 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .session-actions {
+      display: flex;
+      gap: 10px;
     }
     
     .iconbtn{
@@ -591,10 +658,6 @@
     .session:not(.collapsed) .audience, 
     .session:not(.collapsed) .list{
       transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    
-    .session.collapsed {
-      transform: scale(0.98);
     }
 
     /* ===== ENHANCED ROWS ===== */
@@ -957,7 +1020,7 @@
   <!-- Loader -->
   <div id="pageloader" role="status" aria-live="polite" aria-label="Loading">
     <div class="pl-card">
-      <img class="pl-logo" src="https://i.imgur.com/Q7CqyWC.jpeg" alt="TITLE CRAFT logo" width="80" height="80" />
+      <img class="pl-logo" src="https://i.imgur.com/NAlA829.jpeg" alt="TITLE CRAFT logo" width="80" height="80" />
       <div class="pl-bar"><span></span></div>
     </div>
   </div>
@@ -981,18 +1044,27 @@
             <h3 data-i18n="videoTopic">Video topic <span class="req" aria-hidden="true">*</span></h3>
             <div class="field" id="topicField">
               <textarea id="topic" rows="3" data-i18n-placeholder="topicPlaceholder" placeholder="What's the video about?" aria-required="true"></textarea>
+              <div class="field-clear" id="clearTopic" title="Clear field">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              </div>
             </div>
           </div>
           <div class="card">
             <h3 data-i18n="format">Format (optional)</h3>
             <div class="field" id="formatField">
-              <input id="format" data-i18n-placeholder="formatPlaceholder" placeholder="Documentary, Review, Investigation..." />
+              <textarea id="format" rows="3" data-i18n-placeholder="formatPlaceholder" placeholder="Documentary, Review, Investigation..."></textarea>
+              <div class="field-clear" id="clearFormat" title="Clear field">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              </div>
             </div>
           </div>
           <div class="card">
             <h3 data-i18n="targetAudience">Target audience (optional)</h3>
             <div class="field" id="audienceField">
-              <input id="audience" data-i18n-placeholder="audiencePlaceholder" placeholder="Niche, age range, region..." />
+              <textarea id="audience" rows="3" data-i18n-placeholder="audiencePlaceholder" placeholder="Niche, age range, region..."></textarea>
+              <div class="field-clear" id="clearAudience" title="Clear field">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              </div>
             </div>
           </div>
 
@@ -1039,8 +1111,6 @@
         <h2 id="results-title" class="sr-only">Results</h2>
         <div class="tools">
           <button class="chip danger" id="clear-history" data-i18n="clearHistory">🗑 Clear history</button>
-          <button class="chip" id="copy-all-titles" data-i18n="copyAllTitles">⧉ Copy all titles</button>
-          <button class="chip" id="copy-all-thumbs" data-i18n="copyAllThumbs">⧉ Copy all thumbnails</button>
         </div>
         <div id="stream"></div>
       </section>
@@ -1050,8 +1120,9 @@
   <!-- Floating Action Button -->
   <button class="fab" id="fabBtn" aria-label="Quick actions">
     <svg viewBox="0 0 24 24">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-    </svg>
+  <path d="M4 16a2 2 0 0 1 0-2.83l6.59-6.59a2 2 0 0 1 2.82 0L20 13.17a2 2 0 0 1-2.82 2.83L12 10.83l-5.18 5.17A2 2 0 0 1 4 16z"></path>
+</svg>
+
   </button>
 
   <div id="toast" class="toast" aria-hidden="true">Copied</div>
@@ -1459,7 +1530,7 @@ function applyTranslations() {
 }
 
 /* ================= CONFIG ================= */
-const API_KEY = "AIzaSyDkowFTxiuya3AKjX4yaoA4XaTEK13OXx8";
+const API_KEY = "AIzaSyBhzx04RA5ozvs-MpC6Q3_TvQGAtZyDCaM";
 const MODEL   = "gemini-2.5-pro";
 const RETRIES = 5;
 const BASE_DELAY = 800;
@@ -1647,6 +1718,13 @@ function truncate(s,n){ return s && s.length>n ? s.slice(0,n-1)+'…' : (s||"") 
 function uid(){ return 's_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7) }
 function safeParseJSON(m){ if(!m) return null; try{ return JSON.parse(m) }catch{} const a=m.indexOf("{"), b=m.lastIndexOf("}"); if(a>=0&&b>a){ try{ return JSON.parse(m.slice(a,b+1)) }catch{} } return null }
 
+// Extract first sentence from topic
+function getFirstSentence(text) {
+  if (!text) return '';
+  const match = text.match(/^[^.!?]+[.!?]/);
+  return match ? match[0].trim() : text.split(/\s+/).slice(0, 5).join(' ') + '...';
+}
+
 /* ================= NORMALIZE OUTPUT ================= */
 function normalizeOutput(o, opts){
   const { wantTitles, wantThumbs, count } = opts;
@@ -1708,19 +1786,21 @@ function rowHTML(i, opt, topSet, showTitle, showThumb){
 }
 
 function sessionHTML(session){
-  const { output, view } = session;
+  const { output, view, input } = session;
   const showTitle = view.wantTitles, showThumb = view.wantThumbs;
   const topSet = new Set((output.topPicks||[]).map(x=> x.index));
   const list = (output.options||[]).map((o,i)=> rowHTML(i,o,topSet,showTitle,showThumb)).filter(Boolean).join('');
+  const cardTitle = getFirstSentence(input.topic);
+  
   return `
-  <article class="session" role="region" aria-label="Result session" data-id="${session.id}">
+  <article class="session collapsed" role="region" aria-label="Result session" data-id="${session.id}">
     <div class="session-head">
-      <button class="iconbtn collapse" title="${t.collapseExpand}" aria-label="${t.collapseExpand}">
-        <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
-      </button>
-      <button class="iconbtn close" title="${t.removeResult}" aria-label="${t.removeResult}">
-        <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
-      </button>
+      <span class="session-title">${cardTitle}</span>
+      <div class="session-actions">
+        <button class="iconbtn close" title="${t.removeResult}" aria-label="${t.removeResult}">
+          <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
+        </button>
+      </div>
     </div>
     <div class="audience" data-label="${t.audienceProfile}">${output.audienceProfile||''}</div>
     <div class="list">${list}</div>
@@ -1742,6 +1822,68 @@ function skeletonCard(){
   return wrap;
 }
 
+/* ================= 3D CARD SYSTEM ================= */
+let cardClickHandler = null;
+
+function setup3DCards() {
+  const stream = $('#stream');
+  
+  // Remove old handler if exists
+  if (cardClickHandler) {
+    stream.removeEventListener('click', cardClickHandler);
+  }
+  
+  // Update stack indices for collapsed cards
+  function updateStackIndices() {
+    const sessions = [...stream.querySelectorAll('.session')];
+    let stackIndex = 0;
+    
+    sessions.forEach(session => {
+      if (session.classList.contains('collapsed')) {
+        session.style.setProperty('--stack-index', stackIndex);
+        stackIndex++;
+      } else {
+        session.style.setProperty('--stack-index', 0);
+      }
+    });
+  }
+  
+  // Create new handler
+  cardClickHandler = (e) => {
+    const session = e.target.closest('.session');
+    if (!session || e.target.closest('.iconbtn')) return;
+    
+    const isExpanded = session.classList.contains('expanded');
+    const allSessions = [...stream.querySelectorAll('.session')];
+    
+    if (isExpanded) {
+      // Collapse the card
+      session.classList.remove('expanded');
+      session.classList.add('collapsed');
+      allSessions.forEach(s => s.classList.remove('pushed-down'));
+    } else {
+      // Expand this card and push others down
+      allSessions.forEach(s => {
+        s.classList.remove('expanded');
+        s.classList.add('collapsed');
+        if (s !== session) {
+          s.classList.add('pushed-down');
+        }
+      });
+      session.classList.remove('collapsed', 'pushed-down');
+      session.classList.add('expanded');
+    }
+    
+    haptic.medium();
+    setTimeout(updateStackIndices, 50);
+  };
+  
+  // Add new handler
+  stream.addEventListener('click', cardClickHandler);
+  
+  updateStackIndices();
+}
+
 /* ================= COPY / CONTROLS ================= */
 function attachCopyHandlers(scope=document){
   function copyText(el){
@@ -1758,28 +1900,19 @@ function attachCopyHandlers(scope=document){
     });
   }
   scope.querySelectorAll('.txt').forEach(el=>{
-    el.addEventListener('click', ()=> copyText(el));
+    el.onclick = (e) => { 
+      e.stopPropagation(); 
+      copyText(el); 
+    };
     el.addEventListener('touchstart', ()=> haptic.light());
     el.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); copyText(el); }});
   });
 }
 
 function attachSessionControls(scope=document){
-  scope.querySelectorAll('.session .collapse').forEach(btn=>{
-    btn.onclick = () => {
-      const card = btn.closest('.session');
-      card.classList.toggle('collapsed');
-      const path = btn.querySelector('path');
-      if(card.classList.contains('collapsed')){ 
-        path.setAttribute('d','M7 14l5-5 5 5H7z');
-      } else { 
-        path.setAttribute('d','M7 10l5 5 5-5H7z');
-      }
-      haptic.light();
-    };
-  });
   scope.querySelectorAll('.session .close').forEach(btn=>{
-    btn.onclick = () => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
       const card = btn.closest('.session'); 
       const id = card?.dataset?.id;
       card.style.transform='scale(.95)'; 
@@ -1788,25 +1921,19 @@ function attachSessionControls(scope=document){
       setTimeout(()=>{ 
         card.remove(); 
         if(id) store.deleteSession(id); 
+        setup3DCards();
       }, 300);
     };
   });
   scope.querySelectorAll('.sk-close').forEach(btn=>{
-    btn.onclick = () => { 
+    btn.onclick = (e) => { 
+      e.stopPropagation();
       const card = btn.closest('.session');
       card.style.transform='scale(.95)'; 
       card.style.opacity='0';
       haptic.light();
       setTimeout(()=> card?.remove(), 300);
     };
-  });
-}
-
-function collapseAllSessions(){
-  document.querySelectorAll('.session').forEach(el=>{
-    el.classList.add('collapsed');
-    const chevron = el.querySelector('.collapse path');
-    if(chevron) chevron.setAttribute('d','M7 14l5-5 5 5H7z');
   });
 }
 
@@ -1835,14 +1962,25 @@ function setBtnBusy(btn, on){
     btn.setAttribute('aria-busy','true'); 
     btn.classList.add('processing'); 
     btn.disabled=true;
-    const msgs = [t.working, t.formatting, t.polishing, t.almostReady];
+    const msgs = [
+      t.working, 
+      'Analyzing your topic', 
+      'Understanding the audience', 
+      'Finding viral patterns', 
+      'Crafting click-worthy titles', 
+      'Optimizing for engagement',
+      'Adding psychological triggers',
+      'Testing CTR predictions',
+      'Finalizing best options',
+      t.almostReady
+    ];
     let i=0;
     btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
     clearInterval(btnMsgTimer);
     btnMsgTimer = setInterval(()=>{ 
       i=(i+1)%msgs.length; 
       btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`; 
-    }, 1400);
+    }, 10000); // 10 seconds per status
   }else{
     btn.setAttribute('aria-busy','false'); 
     btn.classList.remove('processing'); 
@@ -1880,7 +2018,6 @@ async function generate(){
 
   setBtnBusy(btn, true);
   blinkFields();
-  collapseAllSessions();
   haptic.medium();
 
   const stream = $("#stream"); 
@@ -1912,10 +2049,39 @@ async function generate(){
 
     const cardWrap = document.createElement('div'); 
     cardWrap.innerHTML = sessionHTML(session);
-    stream.replaceChild(cardWrap, skel);
-    attachCopyHandlers(cardWrap);
-    attachSessionControls(cardWrap);
-    cardWrap.querySelector('.session')?.classList.remove('collapsed');
+    const newSession = cardWrap.firstElementChild;
+    stream.replaceChild(newSession, skel);
+    
+    // Re-initialize everything for the new content
+    attachCopyHandlers(stream);
+    attachSessionControls(stream);
+    setup3DCards();
+    
+    // Auto-expand the new card
+    setTimeout(() => {
+      const allSessions = [...stream.querySelectorAll('.session')];
+      allSessions.forEach(s => {
+        s.classList.add('collapsed');
+        s.classList.remove('expanded');
+        if (s !== newSession) {
+          s.classList.add('pushed-down');
+        }
+      });
+      newSession.classList.remove('collapsed', 'pushed-down');
+      newSession.classList.add('expanded');
+      
+      // Update stack indices after expansion
+      let stackIndex = 0;
+      allSessions.forEach(session => {
+        if (session.classList.contains('collapsed')) {
+          session.style.setProperty('--stack-index', stackIndex);
+          stackIndex++;
+        } else {
+          session.style.setProperty('--stack-index', 0);
+        }
+      });
+    }, 100);
+    
     haptic.success();
   }catch(err){
     const message = err?.message||'Unknown error';
@@ -1941,10 +2107,11 @@ function renderAll(){
   store.loadSessions().forEach(s => {
     const wrap = document.createElement("div"); 
     wrap.innerHTML = sessionHTML(s);
-    container.appendChild(wrap);
+    container.appendChild(wrap.firstElementChild);
   });
   attachCopyHandlers(container);
   attachSessionControls(container);
+  setup3DCards();
 }
 
 function bindUI(){
@@ -1987,6 +2154,23 @@ function bindUI(){
     if(e.key==='-' || e.key==='e' || e.key==='E' || e.key==='+') e.preventDefault();
   });
 
+  // Clear field buttons
+  $("#clearTopic").addEventListener("click", () => {
+    $("#topic").value = '';
+    $("#topic").focus();
+    haptic.light();
+  });
+  $("#clearFormat").addEventListener("click", () => {
+    $("#format").value = '';
+    $("#format").focus();
+    haptic.light();
+  });
+  $("#clearAudience").addEventListener("click", () => {
+    $("#audience").value = '';
+    $("#audience").focus();
+    haptic.light();
+  });
+
   // Main button with ripple effect
   const sendBtn = $("#send");
   sendBtn.addEventListener("click", (e) => {
@@ -2013,31 +2197,6 @@ function bindUI(){
     }
   });
   $("#clear-history").addEventListener("touchstart", () => haptic.light());
-
-  // Copy all buttons
-  $("#copy-all-titles").addEventListener("click", ()=>{
-    const items = [...document.querySelectorAll('.txt[data-kind="title"]')].map(n=> n.textContent.trim()).filter(Boolean).join("\n");
-    navigator.clipboard.writeText(items).then(()=> {
-      toast("copied");
-      haptic.success();
-    }).catch(()=> {
-      toast("copyFailed");
-      haptic.error();
-    });
-  });
-  $("#copy-all-titles").addEventListener("touchstart", () => haptic.light());
-  
-  $("#copy-all-thumbs").addEventListener("click", ()=>{
-    const items = [...document.querySelectorAll('.txt[data-kind="thumb"]')].map(n=> n.textContent.trim()).filter(Boolean).join("\n");
-    navigator.clipboard.writeText(items).then(()=> {
-      toast("copied");
-      haptic.success();
-    }).catch(()=> {
-      toast("copyFailed");
-      haptic.error();
-    });
-  });
-  $("#copy-all-thumbs").addEventListener("touchstart", () => haptic.light());
 
   // Checkbox ripple effects
   ["#checkTitles", "#checkThumbs"].forEach(id => {
