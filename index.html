@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>TitleCraft — Premium CTR Titles & Thumbnails</title>
+  <title>TITLE CRAFT — by Genial Design</title>
   <meta name="color-scheme" content="dark light" />
   <style>
     :root{
       --bg:#0b0d12; --panel:#101522e6; --card:#0e1423cc;
       --muted:#9aa7bd; --text:#e8edf6; --text-weak:#c7d0dd;
       --brand:#86a0ff; --brand-2:#6ee7ff; --ok:#67f3a2; --warn:#ffb85c; --err:#ff6b6b;
+      --gold:#ffd76a; --gold2:#ffefb0;
       --glass: blur(10px) saturate(120%); --r-lg:16px; --r-sm:12px; --gap:16px; --tap:44px;
       --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
       --focus: 0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent);
@@ -24,12 +25,43 @@
       color:var(--text); font:500 16px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "SF Pro Text", Arial;
       overflow-x:hidden;
     }
+
+    /* ===== PAGE LOADER ===== */
+    #pageloader{
+      position:fixed; inset:0; background:
+        radial-gradient(1000px 800px at 50% -10%, #15203a 0%, transparent 60%),
+        radial-gradient(900px 700px at 20% 120%, #0f1730 0%, transparent 60%),
+        #0b0d12;
+      z-index:9999; display:grid; place-items:center;
+      transition: opacity .42s ease, visibility .42s ease;
+    }
+    #pageloader.hidden{ opacity:0; visibility:hidden }
+    .pl-card{ text-align:center }
+    .pl-logo{
+      width:68px; height:68px; border-radius:16px; object-fit:cover;
+      box-shadow:0 10px 30px rgba(124,147,255,.45), 0 0 24px rgba(110,231,255,.25);
+      border:1px solid rgba(255,255,255,.15);
+      animation: plGlow 1.6s ease-in-out infinite alternate;
+    }
+    @keyframes plGlow{ from{ filter: drop-shadow(0 0 0 rgba(134,160,255,.0)) } to{ filter: drop-shadow(0 0 16px rgba(134,160,255,.45)) } }
+    .pl-bar{
+      margin-top:16px; width:240px; height:6px; border-radius:999px; background:#10182b; overflow:hidden; border:1px solid #22345a;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 6px 18px rgba(0,0,0,.25)
+    }
+    .pl-bar > span{
+      display:block; height:100%; width:0%; background:linear-gradient(90deg,#6ee7ff,#86a0ff,#6ee7ff);
+      animation: loadline 1.84s ease forwards; box-shadow:0 0 16px rgba(110,231,255,.35)
+    }
+    @keyframes loadline{ 0%{width:0%} 60%{width:82%} 100%{width:100%} }
+
     .app{ max-width:1180px; margin-inline:auto; padding:18px 14px 24px; }
     header{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
-    .brand{ display:flex; align-items:center; gap:10px; }
-    .brand .logo{ width:36px; height:36px; border-radius:10px; display:block; object-fit:cover; background:none; box-shadow:0 8px 22px rgba(124,147,255,.35); border:1px solid rgba(255,255,255,.12) }
-    h1{ margin:0; font-size: clamp(18px, 4.5vw, 22px); font-weight:800 }
-    .status{ color:var(--muted); font-size:12px }
+    .brand{ display:flex; align-items:center; gap:12px; }
+    .brand .logo{ width:40px; height:40px; border-radius:10px; display:block; object-fit:cover; background:none; box-shadow:0 8px 22px rgba(124,147,255,.35); border:1px solid rgba(255,255,255,.12) }
+    .brand h1{ margin:0; font-size: clamp(22px, 5vw, 26px); font-weight:900; letter-spacing:1px }
+    .brand h1 .main{ display:block; letter-spacing:1.2px }
+    .brand h1 .sub{ display:block; font-size:12px; font-weight:800; letter-spacing:.4px; color:var(--muted); margin-top:2px }
+    .brand .main{ text-transform:uppercase }
 
     .grid{ display:grid; grid-template-columns: 1fr; gap: var(--gap); }
     @media (min-width: 960px){ .grid{ grid-template-columns: 360px 1fr; } }
@@ -40,98 +72,163 @@
     .cards{ display:flex; flex-direction:column; gap:12px }
     .card{ background: var(--card); border:1px solid rgba(255,255,255,.08); border-radius: var(--r-sm); padding:12px; }
     .card h3{ margin:0 0 8px; font-size:12px; letter-spacing:.3px; color:var(--text-weak); font-weight:800; text-transform:uppercase }
-    .field{ display:flex; align-items:center; gap:8px; background:#0f1526; border:1px solid #1f2a44; border-radius:12px; padding:12px; }
+    .field{ display:flex; align-items:center; gap:8px; background:#0f1526; border:1px solid #1f2a44; border-radius:12px; padding:12px; transition: box-shadow .25s ease }
     textarea,input{ all:unset; color:var(--text); font:inherit; width:100%; caret-color: var(--brand); }
     .field:focus-within{ box-shadow: var(--focus) }
 
-    /* Controls */
     .controls{ display:grid; grid-template-columns: 1fr; gap:10px; }
     .ctrl{ background:#0f1526; border:1px solid #1f2a44; border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:space-between; gap:8px }
     .ctrl label{ font-size:13px; color:var(--text-weak) }
-    .ctrl input[type="number"]{ all:unset; width:64px; text-align:center; background:#0b1221; border:1px solid #1b2847; border-radius:10px; padding:6px 8px }
+    .ctrl input[type="number"]{ all:unset; width:72px; text-align:center; background:#0b1221; border:1px solid #1b2847; border-radius:10px; padding:8px 10px; font-weight:800 }
+    .ctrl input[type="number"]:invalid{ outline:2px solid #ff8a8a }
 
-    /* Explicit, noticeable checkboxes */
     .checks{ display:flex; gap:10px; flex-wrap:wrap }
     .check{
       display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:14px;
-      background:#0f1526; border:2px solid #253456; transition:.2s ease;
-      min-height:48px; user-select:none;
+      background:#0f1526; border:2px solid #253456; transition:.25s ease;
+      min-height:48px; user-select:none; position:relative; overflow:hidden;
     }
     .check input{ width:20px; height:20px; accent-color: var(--brand); }
     .check .tag{ font-weight:800; letter-spacing:.3px }
     .check .state{
       font-size:11px; padding:4px 8px; border-radius:999px; background:#1a2240; border:1px solid #2a3a5f; color:#cfe3ff
     }
-    /* Highlight when checked */
     .check:has(input:checked){
       background: linear-gradient(180deg, rgba(134,160,255,.12), rgba(110,231,255,.08));
-      border-color: color-mix(in srgb, var(--brand) 60%, #253456);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, transparent);
+      border-color: color-mix(in srgb, var(--ok) 50%, #253456);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 22%, transparent);
     }
-    .check:has(input:checked) .state{ background:linear-gradient(90deg,#86a0ff33,#6ee7ff33); border-color:#3a4f87; color:#eaf2ff }
+    .check:has(input:not(:checked)){
+      border-color: color-mix(in srgb, var(--err) 35%, #253456);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--err) 18%, transparent);
+    }
     .check:has(input:not(:checked)) .state::before{ content:"OFF" }
     .check:has(input:checked) .state::before{ content:"ON" }
 
     .btn{
-      --h: 48px; display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      --h: 52px; display:inline-flex; align-items:center; justify-content:center; gap:10px;
       height:var(--h); width:100%; border-radius: calc(var(--h)/2);
       border:1px solid rgba(255,255,255,.09); color:#0a0d14; font-weight:900; letter-spacing:.3px;
-      background: linear-gradient(180deg, #c9d0ff, #86a0ff 65%, #6ee7ff 100%);
-      box-shadow: 0 10px 30px rgba(124,147,255,.35), inset 0 1px 0 rgba(255,255,255,.7);
-      cursor:pointer; user-select:none; transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+      background: radial-gradient(120% 180% at 50% 0%, #c9d0ff, #86a0ff 55%, #6ee7ff 100%);
+      box-shadow: 0 10px 34px rgba(124,147,255,.45), inset 0 1px 0 rgba(255,255,255,.75), 0 0 24px rgba(110,231,255,.25);
+      cursor:pointer; user-select:none; position:relative; overflow:hidden;
+      transition: transform .15s ease, box-shadow .25s ease, filter .2s ease;
     }
-    .btn:hover{ transform: translateY(-1px) } .btn:active{ transform: translateY(0) scale(.98) } .btn[aria-busy="true"]{ filter:saturate(.7); cursor:progress }
-    .spinner{ width:16px; height:16px; border-radius:50%; border:2.5px solid rgba(0,0,0,.2); border-top-color:#0a0d14; animation:spin 1s linear infinite }
-    @keyframes spin{ to{ transform:rotate(360deg) } }
+    .btn:hover{ transform: translateY(-1px) } .btn:active{ transform: translateY(0) scale(.98) }
+    .btn .spark{ width:18px; height:18px; fill:#0a0d14; filter: drop-shadow(0 0 3px rgba(255,255,255,.65)) }
+    .btn .btn-text{ display:inline-flex; align-items:center; gap:4px }
+    .dots{ display:inline-block; width:24px; text-align:left }
+    .dots::after{ content:""; display:inline-block; width:1ch; animation: dots 1.2s steps(3,end) infinite }
+    @keyframes dots{ 0%{content:""} 33%{content:"."} 66%{content:".."} 100%{content:"..."} }
 
-    /* Results */
-    .session{ padding:12px; border:1px solid rgba(255,255,255,.08); border-radius:14px; background:linear-gradient(180deg, #0f1420b8, #0b0f1ab8); margin-bottom:12px; }
-    .audience{ color:var(--text); background:#0f1522; border:1px solid #1e2a42; border-radius:12px; padding:12px; margin:6px 0 12px; font-size:14px }
+    .session{
+      padding:0; border:1px solid rgba(255,255,255,.10); border-radius:16px;
+      background:linear-gradient(180deg, #0f1420cc, #0b0f1acc);
+      margin:18px 0; box-shadow: 0 14px 28px rgba(0,0,0,.35); overflow:hidden;
+      transition: box-shadow .25s ease, transform .15s ease;
+    }
+    .session-head{
+      display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:8px;
+      background:linear-gradient(180deg,#0e1423,#0b1020);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .iconbtn{
+      width:34px; height:34px; border-radius:10px; display:grid; place-items:center;
+      background:#0d1526; border:1px solid #223456; color:#cfe3ff; cursor:pointer;
+      transition:.2s ease; user-select:none;
+    }
+    .iconbtn:hover{ transform: translateY(-1px) }
+    .iconbtn:active{ transform: translateY(0) scale(.98) }
+    .iconbtn svg{ width:16px; height:16px; fill:#cfe3ff }
+
+    .audience{
+      color:var(--text); background:linear-gradient(180deg,#0f1528,#0c1222);
+      border-radius:14px; padding:12px; margin:12px; font-size:14px; position:relative;
+      border:1px solid #2a3a5f; box-shadow: 0 0 0 3px rgba(134,160,255,.10);
+    }
+    .audience::before{
+      content:"Audience Profile"; position:absolute; top:-10px; left:12px; font-size:11px; padding:4px 8px; border-radius:999px;
+      background:linear-gradient(90deg,#86a0ff33,#6ee7ff33); color:#eaf2ff; border:1px solid #3a4f87; font-weight:900; letter-spacing:.3px
+    }
+
+    .list{ display:flex; flex-direction:column; gap:12px; padding:0 12px 12px 12px }
+    .session.collapsed .audience, .session.collapsed .list{
+      max-height:0; opacity:0; overflow:hidden; padding-top:0; padding-bottom:0; margin:0 12px; border-width:0;
+      transition: max-height .35s ease, opacity .25s ease, padding .35s ease, margin .35s ease, border-width .35s ease;
+    }
+    .session:not(.collapsed) .audience, .session:not(.collapsed) .list{
+      transition: max-height .45s ease, opacity .35s ease, padding .45s ease, margin .45s ease;
+    }
+
+    .row{
+      position:relative; display:block;
+      background:#0b1221; border:1px solid #1b2847; border-radius:14px; padding:14px 12px 12px 12px;
+      transition:.2s ease; box-shadow: 0 6px 14px rgba(0,0,0,.25);
+    }
+    .row.top{
+      border-color: transparent;
+      background-image:
+        linear-gradient(#0b1221,#0b1221),
+        radial-gradient(150px 60px at 18px 18px, #ffe38d70, transparent 60%),
+        linear-gradient(120deg, #ffec9a, #ffd86a);
+      background-origin: padding-box, border-box, border-box; background-clip: padding-box, padding-box, border-box;
+      box-shadow: 0 0 0 4px rgba(255,231,150,.20), 0 10px 28px rgba(255,231,150,.12);
+    }
+    .badge{
+      position:absolute; top:8px; left:8px;
+      min-width:28px; height:28px; border-radius:8px; display:grid; place-items:center;
+      font-weight:900; color:#cfe3ff; background:linear-gradient(180deg,#233153,#121b2f); border:1px solid #2a3a5f;
+      box-shadow:0 4px 10px rgba(0,0,0,.25)
+    }
+    .star{ position:absolute; top:8px; left:42px; font-size:14px; color:#ffd76a; }
+
+    .pair{ display:flex; flex-direction:column; gap:10px; margin-top:16px }
+    .line{ display:grid; grid-template-columns: 1fr; gap:6px; padding:8px 10px; border-radius:12px; background:#0e172a; border:1px dashed #203156 }
+    .label{ font-size:12px; color:#a9b7d0; letter-spacing:.2px; font-weight:800 }
+    .txt{
+      color:var(--text); word-break:break-word; font-size:15px; line-height:1.45;
+      cursor:pointer; border-radius:10px; padding:6px 8px; position:relative; outline:none;
+      background: linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,.08), rgba(255,255,255,.03));
+      background-size: 200% 100%; animation: shimmer 3.2s linear infinite;
+      transition: box-shadow .25s ease, transform .05s ease;
+    }
+    .txt:active{ transform: scale(.98) }
+
     .tools{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin:6px 0 10px }
     .chip{ height:36px; padding:0 12px; border-radius:12px; background:#0e1627; border:1px solid #2a3a5f; color:#d6e4ff; font-weight:800; cursor:pointer }
     .chip.danger{ border-color:#5f2a2a; background:#1a0f12; color:#ffc7c7 }
     .chip:active{ transform: translateY(1px) }
 
-    .list{ display:flex; flex-direction:column; gap:10px }
-    .row{ position:relative; display:grid; grid-template-columns: auto 1fr auto; gap:10px; align-items:start; background:#0b1221; border:1px solid #1b2847; border-radius:12px; padding:10px; }
-    .row.top{ border-color:transparent; background-image:
-      linear-gradient(#0b1221,#0b1221),
-      radial-gradient(120px 50px at 12px 12px, #98aaff80, transparent 60%),
-      linear-gradient(120deg, #8ea2ff, #6ee7ff);
-      background-origin: padding-box, border-box, border-box; background-clip: padding-box, padding-box, border-box;
-      box-shadow: 0 0 0 4px rgba(124,147,255,.10);
-    }
-    .num{ display:flex; align-items:center; gap:8px; }
-    .badge{ min-width:32px; height:32px; border-radius:10px; display:grid; place-items:center; font-weight:900; color:#cfe3ff; background:linear-gradient(180deg,#233153,#121b2f); border:1px solid #2a3a5f }
-    .star{ font-size:14px; color:#ffd76a; margin-left:2px }
-
-    .pair{ display:flex; flex-direction:column; gap:8px }
-    .line{ display:grid; grid-template-columns: auto 1fr; align-items:start; gap:8px; padding:6px 8px; border-radius:10px; background:#0e172a; border:1px dashed #203156 }
-    .label{ font-size:12px; color:#a9b7d0; letter-spacing:.2px; align-self:center }
-    .txt{ color:var(--text); word-break:break-word; font-size:15px }
-
-    .actions{ display:flex; align-items:center; justify-content:flex-end; gap:8px }
-    .copy{ min-width:var(--tap); height:var(--tap); display:grid; place-items:center; border-radius:10px; border:1px solid #2a3a5f; background:#0e1627; cursor:pointer }
-    .copy svg{ width:18px; height:18px; fill:#cfe3ff }
-    .copy:active{ transform: translateY(1px) }
-
-    .toast{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(16px); background:linear-gradient(90deg,#20df92,#6ee7ff); color:#03141a; font-weight:900; font-size:12px; padding:10px 14px; border-radius:999px; box-shadow:0 10px 24px rgba(110,231,255,.25); opacity:0; pointer-events:none }
+    .toast{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(16px); background:linear-gradient(90deg,#20df92,#6ee7ff); color:#03141a; font-weight:900; font-size:12px; padding:10px 14px; border-radius:999px; box-shadow: 0 10px 24px rgba(110,231,255,.25); opacity:0; pointer-events:none; z-index:9999 }
     .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); transition:.25s ease }
 
-    .skeleton{ border:1px dashed #263a6b; background:#0b1020; border-radius:12px; padding:12px }
-    .pulse{ height:12px; margin:8px 0; border-radius:6px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05)); background-size:200% 100%; animation: shimmer 1.2s linear infinite }
-    @keyframes spin{ to{ transform:rotate(360deg) } } @keyframes shimmer{ to{ background-position:-200% 0 } }
+    .skeleton{ border:1px dashed #263a6b; background:#0b1020; border-radius:12px; padding:12px; position:relative }
+    .pulse{ height:12px; margin:8px 0; border-radius:6px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05)); background-size:200% 100%; animation: shimmerQuick 1.1s linear infinite }
+    .sk-close{ position:absolute; right:8px; top:8px }
+    .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; clip-path: inset(50%) }
     :focus-visible{ outline: 3px solid color-mix(in srgb, var(--brand) 50%, transparent); outline-offset:2px }
+    @keyframes shimmer{ to{ background-position:-200% 0 } }
+    @keyframes shimmerQuick{ to{ background-position:-200% 0 } }
   </style>
 </head>
 <body>
-  <div class="app">
+  <!-- Loader -->
+  <div id="pageloader" role="status" aria-live="polite" aria-label="Loading">
+    <div class="pl-card">
+      <img class="pl-logo" src="https://i.imgur.com/Q7CqyWC.jpeg" alt="TITLE CRAFT logo" width="68" height="68" />
+      <div class="pl-bar"><span></span></div>
+    </div>
+  </div>
+
+  <div class="app" aria-hidden="true" id="appRoot">
     <header>
       <div class="brand">
-        <img class="logo" src="https://i.imgur.com/Q7CqyWC.jpeg" alt="TitleCraft logo" width="36" height="36" decoding="async" loading="lazy" />
-        <h1>TitleCraft</h1>
+        <img class="logo" src="https://i.imgur.com/Q7CqyWC.jpeg" alt="TITLE CRAFT logo" width="40" height="40" decoding="async" loading="lazy" />
+        <h1>
+          <span class="main">TITLE CRAFT</span>
+          <span class="sub">by Genial Design</span>
+        </h1>
       </div>
-      <div id="status" class="status" role="status" aria-live="polite">Ready</div>
     </header>
 
     <div class="grid">
@@ -140,7 +237,7 @@
         <div class="cards">
           <div class="card">
             <h3>Video topic <span class="req" aria-hidden="true">*</span></h3>
-            <div class="field"><textarea id="topic" rows="3" placeholder="What’s the video about?" aria-required="true"></textarea></div>
+            <div class="field"><textarea id="topic" rows="3" placeholder="What's the video about?" aria-required="true"></textarea></div>
           </div>
           <div class="card">
             <h3>Format (optional)</h3>
@@ -167,15 +264,23 @@
             </div>
             <div class="controls" style="margin-top:10px">
               <div class="ctrl">
-                <label for="count">Count (1–15)</label>
-                <input type="number" id="count" min="1" max="15" value="10" inputmode="numeric" />
+                <label for="count">Count (5–15)</label>
+                <input 
+  type="number" 
+  id="count" 
+  min="5" 
+  max="15" 
+  value="10" 
+  inputmode="numeric"
+  onblur="this.value = Math.min(15, Math.max(5, this.value || 5));"
+/>
               </div>
             </div>
           </div>
 
           <button id="send" class="btn" aria-busy="false">
             <svg class="spark" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2l1.8 4.6L18 8l-4.2 1.4L12 14l-1.8-4.6L6 8l4.2-1.4L12 2z"/></svg>
-            <span>Send</span>
+            <span class="btn-text">Send</span>
           </button>
         </div>
       </section>
@@ -183,9 +288,9 @@
       <section class="panel results" aria-labelledby="results-title">
         <h2 id="results-title" class="sr-only">Results</h2>
         <div class="tools">
-          <button class="chip danger" id="clear-history" title="Clear all generations" aria-label="Clear all generations">🗑 Clear history</button>
-          <button class="chip" id="copy-all-titles" title="Copy all titles">⧉ Copy all titles</button>
-          <button class="chip" id="copy-all-thumbs" title="Copy all thumbnail texts">⧉ Copy all thumbnails</button>
+          <button class="chip danger" id="clear-history">🗑 Clear history</button>
+          <button class="chip" id="copy-all-titles">⧉ Copy all titles</button>
+          <button class="chip" id="copy-all-thumbs">⧉ Copy all thumbnails</button>
         </div>
         <div id="stream"></div>
       </section>
@@ -195,47 +300,314 @@
   <div id="toast" class="toast" aria-hidden="true">Copied</div>
 
 <script>
-/* ================= CONFIG (HQ always on) ================= */
+/* ================= CONFIG ================= */
 const API_KEY = "AIzaSyDkowFTxiuya3AKjX4yaoA4XaTEK13OXx8";
 const MODEL   = "gemini-2.5-pro";
 const RETRIES = 5;
-const BASE_DELAY = 800; // ms
+const BASE_DELAY = 800;
 
-// HQ config (no toggle)
-const GENCFG_HQ = {
-  temperature: 0.85,
-  topP: 0.92,
-  maxOutputTokens: 65535,
-  responseMimeType: "application/json",
-  responseSchema: responseSchema(),
-  thinkingConfig: { includeThoughts: false, thinkingBudget: 32768 }
-};
+/* ================= ENHANCED SYSTEM PROMPT ================= */
+const SYSTEM_PROMPT = `ROLE & MISSION
+You are an expert in viral YouTube titles & thumbnail texts 🔥 with a finely tuned sense for click psychology (hundreds of A/B tests). Your mission: from the user's topic/context, craft options that skyrocket CTR and hold attention.
 
-/* ================= STORAGE ================= */
-const store = {
-  saveInputs(v){ localStorage.setItem("tc_inputs_v3", JSON.stringify(v)); },
-  loadInputs(){ try{ return JSON.parse(localStorage.getItem("tc_inputs_v3"))||{} }catch{ return {} } },
-  addSession(s){ const all = store.loadSessions(); all.unshift(s); localStorage.setItem("tc_sessions_v3", JSON.stringify(all)); },
-  loadSessions(){ try{ return JSON.parse(localStorage.getItem("tc_sessions_v3"))||[] }catch{ return [] } },
-  clearSessions(){ localStorage.setItem("tc_sessions_v3", JSON.stringify([])); }
-};
+KNOWLEDGE BASE & EXAMPLES (FOR INTERNAL GUIDANCE ONLY — NEVER OUTPUT THIS SECTION)
+• Click Mechanics 🧠
+  - Core triggers: Curiosity / Promised benefit / FOMO / Surprise / Status.
+  - Specificity & novelty: use exact numbers and crisp nouns (e.g., 208% vs 200%; 1,006,513 vs 1,000,000).
+  - Title ↔ Thumbnail pairing: title sets intrigue; thumbnail adds a sharp complementary detail (question→hint or hint→answer) — together they tell a 1-second story.
 
-/* ================= UTILS ================= */
-const $ = s => document.querySelector(s);
-const status = m => { const el = $("#status"); if(el) el.textContent = m };
-const clamp = (n,min,max)=> Math.max(min, Math.min(max, n));
-const clampStr = (s,n)=> (s||"").trim().slice(0,n);
-const MAX_CHARS_TOPIC=800, MAX_CHARS_FORMAT=300, MAX_CHARS_AUDIENCE=300;
-const toast = (msg="Copied")=>{ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=> t.classList.remove("show"), 1100) };
-function escapeForPrompt(s){ return (s||"").replace(/[<>]/g, m => ({'<':'&lt;','>':'&gt;'}[m])) }
-function safeParseJSON(m){ if(!m) return null; try{ return JSON.parse(m) }catch{} const a=m.indexOf("{"), b=m.lastIndexOf("}"); if(a>=0&&b>a){ try{ return JSON.parse(m.slice(a,b+1)) }catch{} } return null }
-function nowStr(){ try{ return new Date().toLocaleString('en-GB', { hour12:false, timeZone:'Europe/London' }); }catch{ return new Date().toLocaleString(); } }
-function joinParts(parts){ return (parts||[]).map(p=> p.text).filter(Boolean).join("") }
-function truncate(s,n){ return s && s.length>n ? s.slice(0,n-1)+'…' : (s||"") }
+• Emotional Hooks by Niche 🎯 (pick 1–2 per brief)
+  - Education/History: surprise, "unknown", myth vs truth ("Unknown fact…", "Myth or truth: …").
+  - Cooking: appetite + shock-experiment ("What happens if you eat fast food for a month?").
+  - DIY/Handmade: transformation/achievement under time or budget ("Pallet table built in 1 day!").
+  - Entertainment/Vlogs: shock, humor ("Cat's reaction to a cucumber?!").
+  - Technology/Reviews: novelty, FOMO ("iPhone 15 vs S25: is it worth switching?").
+  - Travel: secret spots, cheap hacks, risk/adventure ("Secret spots in … only locals know").
+  - Gaming: challenge/records/easter eggs/meta ("TOP 10 hidden levels in …").
 
-/* ================= PROMPT (system/user split) ================= */
-const SYSTEM_PROMPT = `You are a YouTube title & thumbnail copywriter focused on CTR. Return concise, high-impact options. Never reveal chain-of-thought. Avoid clickbait lies; promise real, specific value. Follow strict per-item limits: Title <= 100 chars; Thumbnail Text <= 50 chars (1–5 words, NO colons). Produce exactly the components and number of options specified by the user. If Top picks are requested, include only indexes (and rationales only if explicitly requested).`;
+• Thumbnail Text — Best Practices 🖼️
+  - 1–5 words, ≤50 chars, NO colons ":". 1–2 words in ALL CAPS allowed.
+  - Use numbers, a question mark (?), exclamation (!), or ellipsis (…) when natural.
+  - Power words ok ("SECRET", "SHOCK", "FREE", "TOP"), but keep it true.
+  - Must NOT repeat or paraphrase the title; avoid >70% word overlap; add a complementary hook.
 
+• Title Techniques & Templates (as inspiration only — DO NOT output these headings)
+  - Lists (Top-lists): "7 facts about…", "Top 10 …"
+  - How-to: "How to … in …"
+  - Why…? / What if…? / Mistakes / VS / Personal Experience / Trend / Urgency
+  - Before/After; "The whole truth about …"; "You're losing X by not doing Y (FOMO)"
+  - Niche examples you can adapt (do NOT copy verbatim):
+    • History/Documentary: "Unknown story of [event/person]", "How [event] changed the world"
+    • Food/Cooking: "Recipe for [dish] in 5 minutes", "10 mistakes you're making when cooking [dish]"
+    • DIY/Handmade: "How to make [item] from [material]", "Before/After: [upcycled item]"
+    • Kids/Parenting: "5 ways to calm a child in a minute", "TOP 7 games for [age]"
+    • Tech/Reviews: "Review of the new [gadget] — revolution or flop?", "Comparison: [A] vs [B]"
+    • Travel: "Secret spots in [city/country]", "How to travel [country] on $100/week"
+    • Gaming: "[Game]: max-difficulty run (my experience)", "New record in [game]: how I did it"
+	
+	
+	
+	
+	Database:
+
+1. Click Mechanics
+   Psychological triggers: curiosity, promised benefit, fear of missing out (FOMO). The title must instantly answer "what will I get by clicking?" or challenge the imagination
+
+Specificity and novelty: use EXACT numbers, facts, and power words ("secret", "shock", "NEW") for a precise promise. For example, always write 208% instead of 200%, or 1,006,513 instead of 1,000,000, etc.
+
+Title + thumbnail text pairing: the title creates intrigue, and the thumbnail provides a detail (question → hint at the answer, or vice versa)—together they tell a story in a second
+
+2. Emotional Hooks by Niche
+
+Choose 1–2 key emotions for your audience:
+
+Education/History: surprise, intellectual curiosity ("Unknown fact…")
+
+Cooking: appetite, shock-experiment ("What happens if you eat fast food for a month?")
+
+DIY/Handmade: inspiration, sense of accomplishment ("Pallet table built in 1 day!")
+
+Entertainment/Vlogs: shock, humor ("Cat's reaction to a cucumber?!")
+
+Technology/Reviews: novelty, FOMO ("iPhone 15 vs S25: is it worth switching?")
+
+3. Top Elements of Thumbnail Text
+
+Numbers and lists: promise structure and value ("10 facts").
+Question mark: creates mystery and engages ("What if…?").
+Exclamation: adds energy and urgency ("URGENT!")
+Ellipsis: the unfinished thought keeps the tension ("He opened the door and…")
+Power words: "secret", "shock", "free", "TOP" etc.
+Untold conflicts: semi-transparent sensations ("No one knew…")
+Special characters/emojis: gently add emotion and contrast (👉, 🔥)
+
+4. Top Title Techniques
+
+Use proven formulas:
+
+Lists (Top-lists)
+"7 facts about…" — promises a clear number of takeaways.
+Example: "7 facts about health that are hard to believe."
+
+How-to (Instruction)
+"How to do X" — guarantees practical benefit.
+Example: "How to learn 100 words in a day."
+
+"Why…?" (Explanation of the reason)
+A question promising an analysis of motivation or mechanics.
+Example: "Why does popcorn pop?"
+
+Curiosity Gap
+A hint at a secret, part of the information is hidden.
+Example: "What teachers don't want you to know in schools…"
+
+Mistakes/Negation
+A negative list playing on the fear of missing out.
+Example: "7 mistakes new entrepreneurs make."
+
+Shock Theses
+Provocation, an extreme statement.
+Example: "Is my diet killing me?"
+
+Comparisons (X vs Y)
+Promises comparison and analysis.
+Example: "iPhone 15 vs Galaxy S25: is it worth switching?"
+
+Personal Experience
+A first-person story that creates a connection.
+Example: "I lived like a millionaire for a week — here's what happened."
+
+Trend/Urgency
+Relevance, emphasis on "now".
+Example: "Top gadgets of 2025."
+
+Call to Action
+Interactive, a challenge to the audience.
+Example: "Can you survive on \$10 a week? We tried."
+
+The whole truth about… / Secret…
+Revealing the hidden.
+Example: "The whole truth about working from home."
+
+What if…? (What-if/Scenario experiment)
+Curiosity about the experiment's outcome.
+Example: "What happens if you don't sleep for a month?"
+
+\[Number] best \[items]
+A curated list with ratings.
+Example: "10 best apps for language learning."
+
+\[Situation]: before and after
+Visualization of transformation.
+Example: "House before and after renovation: unrecognizable!"
+
+Legendary \[item] with your own eyes
+An invitation to "experience" it.
+Example: "Chernobyl today: through my eyes."
+
+\[Question] that will change your…
+Promises deep insight.
+Example: "Will this question change your view on money?"
+
+You're losing \[X] by not doing \[Y] (FOMO formula)
+Fear of missing out on a benefit.
+Example: "You're losing money by not investing in cryptocurrency."
+
+5. Flexible Template Base
+
+Universal headline templates
+How to \[achieve X] in \[Y]
+Example: "How to learn 100 words in a day."
+
+\[Number] ways/secrets/mistakes \[topic]
+Example: "7 secrets of a successful YouTube channel."
+
+I tried \[X] and here's what happened
+Example: "I lived without a smartphone for a week, and here's what happened."
+
+\[X] vs \[Y]
+Example: "iPhone 15 Pro Max vs Galaxy S25 Ultra: which to choose?"
+
+Before/After \[something]
+Example: "My room before and after \$100 renovation."
+
+The whole truth about… / Secret…
+Example: "The whole truth about working from home."
+
+What if…? (What-if experiment)
+Example: "What happens if you don't sleep for a month?"
+
+Why \[phenomenon]?
+Example: "Why does popcorn pop?"
+
+\[Number] best \[items] for \[purpose]
+Example: "10 best apps for language learning."
+
+\[Number] mistakes that…
+Example: "7 mistakes new entrepreneurs make."
+
+\[I/We] \[extreme action], and here's what happened
+Example: "I lived like a millionaire for a week — here's what happened."
+
+\[Situation]: before and after
+Example: "House before and after renovation: unrecognizable!"
+
+Legendary \[item] with your own eyes
+Example: "Chernobyl today: through my eyes."
+
+Shocking truth about \[topic]
+Example: "The shocking truth about fast food that they're hiding from you."
+
+You're losing \[X] by not doing \[Y] (FOMO)
+Example: "You're losing money by not investing in cryptocurrency."
+
+\[Question] that will change your \[perspective/life]
+Example: "Will this question change your view on money?"
+
+Niche templates (examples for different topics)
+History / Documentary
+"Unknown story of \[event/person]"
+"How \[historical event] changed the world"
+"Myth or truth: \[fact]"
+"Top 5 historical mysteries that remain unsolved"
+
+Food / Cooking
+"Recipe for \[dish] in 5 minutes"
+"\[Dish] like grandma's: step-by-step recipe"
+"10 mistakes you're making when cooking \[dish]"
+"I only ate \[ingredient] for a week — experiment"
+
+DIY / Handmade
+"How to make \[item] from \[material] with your own hands"
+"Home hacks: \[X] ideas for pennies"
+"Before/After: \[upcycled item] (amazing result)"
+"Masterclass: \[making something] step by step"
+
+Kids / Parenting
+"5 ways to calm a child in a minute"
+"How to teach a child \[habit] without tears"
+"TOP 7 developmental games for children \[age]"
+"Parenting mistakes that almost all parents make"
+
+Technology / Reviews
+"Review of the new \[gadget] — revolution or flop?"
+"Comparison: \[Gadget A] vs \[Gadget B] — which to choose?"
+"How I spent a day with \[gadget] instead of a phone"
+"TOP 5 hidden features of \[app/service]"
+
+Travel
+"Secret spots in \[city/country] that only locals know"
+"How to travel around \[country] on \$100 a week"
+"Dangerous adventures: a night in the \[place] jungle"
+"10 tourist mistakes that ruin your trips"
+
+Gaming
+"\[Game]: playthrough on maximum difficulty (my experience)"
+"TOP 10 hidden levels/easter eggs in \[game]"
+"New record in \[game]: how I managed it"
+"Best character in \[game]? Comparing all heroes"
+
+These are just examples; just look at them to understand the concept, but don't copy them blindly—be sure to change and adapt them to the user's topic.
+
+
+• Presentation tweaks (when natural) ✨
+  - In titles, you may use light emojis/special characters for scan-ability; avoid clutter.
+  - Front-load the hook in ~first 40 chars; maximize meaning per word; avoid fluff/clichés.
+
+METHODOLOGY (INTERNAL ONLY — NEVER OUTPUT)
+• Selection logic ("Chain of Thought"): silently reason about styles best for the niche/audience.
+• Chain of Verification: for each candidate, check —
+  1) strong emotion/curiosity?  2) instant clarity at scroll speed?  3) impulse to click?
+• Target Quality Parameters:
+  - Clickability: 15/10
+  - Info-structure & clarity: 10/10
+  - Unconventionality & creativity: 10/11
+
+VARIATION COVERAGE (WHEN TOPIC ALLOWS)
+Across N options include a healthy mix: How-to, Lists/Numbered, Curiosity Gap, VS/Comparison, Personal, Mistakes, Trend/Urgency. Ensure low semantic overlap.
+
+LANGUAGE
+Match the user's input language 1:1 (tone and locale). If unclear, default to the user's current language.
+
+==== HARD CONSTRAINTS & OUTPUT CONTRACT (MUST OBEY) ====
+1) STRICT JSON ONLY — NO MARKDOWN, NO LISTS, NO COMMENTARY, NO CHAIN-OF-THOUGHT.
+   Return exactly ONE JSON object that matches the runtime responseSchema with fields:
+   {
+     "audienceProfile": "STRING (3–6 concise, merit-focused sentences)",
+     "options": [{"title":"STRING","thumbnailText":"STRING"}],
+     "topPicks": [{"index":INTEGER},{"index":INTEGER}]
+   }
+
+2) COUNT
+   - Return exactly N options (N is provided externally in the user block). Do not exceed or fall short.
+
+3) TITLES
+   - ≤100 chars; strongest hook in ~first 40 chars; specific power words; truthful (no fake facts).
+
+4) THUMBNAIL TEXTS
+   - 1–5 words, ≤50 chars, NO colons ":".
+   - 1–2 words in ALL CAPS permitted.
+   - Must NOT repeat or paraphrase the title; avoid >70% word overlap; provide a complementary hint.
+
+5) FIELDS — DO NOT ADD ANY OTHERS
+   - Do NOT include "style", "triggers", "synergy", "rationale", or any extra keys not in the schema.
+   - If the user asked for Titles-only or Thumbnails-only, still keep both keys in each option; set the unused one to "".
+
+6) TOP PICKS
+   - Exactly two unique 1-based indexes into the options array (numbers only, no rationales).
+
+7) RELIABILITY GUARD
+   - Start your output with "{" and end with "}". No preface/appendix.
+   - If you are about to output any extra text or fields, delete them and emit only valid JSON per schema.
+
+RESOLUTION RULES
+- On conflict, the schema and HARD CONSTRAINTS override everything else.
+- Tease without deception; protect trust; mobile scan-ability first.
+
+FINAL REMINDER
+Output ONLY the JSON object conforming to responseSchema — nothing else.`;
+
+/* ================= USER PROMPT BUILDER ================= */
 function buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count}){
   const comp =
     wantTitles && wantThumbs ? "Titles & Thumbnail texts" :
@@ -245,13 +617,14 @@ function buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count}
     `VIDEO TOPIC: ${escapeForPrompt(topic)}`,
     `FORMAT: ${escapeForPrompt(format || "(not specified)")}`,
     `TARGET AUDIENCE: ${escapeForPrompt(audience || "(not specified)")}`,
-    `LANGUAGE: auto-detect (fallback: English)`,
+    `LANGUAGE: auto-detect from topic (fallback: English)`,
     `REQUESTED COMPONENTS: ${comp}`,
-    `NUMBER OF VARIANTS: ${count} (between 1 and 15)`,
-    `OUTPUT SPEC:
-• Audience Profile (3–6 sentences; concrete, merit-oriented).
-• Options: produce exactly the requested number with only the requested components.
-• Style: click-worthy, clear benefits, avoid clickbait lies.`
+    `NUMBER OF VARIANTS: ${count}`,
+    `OUTPUT REQUIREMENTS:
+• Return exactly ${count} options with the requested components
+• Include Audience Profile (3-6 sentences about the target viewers)
+• Include Top Picks (2 best options by index)
+• Follow all title and thumbnail text constraints from system instructions`
   ];
   return lines.join("\n");
 }
@@ -268,7 +641,8 @@ function responseSchema(){
           properties: {
             title: { type: "STRING" },
             thumbnailText: { type: "STRING" }
-          }
+          },
+          required: ["title", "thumbnailText"]
         }
       },
       topPicks: {
@@ -276,17 +650,66 @@ function responseSchema(){
         items: {
           type: "OBJECT",
           properties: {
-            index: { type: "INTEGER" },
-            rationale: { type: "STRING" }
-          }
+            index: { type: "INTEGER" }
+          },
+          required: ["index"]
         }
       }
     },
-    required: ["audienceProfile","options"]
+    required: ["audienceProfile","options","topPicks"]
   };
 }
 
-/* ================= API with retry/backoff ================= */
+const GENCFG_HQ = {
+  temperature: 0.85,
+  topP: 0.92,
+  maxOutputTokens: 65535,
+  responseMimeType: "application/json",
+  responseSchema: responseSchema(),
+  thinkingConfig: { includeThoughts: false, thinkingBudget: 32768 }
+};
+
+/* ================= STORAGE ================= */
+const store = {
+  saveInputs(v){ localStorage.setItem("tc_inputs_v7", JSON.stringify(v)); },
+  loadInputs(){ try{ return JSON.parse(localStorage.getItem("tc_inputs_v7"))||{} }catch{ return {} } },
+  addSession(s){ const all = store.loadSessions(); all.unshift(s); localStorage.setItem("tc_sessions_v7", JSON.stringify(all)); },
+  loadSessions(){ try{ return JSON.parse(localStorage.getItem("tc_sessions_v7"))||[] }catch{ return [] } },
+  clearSessions(){ localStorage.setItem("tc_sessions_v7", JSON.stringify([])); },
+  deleteSession(id){ const all = store.loadSessions().filter(x => x.id !== id); localStorage.setItem("tc_sessions_v7", JSON.stringify(all)); }
+};
+
+/* ================= UTILS ================= */
+const $ = s => document.querySelector(s);
+const clamp = (n,min,max)=> Math.max(min, Math.min(max, n));
+const clampStr = (s,n)=> (s||"").trim().slice(0,n);
+const MAX_CHARS_TOPIC=800, MAX_CHARS_FORMAT=300, MAX_CHARS_AUDIENCE=300;
+const toast = (msg="Copied")=>{ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=> t.classList.remove("show"), 1200) };
+function escapeForPrompt(s){ return (s||"").replace(/[<>]/g, m => ({'<':'&lt;','>':'&gt;'}[m])) }
+function nowStr(){ try{ return new Date().toLocaleString('en-GB', { hour12:false, timeZone:'Europe/London' }); }catch{ return new Date().toLocaleString(); } }
+function joinParts(parts){ return (parts||[]).map(p=> p.text).filter(Boolean).join("") }
+function truncate(s,n){ return s && s.length>n ? s.slice(0,n-1)+'…' : (s||"") }
+function uid(){ return 's_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7) }
+function safeParseJSON(m){ if(!m) return null; try{ return JSON.parse(m) }catch{} const a=m.indexOf("{"), b=m.lastIndexOf("}"); if(a>=0&&b>a){ try{ return JSON.parse(m.slice(a,b+1)) }catch{} } return null }
+
+/* ================= NORMALIZE OUTPUT ================= */
+function normalizeOutput(o, opts){
+  const { wantTitles, wantThumbs, count } = opts;
+  const options = (o.options||[]).slice(0, count).map(x=> ({
+    title: wantTitles ? (x.title||"").trim().slice(0,100) : "",
+    thumbnailText: wantThumbs ? (x.thumbnailText||"").replace(/:/g,"").trim().slice(0,50) : ""
+  }));
+  while(options.length < count) options.push({ title: wantTitles ? "" : "", thumbnailText: wantThumbs ? "" : "" });
+
+  const tp = Array.isArray(o.topPicks) ? o.topPicks
+              .filter(v => Number.isInteger(v.index))
+              .map(v => ({ index: clamp(parseInt(v.index,10)||1, 1, options.length) }))
+              .slice(0, 2) : [];
+
+  return { audienceProfile: (o.audienceProfile||"").trim(), options, topPicks: tp };
+}
+
+/* ================= NETWORK ================= */
 async function callGemini(payload, tries=RETRIES){
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(API_KEY)}`;
   let lastErr;
@@ -305,27 +728,28 @@ async function callGemini(payload, tries=RETRIES){
 }
 
 /* ================= RENDER ================= */
-function skeletonCard(){
-  const wrap = document.createElement('div');
-  wrap.className = 'session';
-  wrap.innerHTML = `<div class="skeleton"><div class="pulse"></div><div class="pulse"></div><div class="pulse"></div></div>`;
-  return wrap;
-}
-function iconCopy(){ return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' }
-
 function rowHTML(i, opt, topSet, showTitle, showThumb){
   const n = i+1; const isTop = topSet.has(n);
-  const titleHTML = showTitle ? `<div class="line"><div class="label">Title</div><div class="txt" data-kind="title">${opt.title||''}</div></div>` : '';
-  const thumbHTML = showThumb ? `<div class="line"><div class="label">Thumbnail</div><div class="txt" data-kind="thumb">${(opt.thumbnailText||'').replace(/:/g,'')}</div></div>` : '';
-  const copyBtns = `
-    ${showTitle ? `<button class="copy" title="Copy title" aria-label="Copy title" data-copy="title">${iconCopy()}</button>`:''}
-    ${showThumb ? `<button class="copy" title="Copy thumbnail" aria-label="Copy thumbnail" data-copy="thumb">${iconCopy()}</button>`:''}
-  `;
+  const titleVal = opt.title || '';
+  const thumbVal = opt.thumbnailText || '';
+  const titleHTML = showTitle && titleVal ? `
+    <div class="line">
+      <div class="label">Title</div>
+      <div class="txt" data-kind="title" role="button" tabindex="0" title="Click to copy">${titleVal}</div>
+    </div>` : '';
+  const thumbHTML = showThumb && thumbVal ? `
+    <div class="line">
+      <div class="label">Thumbnail</div>
+      <div class="txt" data-kind="thumb" role="button" tabindex="0" title="Click to copy">${thumbVal}</div>
+    </div>` : '';
+  
+  // Only render if we have content to show
+  if (!titleHTML && !thumbHTML) return '';
+  
   return `
   <div class="row${isTop? ' top':''}" data-idx="${n}">
-    <div class="num"><div class="badge" aria-hidden="true">${n}</div>${isTop? '<span class="star" aria-label="Top pick" title="Top pick">★</span>':''}</div>
+    <div class="badge" aria-hidden="true">${n}</div>${isTop? '<span class="star" aria-label="Top pick" title="Top pick">★</span>':''}
     <div class="pair">${titleHTML}${thumbHTML}</div>
-    <div class="actions">${copyBtns}</div>
   </div>`;
 }
 
@@ -333,46 +757,145 @@ function sessionHTML(session){
   const { output, view } = session;
   const showTitle = view.wantTitles, showThumb = view.wantThumbs;
   const topSet = new Set((output.topPicks||[]).map(x=> x.index));
-  const list = (output.options||[]).map((o,i)=> rowHTML(i,o,topSet,showTitle,showThumb)).join('');
+  const list = (output.options||[]).map((o,i)=> rowHTML(i,o,topSet,showTitle,showThumb)).filter(Boolean).join('');
   return `
-  <article class="session" role="region" aria-label="Result session">
+  <article class="session" role="region" aria-label="Result session" data-id="${session.id}">
+    <div class="session-head">
+      <button class="iconbtn collapse" title="Collapse/Expand" aria-label="Collapse or expand">
+        <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
+      </button>
+      <button class="iconbtn close" title="Remove result" aria-label="Remove result">
+        <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
+      </button>
+    </div>
     <div class="audience">${output.audienceProfile||''}</div>
     <div class="list">${list}</div>
   </article>`;
 }
 
+function skeletonCard(){
+  const wrap = document.createElement('div');
+  wrap.className = 'session';
+  wrap.innerHTML = `
+    <div class="session-head">
+      <button class="iconbtn sk-close" title="Dismiss" aria-label="Dismiss">
+        <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
+      </button>
+    </div>
+    <div class="skeleton">
+      <div class="pulse"></div><div class="pulse"></div><div class="pulse"></div>
+    </div>`;
+  return wrap;
+}
+
+/* ================= COPY / CONTROLS ================= */
 function attachCopyHandlers(scope=document){
-  scope.querySelectorAll('.copy').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const row = btn.closest('.row'); const kind=btn.dataset.copy;
-      const text = row.querySelector(`.txt[data-kind="${kind==='title'?'title':'thumb'}"]`)?.textContent || '';
-      navigator.clipboard.writeText(text).then(()=> toast('Copied')).catch(()=> toast('Copy failed'));
-    })
+  function copyText(el){
+    const text = el?.textContent?.trim() || '';
+    if(!text) return;
+    navigator.clipboard.writeText(text).then(()=>{
+      el.style.boxShadow = '0 0 0 3px rgba(110,231,255,.35) inset';
+      el.style.transition = 'box-shadow .35s ease';
+      setTimeout(()=>{ el.style.boxShadow = ''; }, 450);
+      toast('Copied');
+    }).catch(()=> toast('Copy failed'));
+  }
+  scope.querySelectorAll('.txt').forEach(el=>{
+    el.addEventListener('click', ()=> copyText(el));
+    el.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); copyText(el); }});
+  });
+}
+
+function attachSessionControls(scope=document){
+  scope.querySelectorAll('.session .collapse').forEach(btn=>{
+    btn.onclick = () => {
+      const card = btn.closest('.session');
+      card.classList.toggle('collapsed');
+      const path = btn.querySelector('path');
+      if(card.classList.contains('collapsed')){ path.setAttribute('d','M7 14l5-5 5 5H7z'); }
+      else { path.setAttribute('d','M7 10l5 5 5-5H7z'); }
+    };
+  });
+  scope.querySelectorAll('.session .close').forEach(btn=>{
+    btn.onclick = () => {
+      const card = btn.closest('.session'); const id = card?.dataset?.id;
+      card.style.transform='scale(.98)'; card.style.opacity='.0';
+      setTimeout(()=>{ card.remove(); if(id) store.deleteSession(id); }, 180);
+    };
+  });
+  scope.querySelectorAll('.sk-close').forEach(btn=>{
+    btn.onclick = () => { btn.closest('.session')?.remove(); };
+  });
+}
+
+function collapseAllSessions(){
+  document.querySelectorAll('.session').forEach(el=>{
+    el.classList.add('collapsed');
+    const chevron = el.querySelector('.collapse path');
+    if(chevron) chevron.setAttribute('d','M7 14l5-5 5 5H7z');
   });
 }
 
 /* ================= FLOW ================= */
-function getGenConfig(){ return GENCFG_HQ; } // HQ всегда
+function clampCountInput(){
+  const el = $("#count");
+  let val = parseInt(el.value||"10",10);
+  if(isNaN(val)) val = 10;
+  if(val < 1) val = 1;
+  if(val > 15) val = 15;
+  el.value = String(val);
+}
+
+function blinkFields(){
+  ['#topic','#format','#audience'].forEach(sel=>{
+    const host = document.querySelector(sel)?.closest('.field'); if(!host) return;
+    host.style.boxShadow='0 0 0 3px rgba(110,231,255,.25)';
+    setTimeout(()=> host.style.boxShadow='', 450);
+  });
+}
+
+let btnMsgTimer=null;
+function setBtnBusy(btn, on){
+  if(on){
+    btn.setAttribute('aria-busy','true'); btn.classList.add('processing'); btn.disabled=true;
+    const msgs = ['Working','Formatting','Polishing','Almost ready'];
+    let i=0;
+    btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
+    clearInterval(btnMsgTimer);
+    btnMsgTimer = setInterval(()=>{ i=(i+1)%msgs.length; btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`; }, 1400);
+  }else{
+    btn.setAttribute('aria-busy','false'); btn.classList.remove('processing'); btn.disabled=false;
+    clearInterval(btnMsgTimer); btnMsgTimer=null;
+    btn.querySelector('.btn-text').textContent = 'Send';
+  }
+}
 
 async function generate(){
+  const btn = $("#send");
+  if(btn.getAttribute('aria-busy')==='true'){ toast('Please wait — processing'); return; }
+
   const topic = clampStr($("#topic").value, MAX_CHARS_TOPIC);
   const format = clampStr($("#format").value, MAX_CHARS_FORMAT);
   const audience = clampStr($("#audience").value, MAX_CHARS_AUDIENCE);
   let wantTitles = $("#wantTitles").checked, wantThumbs = $("#wantThumbs").checked;
+  clampCountInput();
   let count = clamp(parseInt($("#count").value||"10",10)||10, 1, 15);
 
-  if(!wantTitles && !wantThumbs){ wantTitles = true; } // хотя бы что-то
-  if(!topic){ status("Topic is required"); $("#topic").focus(); return; }
+  if(!wantTitles && !wantThumbs){ wantTitles = true; }
+  if(!topic){ $("#topic").focus(); toast("Topic is required"); return; }
 
   store.saveInputs({topic, format, audience, wantTitles, wantThumbs, count});
 
-  const btn = $("#send"); btn.setAttribute('aria-busy','true'); btn.disabled=true; status('Sending…');
+  setBtnBusy(btn, true);
+  blinkFields();
+  collapseAllSessions();
+
   const stream = $("#stream"); const skel = skeletonCard(); stream.prepend(skel);
 
   const payload = {
     systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
     contents: [{ role: "user", parts: [{ text: buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count}) }] }],
-    generationConfig: getGenConfig()
+    generationConfig: GENCFG_HQ
   };
 
   try{
@@ -383,40 +906,31 @@ async function generate(){
     if(!parsed || !Array.isArray(parsed.options)) throw new Error('Invalid model response');
 
     const normalized = normalizeOutput(parsed, { wantTitles, wantThumbs, count });
-    const session = { createdAt: nowStr(), input:{topic,format,audience}, view:{ wantTitles, wantThumbs, count }, output: normalized };
+    const session = { id: uid(), createdAt: nowStr(), input:{topic,format,audience}, view:{ wantTitles, wantThumbs, count }, output: normalized };
     store.addSession(session);
 
     const cardWrap = document.createElement('div'); cardWrap.innerHTML = sessionHTML(session);
     stream.replaceChild(cardWrap, skel);
     attachCopyHandlers(cardWrap);
-    status('Done');
+    attachSessionControls(cardWrap);
+    cardWrap.querySelector('.session')?.classList.remove('collapsed');
   }catch(err){
-    skel.innerHTML = `<div class="skeleton" role="alert" style="border:1px solid #3e2c2c; background:#1a0f12; color:#ffc7c7">
-      <div><strong>Request failed.</strong> ${truncate(err?.message||'Unknown error',260)}</div>
-      <div style="margin-top:8px; display:flex; gap:8px"><button class="chip retry" aria-label="Retry">Retry</button></div>
-    </div>`;
-    skel.querySelector('.retry')?.addEventListener('click', generate, { once:true });
-    status('Error');
-  }finally{ btn.setAttribute('aria-busy','false'); btn.disabled=false }
+    const message = err?.message||'Unknown error';
+    skel.innerHTML = `<div class="session-head">
+        <button class="iconbtn sk-close" title="Dismiss" aria-label="Dismiss">
+          <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
+        </button>
+      </div>
+      <div class="skeleton" role="alert" style="border:1px solid #3e2c2c; background:#1a0f12; color:#ffc7c7">
+        <div><strong>Request failed.</strong> ${truncate(message,260)}</div>
+      </div>`;
+    attachSessionControls(skel);
+  }finally{
+    setBtnBusy(btn,false);
+  }
 }
 
-function normalizeOutput(o, opts){
-  const { wantTitles, wantThumbs, count } = opts;
-  const options = (o.options||[]).slice(0, count).map(x=> ({
-    title: wantTitles ? (x.title||"").trim().slice(0,100) : undefined,
-    thumbnailText: wantThumbs ? (x.thumbnailText||"").replace(/:/g,"").trim().slice(0,50) : undefined
-  }));
-  while(options.length < count) options.push({ title: wantTitles ? "" : undefined, thumbnailText: wantThumbs ? "" : undefined });
-
-  const tp = Array.isArray(o.topPicks) ? o.topPicks
-              .filter(v => Number.isInteger(v.index))
-              .map(v => ({ index: clamp(parseInt(v.index,10)||1, 1, options.length) }))
-              .slice(0, 2) : [];
-
-  return { audienceProfile: (o.audienceProfile||"").trim(), options, topPicks: tp };
-}
-
-/* ================= INIT / UI ================= */
+/* ================= INIT ================= */
 function renderAll(){
   const container = $("#stream"); container.innerHTML = "";
   store.loadSessions().forEach(s => {
@@ -424,8 +938,15 @@ function renderAll(){
     container.appendChild(wrap);
   });
   attachCopyHandlers(container);
+  attachSessionControls(container);
 }
+
 function bindUI(){
+  setTimeout(()=> {
+    const pl = $("#pageloader"); if(pl){ pl.classList.add('hidden'); }
+    const app = $("#appRoot"); if(app){ app.removeAttribute('aria-hidden'); }
+  }, 1840);
+
   const inputs = store.loadInputs();
   if(inputs.topic) $("#topic").value=inputs.topic;
   if(inputs.format) $("#format").value=inputs.format;
@@ -433,6 +954,13 @@ function bindUI(){
   if(typeof inputs.wantTitles==="boolean") $("#wantTitles").checked=inputs.wantTitles;
   if(typeof inputs.wantThumbs==="boolean") $("#wantThumbs").checked=inputs.wantThumbs;
   if(inputs.count) $("#count").value = clamp(parseInt(inputs.count,10)||10, 1, 15);
+
+  const countEl = $("#count");
+  countEl.addEventListener('input', clampCountInput);
+  countEl.addEventListener('blur', clampCountInput);
+  countEl.addEventListener('keydown', (e)=> {
+    if(e.key==='-' || e.key==='e' || e.key==='E' || e.key==='+') e.preventDefault();
+  });
 
   $("#send").addEventListener("click", generate);
   document.addEventListener("keydown", (e)=>{ if(e.key==='Enter' && ['topic','format','audience'].includes(document.activeElement?.id)){ e.preventDefault(); generate(); } });
