@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>TITLE CRAFT — by Genial Design</title>
@@ -1005,144 +1017,159 @@
       to { transform: translateX(-50%) rotate(360deg); }
     }
   </style>
-</head>
-<body>
+  
+  
+  <script>
+(function(){
+  // === CONFIG ===
+  const CODE = "boost-ctr";                 // регистр не важен
+  const STORAGE = "site_access_granted";    // localStorage-метка
+  const SHOW_DELAY = 3000;                  // 3s после window.load
+  const SUP = ["en","ru","uk","es"];
 
+  // === базовые фразы (если нет твоего window.translations для gate) ===
+  const FALLBACK = {
+    en:{title:'Access Required', desc:'Enter access code to continue', ph:'Enter access code', btn:'Enter', ok:'✓ Access granted!', err:'✗ Invalid access code'},
+    ru:{title:'Требуется доступ', desc:'Введите код доступа для продолжения', ph:'Введите код доступа', btn:'Войти', ok:'✓ Доступ разрешён!', err:'✗ Неверный код доступа'},
+    uk:{title:'Потрібен доступ', desc:'Введіть код доступу для продовження', ph:'Введіть код доступу', btn:'Увійти', ok:'✓ Доступ надано!', err:'✗ Невірний код доступу'},
+    es:{title:'Acceso requerido', desc:'Ingresa el código para continuar', ph:'Código de acceso', btn:'Entrar', ok:'✓ ¡Acceso concedido!', err:'✗ Código inválido'}
+  };
 
-<!-- SIMPLE ACCESS (visible typing, keep wrong input) — paste right after <body> -->
-<style>
-  @keyframes gate-float-in { from{opacity:0; transform:translateY(20px) scale(.98)} to{opacity:1; transform:translateY(0) scale(1)} }
-  @keyframes gate-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.03)} }
-</style>
-
-<div id="password-screen" style="
-  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-  background: var(--bg, #0b0d12);
-  z-index: 2147483000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-  <div style="
-    width:min(420px,calc(100% - 40px)); padding:28px 22px; border-radius:20px; text-align:center;
-    background: var(--panel, rgba(16,21,34,.92));
-    border:1px solid rgba(255,255,255,.1);
-    box-shadow:0 20px 60px rgba(0,0,0,.5);
-    backdrop-filter: blur(16px) saturate(180%);
-    animation: gate-float-in .5s cubic-bezier(.34,1.56,.64,1)">
-    <div style="
-      width:72px;height:72px;margin:0 auto 18px;border-radius:22px;
-      background:linear-gradient(135deg,#86a0ff,#6ee7ff);
-      display:grid;place-items:center;font-size:32px; animation: gate-pulse 2.2s ease-in-out infinite;">🔐</div>
-
-    <h2 id="pwd-title" style="margin:0 0 8px;color:var(--text,#e8edf6);font-size:22px;font-weight:900">
-      Access Required
-    </h2>
-    <p id="pwd-subtitle" style="margin:0 10px 12px;color:var(--muted,#9aa7bd);font-size:13px">
-      Enter access code to continue
-    </p>
-
-    <input id="pwd-input" type="text" maxlength="64" placeholder="Enter access code" autocomplete="off" inputmode="text"
-      style="width:100%;background:rgba(15,21,38,.8);border:2px solid rgba(31,42,68,.8);border-radius:14px;
-      padding:14px;color:var(--text,#e8edf6);font-size:16px;font-weight:600;margin-bottom:12px;box-sizing:border-box;" />
-
-    <button id="pwd-button" style="
-      width:100%;padding:14px;border:0;border-radius:14px;cursor:pointer;
-      background:linear-gradient(135deg,#86a0ff,#6ee7ff);color:#0a0d14;font-size:16px;font-weight:800;
-      box-shadow:0 12px 30px rgba(134,160,255,.35); transition:transform .18s;">
-      Enter
-    </button>
-
-    <div id="pwd-message" style="min-height:18px;margin-top:10px;font-size:13px;font-weight:700;opacity:0;transition:opacity .25s"></div>
-  </div>
-</div>
-
-<script>
-/* ===== CONFIG ===== */
-const CORRECT_CODE = "boost-ctr";           // ← код для доступа
-const STORAGE_KEY  = "site_access_granted"; // localStorage ключ
-const LOADER_ID    = "pageloader";
-const FIRST_HIDE_DELAY_MS = 700;            // 0.7s
-const REVISIT_FORCE_MS    = 2000;           // 2s
-
-/* ===== i18n ===== */
-const I18N = {
-  en:{t:"Access Required", s:"Enter access code to continue", ph:"Enter access code", b:"Enter", err:"✗ Invalid access code", ok:"✓ Access granted!"},
-  ru:{t:"Требуется доступ", s:"Введите код доступа для продолжения", ph:"Введите код доступа", b:"Войти", err:"✗ Неверный код доступа", ok:"✓ Доступ разрешён!"},
-  uk:{t:"Потрібен доступ", s:"Введіть код доступу для продовження", ph:"Введіть код доступу", b:"Увійти", err:"✗ Невірний код доступу", ok:"✓ Доступ надано!"},
-  es:{t:"Acceso requerido", s:"Ingresa el código para continuar", ph:"Código de acceso", b:"Entrar", err:"✗ Código inválido", ok:"✓ ¡Acceso concedido!"}
-};
-const lang = ((navigator.language||'en').toLowerCase().split('-')[0]);
-const T = I18N[lang] || I18N.en;
-
-/* ===== helpers ===== */
-function $(id){ return document.getElementById(id); }
-function showMsg(text, ok=false){
-  const el=$("pwd-message");
-  el.textContent=text;
-  el.style.color=ok?"#67f3a2":"#ff6b6b";
-  el.style.opacity="1";
-  setTimeout(()=> el.style.opacity="0", 2000);
-}
-function hasAccess(){ return localStorage.getItem(STORAGE_KEY) === "true"; }
-
-function hideLoaderNow(){
-  const pl = document.getElementById(LOADER_ID);
-  if (!pl) return false;
-  pl.classList.add("hidden");
-  setTimeout(()=> pl.remove?.(), 700);
-  return true;
-}
-function hideLoaderRevisit(){
-  setTimeout(() => {
-    if (!hideLoaderNow()){
-      const until = performance.now() + 2000;
-      const iv = setInterval(()=>{
-        if (hideLoaderNow() || performance.now() > until) clearInterval(iv);
-      }, 120);
-    }
-  }, REVISIT_FORCE_MS);
-}
-
-function grantAccess(firstTime){
-  localStorage.setItem(STORAGE_KEY, "true");
-  $("password-screen")?.remove();
-
-  if (firstTime){
-    // первый раз — прячем за 0.7s
-    const t0 = performance.now();
-    const iv = setInterval(()=>{
-      if (hideLoaderNow() || performance.now() - t0 > 2000) clearInterval(iv);
-    }, 80);
-  } else {
-    hideLoaderRevisit();
-  }
-}
-
-/* ===== init ===== */
-(function initGate(){
-  $("pwd-title").textContent = T.t;
-  $("pwd-subtitle").textContent = T.s;
-  $("pwd-input").placeholder = T.ph;
-  $("pwd-button").textContent = T.b;
-
-  if (hasAccess()){
-    grantAccess(false);
-    return;
+  // === язык: html[lang] -> localStorage -> window.currentLang -> navigator ===
+  function pickLang(){
+    const html = (document.documentElement.getAttribute('lang')||'').toLowerCase();
+    let saved = ''; try{ saved = (localStorage.getItem('ui_lang')||'').toLowerCase(); }catch{}
+    const wcur = (typeof window.currentLang==='string' && window.currentLang.toLowerCase()) || '';
+    const nav  = (navigator.language||'en').toLowerCase().split('-')[0];
+    const chain = [html,saved,wcur,nav].filter(Boolean);
+    return chain.find(l=>SUP.includes(l)) || 'en';
   }
 
-  $("pwd-button").addEventListener("click", ()=>{
-    const entered = ($("pwd-input").value||"").trim();
-    if (entered === CORRECT_CODE){
-      showMsg(T.ok, true);
-      setTimeout(()=> grantAccess(true), 100);
-    } else {
-      showMsg(T.err, false);
-      $("pwd-input").focus();          // оставить введённое и выделить
-      $("pwd-input").select();
+  // === получить тексты: сначала из твоего window.translations.gate (если есть), иначе FALLBACK ===
+  function getTexts(lang){
+    try{
+      const t = window?.translations?.[lang] || window?.translations?.gate?.[lang];
+      if (t && t.title && t.desc && t.ph && t.btn && t.ok && t.err) return t;
+    }catch{}
+    return FALLBACK[lang] || FALLBACK.en;
+  }
+
+  // === создать soft-gate в Shadow DOM ===
+  function createGate(){
+    if (hasAccess()) return null;
+    const host = document.createElement('div');
+    host.style.position='fixed'; host.style.inset='0'; host.style.zIndex='2147483000';
+    document.body.appendChild(host);
+    const root = host.attachShadow({mode:'open'});
+
+    root.innerHTML = `
+      <style>
+        :host{ all:initial; }
+        .wrap{position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+              background:rgba(0,0,0,.08); backdrop-filter:blur(12px) saturate(140%);
+              font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+        .card{width:min(440px,calc(100% - 40px)); border-radius:20px; padding:24px 20px; text-align:center;
+              color:#e8edf6; background:rgba(16,21,34,.92); border:1px solid rgba(255,255,255,.1);
+              box-shadow:0 20px 60px rgba(0,0,0,.5); backdrop-filter:blur(16px) saturate(180%);
+              animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+        .logo{width:72px;height:72px;margin:0 auto 16px;border-radius:22px;background:linear-gradient(135deg,#86a0ff,#6ee7ff);
+              display:grid;place-items:center;font-size:32px;animation:pulse 2s ease-in-out infinite}
+        h2{margin:0 0 8px;font-weight:900;font-size:22px}
+        p{margin:0 0 14px;color:#9aa7bd;font-size:13px}
+        input{width:100%;box-sizing:border-box;background:rgba(15,21,38,.85);border:2px solid rgba(31,42,68,.85);
+              border-radius:14px;padding:14px;color:#e8edf6;font-weight:600;font-size:16px;margin-bottom:12px}
+        button{width:100%;padding:14px;border:0;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,#86a0ff,#6ee7ff);
+               color:#0a0d14;font-weight:800;font-size:16px;box-shadow:0 12px 30px rgba(134,160,255,.35);transition:transform .18s}
+        button:active{transform:scale(.98)}
+        .msg{min-height:18px;margin-top:10px;font-size:13px;font-weight:700;opacity:0;transition:opacity .25s}
+        @keyframes pop{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+        @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+      </style>
+      <div class="wrap" role="dialog" aria-modal="true" aria-labelledby="t" aria-describedby="d">
+        <div class="card">
+          <div class="logo">🔐</div>
+          <h2 id="t"></h2>
+          <p id="d"></p>
+          <input id="inp" type="text" autocomplete="off" inputmode="text" maxlength="64"/>
+          <button id="btn"></button>
+          <div id="msg" class="msg"></div>
+        </div>
+      </div>
+    `;
+
+    const els = {
+      t: root.getElementById('t'),
+      d: root.getElementById('d'),
+      inp: root.getElementById('inp'),
+      btn: root.getElementById('btn'),
+      msg: root.getElementById('msg')
+    };
+
+    function i18nApply(){
+      const lang = pickLang();
+      const L = getTexts(lang);
+      els.t.textContent = L.title;
+      els.d.textContent = L.desc;
+      els.inp.placeholder = L.ph;
+      els.btn.textContent = L.btn;
+      host.setAttribute('lang', lang); // помечаем для дебага
     }
-  });
-  $("pwd-input").addEventListener("keydown", (e)=>{ if (e.key === "Enter") $("pwd-button").click(); });
+
+    function showMsg(text, ok){
+      els.msg.textContent = text;
+      els.msg.style.color = ok ? '#67f3a2' : '#ff6b6b';
+      els.msg.style.opacity = '1';
+      setTimeout(()=> els.msg.style.opacity='0', 2000);
+    }
+
+    function closeGate(){
+      host.remove();
+      document.dispatchEvent(new CustomEvent('access:granted',{detail:{firstTime:true}}));
+    }
+
+    // поведение
+    i18nApply(); // начальная локализация
+    els.btn.addEventListener('click', ()=>{
+      const val = (els.inp.value||'').trim().toLowerCase();
+      if (val === CODE.toLowerCase()){
+        showMsg(getTexts(pickLang()).ok, true);
+        setAccess();
+        setTimeout(closeGate, 150);
+      } else {
+        showMsg(getTexts(pickLang()).err, false);
+        els.inp.focus(); els.inp.select(); // не стираем
+      }
+    });
+    els.inp.addEventListener('keydown', e=>{ if(e.key==='Enter') els.btn.click(); });
+    setTimeout(()=> els.inp.focus(), 50);
+
+    // реагировать, если твой сайт позже поменяет <html lang="..">
+    const mo = new MutationObserver(muts=>{
+      if (muts.some(m=>m.attributeName==='lang')) i18nApply();
+    });
+    mo.observe(document.documentElement, { attributes:true });
+
+    return { host, i18nApply };
+  }
+
+  // utils
+  const hasAccess = ()=> localStorage.getItem(STORAGE) === 'true';
+  const setAccess = ()=> localStorage.setItem(STORAGE, 'true');
+
+  // запуск после полной загрузки + 3с
+  function schedule(){
+    if (hasAccess()) return;
+    setTimeout(()=>{ createGate(); }, SHOW_DELAY);
+  }
+  if (document.readyState === 'complete') schedule();
+  else window.addEventListener('load', schedule, { once:true });
 })();
 </script>
-<!-- /SIMPLE ACCESS -->
 
+  
+  
+</head>
+<body>
 
   <!-- Particles Background -->
   <canvas id="particles-bg"></canvas>
