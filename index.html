@@ -1022,30 +1022,22 @@
 
 
 
-
-
-
-
 <script>
 (function(){
-  /* ===== CONFIG ===== */
-  const STORAGE_KEY   = "site_access_v2";        // текущее состояние доступа
-  const USED_KEY      = "site_used_codes_v2";    // реестр уже использованных кодов (одноразовые)
-  const SHOW_DELAY_MS = 3000;                    // показать окно через 3s после полной загрузки
-  const REAUTH_EVERY_DAYS = 0;                   // 0 = выкл; >0 — требовать повторный ввод через N дней для любого кода
+  const STORAGE_KEY   = "site_access_v2";
+  const USED_KEY      = "site_used_codes_v2";
+  const SHOW_DELAY_MS = 3000;
+  const REAUTH_EVERY_DAYS = 0;
 
-// уровни кодов
   const CODES = {
     "boost-ctr-07": { ttlMs: 7*24*60*60*1000,  oneTime: true  },
     "boost-ctr-30": { ttlMs: 30*24*60*60*1000, oneTime: true  },
-    "boost-ctr":    { ttlMs: 0,                oneTime: false }, // перманентный
-    "temp":         { ttlMs: 15*1000,          oneTime: true  }  // 15 секунд для теста
+    "boost-ctr":    { ttlMs: 0,                oneTime: false },
+    "temp":         { ttlMs: 15*1000,          oneTime: true  },
+    "trial":        { ttlMs: 10*60*1000,       oneTime: true  } // 10 минут
   };
 
-  // поддерживаемые языки
   const SUP = ["en","ru","uk","es"];
-
-  // тексты (fallback, если нет твоих глобальных)
   const STR = {
     en:{title:'Access Required', desc:'Enter access code to continue', ph:'Enter access code', btn:'Enter',
         ok:'✓ Access granted!', err:'✗ Invalid access code', used:'✗ This code was already used', expired:'✗ Code expired'},
@@ -1057,175 +1049,104 @@
         ok:'✓ ¡Acceso concedido!', err:'✗ Código inválido', used:'✗ Este código ya fue usado', expired:'✗ Código expirado'}
   };
 
-  /* ===== язык: html[lang] -> localStorage.ui_lang -> window.currentLang -> navigator ===== */
   function pickLang(){
-    const html = (document.documentElement.getAttribute('lang')||'').toLowerCase();
-    let saved=''; try{ saved=(localStorage.getItem('ui_lang')||'').toLowerCase(); }catch{}
-    const wcur = (typeof window.currentLang==='string' && window.currentLang.toLowerCase()) || '';
-    const nav  = (navigator.language||'en').toLowerCase().split('-')[0];
-    return [html,saved,wcur,nav].find(l=>SUP.includes(l)) || 'en';
+    const html=(document.documentElement.getAttribute('lang')||'').toLowerCase();
+    let saved='';try{saved=(localStorage.getItem('ui_lang')||'').toLowerCase();}catch{}
+    const wcur=(typeof window.currentLang==='string'&&window.currentLang.toLowerCase())||'';
+    const nav=(navigator.language||'en').toLowerCase().split('-')[0];
+    return [html,saved,wcur,nav].find(l=>SUP.includes(l))||'en';
   }
-  function T(){ 
-    const lang = pickLang();
-    // если у тебя есть window.translations.gate[lang] с такими ключами — возьмём его
-    try{
-      const tt = window?.translations?.gate?.[lang] || window?.translations?.[lang];
-      if (tt && tt.title && tt.desc && tt.ph && tt.btn && tt.ok && tt.err) return tt;
-    }catch{}
-    return STR[lang] || STR.en;
+  function T(){
+    const lang=pickLang();
+    try{const tt=window?.translations?.gate?.[lang]||window?.translations?.[lang];if(tt&&tt.title)return tt;}catch{}
+    return STR[lang]||STR.en;
   }
 
-  /* ===== storage helpers ===== */
-  function now(){ return Date.now(); }
-  function loadState(){
-    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null") }catch{ return null }
-  }
-  function saveState(s){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch{} }
-  function clearState(){ try{ localStorage.removeItem(STORAGE_KEY); }catch{} }
-
-  function loadUsed(){
-    try{ return JSON.parse(localStorage.getItem(USED_KEY) || "{}") }catch{ return {} }
-  }
-  function markUsed(code){
-    const used = loadUsed(); used[code] = used[code] || now();
-    try{ localStorage.setItem(USED_KEY, JSON.stringify(used)); }catch{}
-  }
-  function isUsed(code){ const used = loadUsed(); return !!used[code]; }
+  function now(){return Date.now();}
+  function loadState(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null")}catch{return null}}
+  function saveState(s){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s));}catch{}}
+  function clearState(){try{localStorage.removeItem(STORAGE_KEY);}catch{}}
+  function loadUsed(){try{return JSON.parse(localStorage.getItem(USED_KEY)||"{}")}catch{return {}}}
+  function markUsed(code){const u=loadUsed();u[code]=now();try{localStorage.setItem(USED_KEY,JSON.stringify(u));}catch{}}
+  function isUsed(code){return !!loadUsed()[code];}
 
   function hasAccess(){
-    const s = loadState();
-    if (!s || !s.granted) return false;
-    const reauthMs = REAUTH_EVERY_DAYS>0 ? REAUTH_EVERY_DAYS*24*60*60*1000 : 0;
-    const maxAlive = reauthMs ? (s.grantedAt + reauthMs) : Infinity;
-    const until = s.expiresAt>0 ? Math.min(s.expiresAt, maxAlive) : maxAlive;
-    if (now() < until) return true;
-    // истёк — чистим
-    clearState();
-    return false;
+    const s=loadState();if(!s||!s.granted)return false;
+    const reauthMs=REAUTH_EVERY_DAYS>0?REAUTH_EVERY_DAYS*24*60*60*1000:0;
+    const maxAlive=reauthMs?(s.grantedAt+reauthMs):Infinity;
+    const until=s.expiresAt>0?Math.min(s.expiresAt,maxAlive):maxAlive;
+    if(now()<until)return true; clearState();return false;
+  }
+  function grant(code,meta){
+    const grantedAt=now();
+    const reauthMs=REAUTH_EVERY_DAYS>0?REAUTH_EVERY_DAYS*24*60*60*1000:0;
+    const ttlMs=meta.ttlMs||0;
+    const expCode=ttlMs?(grantedAt+ttlMs):0;
+    const expPolicy=reauthMs?(grantedAt+reauthMs):0;
+    const expiresAt=expCode&&expPolicy?Math.min(expCode,expPolicy):(expCode||expPolicy||0);
+    saveState({granted:true,code,grantedAt,expiresAt,version:2});
+    if(meta.oneTime)markUsed(code);
   }
 
-  function grant(code, meta){
-    const grantedAt = now();
-    const reauthMs = REAUTH_EVERY_DAYS>0 ? REAUTH_EVERY_DAYS*24*60*60*1000 : 0;
-    const ttlMs = meta.ttlMs || 0;
-    const expiresFromCode = ttlMs ? (grantedAt + ttlMs) : 0; // 0 = бессрочно
-    const expiresByPolicy = reauthMs ? (grantedAt + reauthMs) : 0;
-    let expiresAt = 0;
-    if (expiresFromCode && expiresByPolicy) expiresAt = Math.min(expiresFromCode, expiresByPolicy);
-    else expiresAt = expiresFromCode || expiresByPolicy || 0;
-
-    saveState({ granted:true, code, grantedAt, expiresAt, version:2 });
-    if (meta.oneTime) markUsed(code);
-  }
-
-  /* ===== UI (Shadow DOM) ===== */
   function showGate(){
-    if (hasAccess()) return null;
-
-    const host = document.createElement('div');
-    host.style.position='fixed'; host.style.inset='0'; host.style.zIndex='2147483000';
+    if(hasAccess())return;
+    const host=document.createElement('div');
+    host.style.position='fixed';host.style.inset='0';host.style.zIndex='2147483000';
     document.body.appendChild(host);
-    const root = host.attachShadow({mode:'open'});
-
-    root.innerHTML = `
-      <style>
-        :host{ all:initial; }
-        .wrap{position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-              background:rgba(0,0,0,.08); backdrop-filter:blur(12px) saturate(140%);
-              font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
-        .card{width:min(460px,calc(100% - 40px)); border-radius:20px; padding:24px 20px; text-align:center;
-              color:#e8edf6; background:rgba(16,21,34,.92); border:1px solid rgba(255,255,255,.1);
-              box-shadow:0 20px 60px rgba(0,0,0,.5); backdrop-filter:blur(16px) saturate(180%);
-              animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
-        .logo{width:72px;height:72px;margin:0 auto 16px;border-radius:22px;background:linear-gradient(135deg,#86a0ff,#6ee7ff);
-              display:grid;place-items:center;font-size:32px;animation:pulse 2s ease-in-out infinite}
-        h2{margin:0 0 8px;font-weight:900;font-size:22px}
-        p{margin:0 0 14px;color:#9aa7bd;font-size:13px}
-        input{width:100%;box-sizing:border-box;background:rgba(15,21,38,.85);border:2px solid rgba(31,42,68,.85);
-              border-radius:14px;padding:14px;color:#e8edf6;font-weight:600;font-size:16px;margin-bottom:12px}
-        button{width:100%;padding:14px;border:0;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,#86a0ff,#6ee7ff);
-               color:#0a0d14;font-weight:800;font-size:16px;box-shadow:0 12px 30px rgba(134,160,255,.35);transition:transform .18s}
-        button:active{transform:scale(.98)}
-        .msg{min-height:18px;margin-top:10px;font-size:13px;font-weight:700;opacity:0;transition:opacity .25s}
-        @keyframes pop{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-        @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-      </style>
-      <div class="wrap" role="dialog" aria-modal="true" aria-labelledby="t" aria-describedby="d">
-        <div class="card">
-          <div class="logo">🔐</div>
-          <h2 id="t"></h2>
-          <p id="d"></p>
-          <input id="inp" type="text" autocomplete="off" inputmode="text" maxlength="64"/>
-          <button id="btn"></button>
-          <div id="msg" class="msg"></div>
-        </div>
-      </div>
-    `;
-
-    const els = {
-      t: root.getElementById('t'),
-      d: root.getElementById('d'),
-      inp: root.getElementById('inp'),
-      btn: root.getElementById('btn'),
-      msg: root.getElementById('msg')
-    };
-
-    function applyI18n(){
-      const l = T();
-      els.t.textContent = l.title;
-      els.d.textContent = l.desc;
-      els.inp.placeholder = l.ph;
-      els.btn.textContent = l.btn;
-    }
-    function toast(text, ok){
-      els.msg.textContent = text;
-      els.msg.style.color = ok ? '#67f3a2' : '#ff6b6b';
-      els.msg.style.opacity = '1';
-      setTimeout(()=> els.msg.style.opacity='0', 2000);
-    }
-    function close(){
-      host.remove();
-      document.dispatchEvent(new CustomEvent('access:granted', {detail:{firstTime:true}}));
-    }
-
-    applyI18n();
-    setTimeout(()=> els.inp.focus(), 50);
-
-    // реакция на смену <html lang>
-    const mo = new MutationObserver(m=>{ if(m.some(x=>x.attributeName==='lang')) applyI18n(); });
-    mo.observe(document.documentElement, {attributes:true});
-
-    els.btn.addEventListener('click', ()=>{
-      const raw = (els.inp.value||'').trim();
-      const code = raw.toLowerCase();
-      const meta = CODES[code];
-      const l = T();
-
-      if (!meta){ toast(l.err, false); els.inp.focus(); els.inp.select(); return; }
-      if (meta.oneTime && isUsed(code)){ toast(l.used, false); els.inp.focus(); els.inp.select(); return; }
-      if (meta.ttlMs && meta.ttlMs < 0){ toast(l.expired, false); return; } // на всякий
-
-      // выдать доступ
-      grant(code, meta);
-      toast(l.ok, true);
-      setTimeout(close, 160);
+    const root=host.attachShadow({mode:'open'});
+    root.innerHTML=`<style>
+      :host{all:initial;}
+      .wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+            background:rgba(0,0,0,.08);backdrop-filter:blur(12px) saturate(140%);
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+      .card{width:min(460px,calc(100% - 40px));border-radius:20px;padding:24px 20px;text-align:center;
+            color:#e8edf6;background:rgba(16,21,34,.92);border:1px solid rgba(255,255,255,.1);
+            box-shadow:0 20px 60px rgba(0,0,0,.5);backdrop-filter:blur(16px) saturate(180%);
+            animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+      .logo{width:72px;height:72px;margin:0 auto 16px;border-radius:22px;background:linear-gradient(135deg,#86a0ff,#6ee7ff);
+            display:grid;place-items:center;font-size:32px;animation:pulse 2s ease-in-out infinite}
+      h2{margin:0 0 8px;font-weight:900;font-size:22px}
+      p{margin:0 0 14px;color:#9aa7bd;font-size:13px}
+      input{width:100%;box-sizing:border-box;background:rgba(15,21,38,.85);border:2px solid rgba(31,42,68,.85);
+            border-radius:14px;padding:14px;color:#e8edf6;font-weight:600;font-size:16px;margin-bottom:12px}
+      button{width:100%;padding:14px;border:0;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,#86a0ff,#6ee7ff);
+             color:#0a0d14;font-weight:800;font-size:16px;box-shadow:0 12px 30px rgba(134,160,255,.35);transition:transform .18s}
+      button:active{transform:scale(.98)}
+      .msg{min-height:18px;margin-top:10px;font-size:13px;font-weight:700;opacity:0;transition:opacity .25s}
+      @keyframes pop{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+      @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+    </style>
+    <div class="wrap"><div class="card">
+      <div class="logo">🔐</div>
+      <h2 id="t"></h2><p id="d"></p>
+      <input id="inp" type="text" autocomplete="off" inputmode="text" maxlength="64"/>
+      <button id="btn"></button>
+      <div id="msg" class="msg"></div>
+    </div></div>`;
+    const els={t:root.getElementById('t'),d:root.getElementById('d'),inp:root.getElementById('inp'),btn:root.getElementById('btn'),msg:root.getElementById('msg')};
+    function applyI18n(){const l=T();els.t.textContent=l.title;els.d.textContent=l.desc;els.inp.placeholder=l.ph;els.btn.textContent=l.btn;}
+    function toast(txt,ok){els.msg.textContent=txt;els.msg.style.color=ok?"#67f3a2":"#ff6b6b";els.msg.style.opacity="1";setTimeout(()=>els.msg.style.opacity="0",2000);}
+    function close(){host.remove();}
+    applyI18n();setTimeout(()=>els.inp.focus(),50);
+    const mo=new MutationObserver(m=>{if(m.some(x=>x.attributeName==='lang'))applyI18n();});
+    mo.observe(document.documentElement,{attributes:true});
+    els.btn.addEventListener('click',()=>{
+      const raw=(els.inp.value||'').trim().toLowerCase();
+      const meta=CODES[raw];const l=T();
+      if(!meta){toast(l.err,false);els.inp.focus();els.inp.select();return;}
+      if(meta.oneTime&&isUsed(raw)){toast(l.used,false);els.inp.focus();els.inp.select();return;}
+      const expiresAt=meta.ttlMs?now()+meta.ttlMs:0;
+      if(expiresAt&&expiresAt<now()){toast(l.expired,false);return;}
+      grant(raw,meta);toast(l.ok,true);setTimeout(close,160);
     });
-
-    els.inp.addEventListener('keydown', e=>{ if(e.key==='Enter') els.btn.click(); });
-
-    return host;
+    els.inp.addEventListener('keydown',e=>{if(e.key==="Enter")els.btn.click();});
   }
 
-  /* ===== запуск после полной загрузки + 3с ===== */
-  function schedule(){
-    if (hasAccess()) return;
-    setTimeout(showGate, SHOW_DELAY_MS);
-  }
-  if (document.readyState === 'complete') schedule();
-  else window.addEventListener('load', schedule, { once:true });
-
+  function schedule(){if(hasAccess())return;setTimeout(showGate,SHOW_DELAY_MS);}
+  if(document.readyState==="complete")schedule(); else window.addEventListener("load",schedule,{once:true});
 })();
 </script>
+
 
 
 
