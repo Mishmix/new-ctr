@@ -1019,44 +1019,109 @@
   </style>
   
   
-  <script>
-(function(){
-  // === CONFIG ===
-  const CODE = "boost-ctr";                 // регистр не важен
-  const STORAGE = "site_access_granted";    // localStorage-метка
-  const SHOW_DELAY = 3000;                  // 3s после window.load
-  const SUP = ["en","ru","uk","es"];
 
-  // === базовые фразы (если нет твоего window.translations для gate) ===
-  const FALLBACK = {
-    en:{title:'Access Required', desc:'Enter access code to continue', ph:'Enter access code', btn:'Enter', ok:'✓ Access granted!', err:'✗ Invalid access code'},
-    ru:{title:'Требуется доступ', desc:'Введите код доступа для продолжения', ph:'Введите код доступа', btn:'Войти', ok:'✓ Доступ разрешён!', err:'✗ Неверный код доступа'},
-    uk:{title:'Потрібен доступ', desc:'Введіть код доступу для продовження', ph:'Введіть код доступу', btn:'Увійти', ok:'✓ Доступ надано!', err:'✗ Невірний код доступу'},
-    es:{title:'Acceso requerido', desc:'Ingresa el código para continuar', ph:'Código de acceso', btn:'Entrar', ok:'✓ ¡Acceso concedido!', err:'✗ Código inválido'}
+
+
+
+
+
+
+<script>
+(function(){
+  /* ===== CONFIG ===== */
+  const STORAGE_KEY   = "site_access_v2";        // текущее состояние доступа
+  const USED_KEY      = "site_used_codes_v2";    // реестр уже использованных кодов (одноразовые)
+  const SHOW_DELAY_MS = 3000;                    // показать окно через 3s после полной загрузки
+  const REAUTH_EVERY_DAYS = 0;                   // 0 = выкл; >0 — требовать повторный ввод через N дней для любого кода
+
+// уровни кодов
+  const CODES = {
+    "boost-ctr-07": { ttlMs: 7*24*60*60*1000,  oneTime: true  },
+    "boost-ctr-30": { ttlMs: 30*24*60*60*1000, oneTime: true  },
+    "boost-ctr":    { ttlMs: 0,                oneTime: false }, // перманентный
+    "temp":         { ttlMs: 15*1000,          oneTime: true  }  // 15 секунд для теста
   };
 
-  // === язык: html[lang] -> localStorage -> window.currentLang -> navigator ===
+  // поддерживаемые языки
+  const SUP = ["en","ru","uk","es"];
+
+  // тексты (fallback, если нет твоих глобальных)
+  const STR = {
+    en:{title:'Access Required', desc:'Enter access code to continue', ph:'Enter access code', btn:'Enter',
+        ok:'✓ Access granted!', err:'✗ Invalid access code', used:'✗ This code was already used', expired:'✗ Code expired'},
+    ru:{title:'Требуется доступ', desc:'Введите код доступа для продолжения', ph:'Введите код доступа', btn:'Войти',
+        ok:'✓ Доступ разрешён!', err:'✗ Неверный код доступа', used:'✗ Этот код уже использован', expired:'✗ Срок кода истёк'},
+    uk:{title:'Потрібен доступ', desc:'Введіть код доступу для продовження', ph:'Введіть код доступу', btn:'Увійти',
+        ok:'✓ Доступ надано!', err:'✗ Невірний код', used:'✗ Цей код уже використано', expired:'✗ Термін дії коду вичерпано'},
+    es:{title:'Acceso requerido', desc:'Ingresa el código para continuar', ph:'Código de acceso', btn:'Entrar',
+        ok:'✓ ¡Acceso concedido!', err:'✗ Código inválido', used:'✗ Este código ya fue usado', expired:'✗ Código expirado'}
+  };
+
+  /* ===== язык: html[lang] -> localStorage.ui_lang -> window.currentLang -> navigator ===== */
   function pickLang(){
     const html = (document.documentElement.getAttribute('lang')||'').toLowerCase();
-    let saved = ''; try{ saved = (localStorage.getItem('ui_lang')||'').toLowerCase(); }catch{}
+    let saved=''; try{ saved=(localStorage.getItem('ui_lang')||'').toLowerCase(); }catch{}
     const wcur = (typeof window.currentLang==='string' && window.currentLang.toLowerCase()) || '';
     const nav  = (navigator.language||'en').toLowerCase().split('-')[0];
-    const chain = [html,saved,wcur,nav].filter(Boolean);
-    return chain.find(l=>SUP.includes(l)) || 'en';
+    return [html,saved,wcur,nav].find(l=>SUP.includes(l)) || 'en';
   }
-
-  // === получить тексты: сначала из твоего window.translations.gate (если есть), иначе FALLBACK ===
-  function getTexts(lang){
+  function T(){ 
+    const lang = pickLang();
+    // если у тебя есть window.translations.gate[lang] с такими ключами — возьмём его
     try{
-      const t = window?.translations?.[lang] || window?.translations?.gate?.[lang];
-      if (t && t.title && t.desc && t.ph && t.btn && t.ok && t.err) return t;
+      const tt = window?.translations?.gate?.[lang] || window?.translations?.[lang];
+      if (tt && tt.title && tt.desc && tt.ph && tt.btn && tt.ok && tt.err) return tt;
     }catch{}
-    return FALLBACK[lang] || FALLBACK.en;
+    return STR[lang] || STR.en;
   }
 
-  // === создать soft-gate в Shadow DOM ===
-  function createGate(){
+  /* ===== storage helpers ===== */
+  function now(){ return Date.now(); }
+  function loadState(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null") }catch{ return null }
+  }
+  function saveState(s){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch{} }
+  function clearState(){ try{ localStorage.removeItem(STORAGE_KEY); }catch{} }
+
+  function loadUsed(){
+    try{ return JSON.parse(localStorage.getItem(USED_KEY) || "{}") }catch{ return {} }
+  }
+  function markUsed(code){
+    const used = loadUsed(); used[code] = used[code] || now();
+    try{ localStorage.setItem(USED_KEY, JSON.stringify(used)); }catch{}
+  }
+  function isUsed(code){ const used = loadUsed(); return !!used[code]; }
+
+  function hasAccess(){
+    const s = loadState();
+    if (!s || !s.granted) return false;
+    const reauthMs = REAUTH_EVERY_DAYS>0 ? REAUTH_EVERY_DAYS*24*60*60*1000 : 0;
+    const maxAlive = reauthMs ? (s.grantedAt + reauthMs) : Infinity;
+    const until = s.expiresAt>0 ? Math.min(s.expiresAt, maxAlive) : maxAlive;
+    if (now() < until) return true;
+    // истёк — чистим
+    clearState();
+    return false;
+  }
+
+  function grant(code, meta){
+    const grantedAt = now();
+    const reauthMs = REAUTH_EVERY_DAYS>0 ? REAUTH_EVERY_DAYS*24*60*60*1000 : 0;
+    const ttlMs = meta.ttlMs || 0;
+    const expiresFromCode = ttlMs ? (grantedAt + ttlMs) : 0; // 0 = бессрочно
+    const expiresByPolicy = reauthMs ? (grantedAt + reauthMs) : 0;
+    let expiresAt = 0;
+    if (expiresFromCode && expiresByPolicy) expiresAt = Math.min(expiresFromCode, expiresByPolicy);
+    else expiresAt = expiresFromCode || expiresByPolicy || 0;
+
+    saveState({ granted:true, code, grantedAt, expiresAt, version:2 });
+    if (meta.oneTime) markUsed(code);
+  }
+
+  /* ===== UI (Shadow DOM) ===== */
+  function showGate(){
     if (hasAccess()) return null;
+
     const host = document.createElement('div');
     host.style.position='fixed'; host.style.inset='0'; host.style.zIndex='2147483000';
     document.body.appendChild(host);
@@ -1068,7 +1133,7 @@
         .wrap{position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
               background:rgba(0,0,0,.08); backdrop-filter:blur(12px) saturate(140%);
               font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
-        .card{width:min(440px,calc(100% - 40px)); border-radius:20px; padding:24px 20px; text-align:center;
+        .card{width:min(460px,calc(100% - 40px)); border-radius:20px; padding:24px 20px; text-align:center;
               color:#e8edf6; background:rgba(16,21,34,.92); border:1px solid rgba(255,255,255,.1);
               box-shadow:0 20px 60px rgba(0,0,0,.5); backdrop-filter:blur(16px) saturate(180%);
               animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
@@ -1105,66 +1170,71 @@
       msg: root.getElementById('msg')
     };
 
-    function i18nApply(){
-      const lang = pickLang();
-      const L = getTexts(lang);
-      els.t.textContent = L.title;
-      els.d.textContent = L.desc;
-      els.inp.placeholder = L.ph;
-      els.btn.textContent = L.btn;
-      host.setAttribute('lang', lang); // помечаем для дебага
+    function applyI18n(){
+      const l = T();
+      els.t.textContent = l.title;
+      els.d.textContent = l.desc;
+      els.inp.placeholder = l.ph;
+      els.btn.textContent = l.btn;
     }
-
-    function showMsg(text, ok){
+    function toast(text, ok){
       els.msg.textContent = text;
       els.msg.style.color = ok ? '#67f3a2' : '#ff6b6b';
       els.msg.style.opacity = '1';
       setTimeout(()=> els.msg.style.opacity='0', 2000);
     }
-
-    function closeGate(){
+    function close(){
       host.remove();
-      document.dispatchEvent(new CustomEvent('access:granted',{detail:{firstTime:true}}));
+      document.dispatchEvent(new CustomEvent('access:granted', {detail:{firstTime:true}}));
     }
 
-    // поведение
-    i18nApply(); // начальная локализация
-    els.btn.addEventListener('click', ()=>{
-      const val = (els.inp.value||'').trim().toLowerCase();
-      if (val === CODE.toLowerCase()){
-        showMsg(getTexts(pickLang()).ok, true);
-        setAccess();
-        setTimeout(closeGate, 150);
-      } else {
-        showMsg(getTexts(pickLang()).err, false);
-        els.inp.focus(); els.inp.select(); // не стираем
-      }
-    });
-    els.inp.addEventListener('keydown', e=>{ if(e.key==='Enter') els.btn.click(); });
+    applyI18n();
     setTimeout(()=> els.inp.focus(), 50);
 
-    // реагировать, если твой сайт позже поменяет <html lang="..">
-    const mo = new MutationObserver(muts=>{
-      if (muts.some(m=>m.attributeName==='lang')) i18nApply();
-    });
-    mo.observe(document.documentElement, { attributes:true });
+    // реакция на смену <html lang>
+    const mo = new MutationObserver(m=>{ if(m.some(x=>x.attributeName==='lang')) applyI18n(); });
+    mo.observe(document.documentElement, {attributes:true});
 
-    return { host, i18nApply };
+    els.btn.addEventListener('click', ()=>{
+      const raw = (els.inp.value||'').trim();
+      const code = raw.toLowerCase();
+      const meta = CODES[code];
+      const l = T();
+
+      if (!meta){ toast(l.err, false); els.inp.focus(); els.inp.select(); return; }
+      if (meta.oneTime && isUsed(code)){ toast(l.used, false); els.inp.focus(); els.inp.select(); return; }
+      if (meta.ttlMs && meta.ttlMs < 0){ toast(l.expired, false); return; } // на всякий
+
+      // выдать доступ
+      grant(code, meta);
+      toast(l.ok, true);
+      setTimeout(close, 160);
+    });
+
+    els.inp.addEventListener('keydown', e=>{ if(e.key==='Enter') els.btn.click(); });
+
+    return host;
   }
 
-  // utils
-  const hasAccess = ()=> localStorage.getItem(STORAGE) === 'true';
-  const setAccess = ()=> localStorage.setItem(STORAGE, 'true');
-
-  // запуск после полной загрузки + 3с
+  /* ===== запуск после полной загрузки + 3с ===== */
   function schedule(){
     if (hasAccess()) return;
-    setTimeout(()=>{ createGate(); }, SHOW_DELAY);
+    setTimeout(showGate, SHOW_DELAY_MS);
   }
   if (document.readyState === 'complete') schedule();
   else window.addEventListener('load', schedule, { once:true });
+
 })();
 </script>
+
+
+
+
+
+
+
+
+
 
   
   
