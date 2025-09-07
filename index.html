@@ -16,6 +16,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>TITLE CRAFT — by Genial Design</title>
+
+<!-- favicon -->
+<link rel="icon" type="image/x-icon" href="https://i.imgur.com/NAlA829.jpeg">
+
+
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#0b0d12" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1030,12 +1035,35 @@
   const REAUTH_EVERY_DAYS = 0;
 
   const CODES = {
-    "boost-ctr-07": { ttlMs: 7*24*60*60*1000,  oneTime: true  },
-    "boost-ctr-30": { ttlMs: 30*24*60*60*1000, oneTime: true  },
-    "boost-ctr":    { ttlMs: 0,                oneTime: false },
-    "temp":         { ttlMs: 15*1000,          oneTime: true  },
-    "trial":        { ttlMs: 10*60*1000,       oneTime: true  } // 10 минут
-  };
+  "boost-ctr-07": {
+    "ttlMs": 604800000,
+    "oneTime": true
+  },
+  "boost-ctr-30": {
+    "ttlMs": 2592000000,
+    "oneTime": true
+  },
+  "boost-ctr": {
+    "ttlMs": 0,
+    "oneTime": false
+  },
+  "temp": {
+    "ttlMs": 15000,
+    "oneTime": true
+  },
+  "trial": {
+    "ttlMs": 600000,
+    "oneTime": true
+  },
+  "daniel-boost-ctr": {
+    "ttlMs": 0,
+    "oneTime": false
+  },
+  "denys-lifetime": {
+    "ttlMs": 0,
+    "oneTime": false
+  }
+};
 
   const SUP = ["en","ru","uk","es"];
   const STR = {
@@ -1690,7 +1718,7 @@ function applyTranslations() {
 /* ================= CONFIG ================= */
 const API_KEY = "AIzaSyBhzx04RA5ozvs-MpC6Q3_TvQGAtZyDCaM";
 const MODEL   = "gemini-2.5-pro";
-const RETRIES = 2;
+const RETRIES = 5;
 const BASE_DELAY = 800;
 
 /* ================= SYSTEM PROMPT (keeping original) ================= */
