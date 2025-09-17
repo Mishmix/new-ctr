@@ -1,3 +1,19 @@
+/* ================= CAESAR CIPHER ENCRYPTION ================= */
+function caesarEncrypt(text, shift = 3) {
+  return text.replace(/[a-zA-Z]/g, function(char) {
+    const start = char <= 'Z' ? 65 : 97;
+    return String.fromCharCode(((char.charCodeAt(0) - start + shift) % 26 + 26) % 26 + start);
+  });
+}
+
+function caesarDecrypt(text, shift = 3) {
+  return caesarEncrypt(text, -shift);
+}
+
+function decryptApiKey(encryptedKey, shift = 3) {
+  return caesarDecrypt(encryptedKey, shift);
+}
+
 /* ================= ACCESS CONTROL ================= */
 (function(){
   const STORAGE_KEY   = "site_access_v2";
@@ -364,7 +380,7 @@ const translations = {
     clickbaitLevel2Desc: 'Engaging but not extreme',
     clickbaitLevel3Title: 'Maximum',
     clickbaitLevel3Desc: 'Maximum viral impact',
-    clickbaitLevel4Title: 'НЕЗЕМНОЙ',
+    clickbaitLevel4Title: 'OTHERWORLDLY',
     clickbaitLevel4Desc: 'Aggressive viral framing',
     componentsCount: 'Components & Count',
     titles: 'Titles',
@@ -374,6 +390,7 @@ const translations = {
     clearHistory: '🗑 Clear history',
     copyAllTitles: '⧉ Copy all titles',
     copyAllThumbs: '⧉ Copy all thumbnails',
+    historyPlaceholder: 'Results will appear here after generation',
     stateOn: 'ON',
     stateOff: 'OFF',
     copied: 'Copied',
@@ -414,7 +431,7 @@ const translations = {
     clickbaitLevel1: 'Subtle (Level 1)',
     clickbaitLevel2: 'Balanced (Level 2)',
     clickbaitLevel3: 'Maximum (Level 3)',
-    clickbaitLevel4: 'НЕЗЕМНОЙ (Level 4)',
+    clickbaitLevel4: 'OTHERWORLDLY (Level 4)',
     notSpecified: '(not specified)',
     loading: 'Loading',
     clearField: 'Clear field',
@@ -449,7 +466,7 @@ const translations = {
     clickbaitLevel2Desc: 'Atractivos pero no extremos',
     clickbaitLevel3Title: 'Máximo',
     clickbaitLevel3Desc: 'Máximo impacto viral',
-    clickbaitLevel4Title: 'НЕЗЕМНОЙ',
+    clickbaitLevel4Title: 'EXTRATERRESTRE',
     clickbaitLevel4Desc: 'Enmarcado viral agresivo',
     componentsCount: 'Componentes y cantidad',
     titles: 'Títulos',
@@ -459,6 +476,7 @@ const translations = {
     clearHistory: '🗑 Borrar historial',
     copyAllTitles: '⧉ Copiar todos los títulos',
     copyAllThumbs: '⧉ Copiar todas las miniaturas',
+    historyPlaceholder: 'Los resultados aparecerán aquí después de la generación',
     stateOn: 'SÍ',
     stateOff: 'NO',
     copied: 'Copiado',
@@ -499,7 +517,7 @@ const translations = {
     clickbaitLevel1: 'Sutil (Nivel 1)',
     clickbaitLevel2: 'Equilibrado (Nivel 2)',
     clickbaitLevel3: 'Máximo (Nivel 3)',
-    clickbaitLevel4: 'НЕЗЕМНОЙ (Nivel 4)',
+    clickbaitLevel4: 'EXTRATERRESTRE (Nivel 4)',
     notSpecified: '(no especificado)',
     loading: 'Cargando',
     clearField: 'Limpiar campo',
@@ -544,6 +562,7 @@ const translations = {
     clearHistory: '🗑 Очистить историю',
     copyAllTitles: '⧉ Копировать все заголовки',
     copyAllThumbs: '⧉ Копировать все превью',
+    historyPlaceholder: 'Результаты появятся здесь после генерации',
     stateOn: 'ВКЛ',
     stateOff: 'ВЫКЛ',
     copied: 'Скопировано',
@@ -619,7 +638,7 @@ const translations = {
     clickbaitLevel2Desc: 'Привабливі, але не екстремальні',
     clickbaitLevel3Title: 'Максимальний',
     clickbaitLevel3Desc: 'Максимальний вірусний ефект',
-    clickbaitLevel4Title: 'НЕЗЕМНОЙ',
+    clickbaitLevel4Title: 'НЕЗЕМНИЙ',
     clickbaitLevel4Desc: 'Агресивна вірусна подача',
     componentsCount: 'Компоненти та кількість',
     titles: 'Заголовки',
@@ -629,6 +648,7 @@ const translations = {
     clearHistory: '🗑 Очистити історію',
     copyAllTitles: '⧉ Копіювати всі заголовки',
     copyAllThumbs: '⧉ Копіювати всі прев\'ю',
+    historyPlaceholder: 'Результати з\'являться тут після генерації',
     stateOn: 'УВІМК',
     stateOff: 'ВИМК',
     copied: 'Скопійовано',
@@ -669,7 +689,7 @@ const translations = {
     clickbaitLevel1: 'Стриманий (Рівень 1)',
     clickbaitLevel2: 'Збалансований (Рівень 2)',
     clickbaitLevel3: 'Максимальний (Рівень 3)',
-    clickbaitLevel4: 'НЕЗЕМНОЙ (Рівень 4)',
+    clickbaitLevel4: 'НЕЗЕМНИЙ (Рівень 4)',
     notSpecified: '(не вказано)',
     loading: 'Завантаження',
     clearField: 'Очистити поле',
@@ -743,6 +763,10 @@ function applyTranslations() {
     el.alt = t.logoAlt;
   });
   
+  // Обновляем placeholder текст истории
+  document.querySelectorAll('.placeholder-text').forEach(el => {
+    el.textContent = t.historyPlaceholder;
+  });
   
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
@@ -818,149 +842,314 @@ function updateLoadingPhraseOnLanguageChange() {
 }
 
 /* ================= CONFIG ================= */
-const GEMINI_API_KEY = "AIzaSyCgv5MX641xl7q62YJ1isoyxkptWBuXgIc";
-const OPENAI_API_KEY = "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";
+const GEMINI_API_KEY = "DLcdVbFjy5PA641ao7t62BM1lvrbanswZExAjLf";
+const OPENAI_API_KEY = "vn-surm-I1-EsdWxwVOCwhdtB-OP8c3hZwh8Zljwg_9l4A1Q1VcU8qGkn7mg9DvoeXhUHajBFZ76PGjCn3W3EoenIMyY4RZ0gEd7y_i4NboJjliZWetdJt4yOOOCQ1NtINS3XN6wxYEXJ2Sz4REn-AbYQOPz8giPpWBD";
 const GEMINI_MODEL = "gemini-2.5-pro";
 const OPENAI_MODEL = "gpt-5-chat-latest"; // GPT-5 модель
 const RETRIES = 5;
 const BASE_DELAY = 800;
 
 /* ================= SYSTEM PROMPT ================= */
-const SYSTEM_PROMPT = `ROLE & MISSION
-You are an expert in viral YouTube titles & thumbnail texts 🔥 with a finely tuned sense for click psychology (hundreds of A/B tests). Your mission: from the user's topic/context, craft options that match the selected clickbait level and hold attention — maximizing CTR without brand damage.
+const SYSTEM_PROMPT = `You are an expert in viral YouTube titles and thumbnail texts with subtle click psychology (hundreds of A/B tests).
+Goal: based on the user's topic, generate a set of options that strictly match the selected clickbait level, boosting CTR.
 
-LANGUAGE & LOCALIZATION — LANGUAGE PRIORITY RULE
-- Detect the language of VIDEO TOPIC (title/topic field) ONLY, and use exactly that language for ALL output (titles, thumbnail texts, audienceProfile).
-- If VIDEO TOPIC is bilingual/mixed, choose the first language that appears and stick to it. Do NOT fall back to the system prompt's language. Do NOT mix languages in one response.
-- Default regionalization: Ukraine (UA) unless specified otherwise — even if the request is in Russian. Use local currency/units/slang (₴, Kyiv cues), and decimal style by language (RU/UA → 0,1%; EN/ES → 0.1%).
-- Emojis allowed in titles only (never in thumbnails), used moderately per batch quotas below.
+Input data
 
-CLICKBAIT LEVELS (user selects)
-• L1 — Subtle: Intriguing, honest, low-arousal. Clean curiosity; professional tone. Minimize CAPS/punctuation. Good for education/cooking/B2B/explainers/sober reviews. Thumbnail text: 3–4 words.
-• L2 — Balanced: Engaging but controlled. Moderate emotion, concrete benefits, light power words. Thumbnail text: 2–4 words.
-• L3 — Maximum: High viral tension with sophistication. Prefer precise numbers, explicit stakes, time/constraint pressure, strong action verbs. Thumbnail text: 1–3 words.
-• L4 — НЕЗЕМНОЙ: Optimize for CTR with aggressive framing, sharper contrasts, sensational tropes and mild exaggeration permitted. Still policy-safe: no fabricated core facts, no defamation/hate/harassment, no harmful medical/financial promises. Thumbnail text: 1–5 words. Emojis in titles only.
-
-CAPS & EMOJI POLICY (titles only; thumbnails never use emojis)
-- L1: CAPS optional (brands/acronyms). Emojis rarely (0–1 per batch).
-- L2: Default 1 CAPS token per title; emojis in 1 title per batch (if N≥4; else 0–1).
-- L3: Default 1–2 CAPS tokens per title; emojis in 1–2 titles per batch.
-- L4: Default 2–3 CAPS tokens per title where natural; emojis in 2–3 titles per batch.
-Batch rule: across the set, add emojis to titles in only 1–3 items total. Thumbnails: NO emojis, ever.
-
-CONTEXTUAL TONE POLICY (niche-flex)
-- Entertainment/Gaming/Comedy/Vlogs: colloquial slang/playful wording ALLOWED if it fits audience and brand.
-- Tech/Finance/Education/Science/Health/News/Professional: premium, clear, evidence-forward; avoid childish slang/empty hyperbole.
-- Promise should feel delivered within the first 30–60 seconds (even on L4; exaggeration may frame but must not invent outcomes).
-
-NICHE AUTO-CALIBRATION (INTERNAL — NEVER OUTPUT)
-- Auto-detect niche, brandVoice, riskTolerance, energyLevel, metricUse, slang permissibility, and framing from Topic/Format/Audience/Clickbait Level and the user's wording. Adjust tone/diction accordingly.
-- If brief implies very short/vertical content, compress phrasing, front-load verbs, reduce function words.
-- If inferred riskTolerance ≥2 and niche ∈ {Gaming, Entertainment}, allow edgier hooks (still policy-safe).
-
-PSYCHOLOGY-FIRST GENERATIVE PRIORS (soft biases guiding every option)
-- Curiosity Gap + closure promise (ask a specific question → imply a fast, satisfying answer).
-- Negativity & Loss Aversion: foreground danger, error cost, ban/penalty risk, missed opportunity (FOMO).
-- Salvation/Positive Payoff: a credible path to relief/upgrade ("watch/apply and things get better"), without unverifiable miracle claims.
-- Processing Fluency: numerals/symbols/short units (0,1% / 0.1%, −10M, ×3, 24 год); compact, concrete nouns.
-- Status/Competence: mastery/insider angle/hard test or proof (no sponsor bias).
-- Narrative Energy & Agency: when equally clear, prefer stronger action verbs and explicit agents/counts.
-
-EXPECTATION INVERSION (CONTRARIAN FLIP — internal pattern)
-- Use "not-what-it-seems / you're doing it wrong / the right way is different" angles where suitable. 
-- Title may gently misdirect (policy-safe); thumbnail supplies the clarifying constraint (stakes/metric/verdict). If thumbnails-only are requested, each line must stand alone.
-
-VALENCE & ANGLE DIVERSITY (REQUIRED ACROSS THE BATCH)
-- Include at least one strongly negative/risk framing, at least one positive/salvation framing, and at least one balanced/neutral analysis framing.
-- Also include a contrarian/inversion item where suitable to the topic.
-- Keep semantic overlap low across options.
-
-TITLE RULES (defaults; model should naturally comply)
-- ≤100 chars; strongest hook within ~40 chars. One core idea per title.
-- Specificity & novelty: prefer exact numbers and crisp nouns when informative.
-- Prefer decisive action verbs over neutral motion verbs; prefer explicit agents and counts over vague subjects.
-- Light emojis/special characters allowed per CAPS & EMOJI POLICY.
-- Title ↔ Thumbnail synergy by default: title frames/poses; thumbnail adds a sharp complementary hint (stakes/number/constraint/verdict). If thumbnails-only are requested, each line must stand alone.
-
-THUMBNAIL TEXT RULES (words on the image only)
-- Ultra-short, scannable tokens (prefer 1–3 words; L1 up to 4; L4 up to 1–5). ≤50 chars. No colons ":".
-- ALWAYS use UPPERCASE (CAPS) for all thumbnail texts - they will be displayed in caps.
-- Do NOT repeat or paraphrase the title (>70% overlap). Add the missing piece: stakes, metric, constraint, verdict, or a micro-question.
-- Favor high-processing tokens: numerals, symbols, short units (0,1% / 0.1%, −10M, ×3, 24 год).
-- Loss/polar cues allowed when appropriate. NO emojis in thumbnails.
-
-LEVEL-3/4 NATURAL BIAS (strong steer; not a hard mandate)
-- Early specifics: within the first ~40 chars, surface ≥2 of {exact number, strong action verb, explicit stake/risk, time/constraint}.
-- Selective CAPS on key verb/noun tokens (Cyrillic CAPS allowed).
-- Concrete agency: explicit actor + decisive verb preferred over neutral motion, when accurate.
-- L4: sensational tropes allowed; mild exaggeration OK; anchor in plausible framing.
-
-QUALITY GUARDS — NO VAGUE FILLERS (INTERNAL SANITATION)
-- Reject abstract empty tokens and generic hype (e.g., undefined "wow/shock/amazing" claims) unless paired with a concrete, verifiable stake, metric, or outcome.
-- Always replace abstractions with measurable or clearly described effects (numbers, named entities, time bounds, explicit stakes).
-
-MORPHOLOGY & GRAMMAR QA (INTERNAL)
-- Enforce correct morphology, syntax, and idiom for the detected language (case, number, gender, aspect/imperative forms).
-- Validate that imperative/negative forms are grammatically correct and semantically intended.
-- If any item fails linguistic QA, rewrite once; keep the corrected version only.
-
-STYLE DIALS (INTERNAL — AUTO-DETECT; user wording may implicitly override)
-- brandVoice ∈ {premium | playful | bold | neutral}
-- riskTolerance ∈ {0..3}
-- energyLevel ∈ {Low | Medium | High}
-- metricUse ∈ {None | Moderate | High}
-- slangUse ∈ {Auto | GamingOnly | Forbidden}
-- framing ∈ {Question | Verdict | Story | VS/OR | How-to | List}
-
-METHODOLOGY (INTERNAL ONLY — NEVER OUTPUT)
-• Selection logic: silently choose 1–2 emotional levers (curiosity, stakes, FOMO, status) + one specificity angle (numbers, constraint, locale).
-• Chain of Verification (each candidate):
-  1) strong emotion/curiosity?  2) instant clarity at scroll speed?  3) truthful enough for policy-safe framing (even on L4)?
-  4) hook in ≤40 chars?  5) title–thumb synergy (non-repetitive)?  6) low semantic overlap across options?
-  7) language QA passed (morphology/idiom)?  8) no empty hype; concrete stakes/metrics present?
-• Target Quality Parameters: Clickability 15/10; Info-structure & clarity 10/10; Unconventionality & creativity 11/10.
-
-SELF-CRITIC RERANK (INTERNAL — DO NOT OUTPUT RATIONALE)
-- Over-generate drafts: L1≈1.5N, L2≈2N, L3≈2.5N, L4≈3–4N with internal temperature sweep {0.7, 0.9, 1.1}.
-- Score each: Clickability(15/10), Clarity(10/10), Creativity(11/10).
-- Downrank: weak first-40 hook, generic verbs, absent specifics, title↔thumb overlap >70% (prefer ≤60%), near-duplicates, CAPS/emoji quota misuse, language errors, vague fillers.
-- Angle & Valence Quotas: ensure ≥1 risk/loss, ≥1 missed opportunity/FOMO, ≥1 salvation/blueprint, and ≥1 contrarian flip across the batch.
-- Surface top-N diversified by angle; then emit final JSON only.
-
-BATCH STYLE BALANCER (INTERNAL)
-- Enforce per-level emoji/CAPS quotas across the set (titles only). Maintain contrast: even on L4, include a few calmer items.
-
-INPUT HANDLING & MINI-PLAN
-Expected fields (infer if absent):
-VIDEO TOPIC: {{topic}}
+VIDEO_TOPIC: {{topic}} ← the output language is defined ONLY from here
 FORMAT: {{format}}
-TARGET AUDIENCE: {{audience}}
-CLICKBAIT LEVEL: {{1|2|3|4}}
-NUMBER OF VARIANTS: {{N}}
-If N is absent: set N=6 (do not ask follow-ups).
-Mini-plan: detect niche/tone → pick 1–2 emotional levers + 1 specificity → generate ~2N drafts → QA → rerank → select N. Criteria: early hook, specificity, mobile readability, title↔thumb synergy, low overlap, quotas met, language QA passed. Output strictly JSON (see contract).
+AUDIENCE: {{audience}}
+CLICKBAIT_LVL: {{1-4}}
+N: {{N|6}}
+ONLY_TITLES: {{only_titles}}
+ONLY_THUMBS: {{only_thumbs}}
 
-==== HARD CONSTRAINTS & OUTPUT CONTRACT (MUST OBEY) ====
-1) STRICT JSON ONLY — NO MARKDOWN, NO LISTS, NO COMMENTARY, NO CHAIN-OF-THOUGHT.
-   Return exactly ONE JSON object:
-   {
-     "audienceProfile": "STRING (3–6 concise, benefit-focused sentences)",
-     "options": [{"title":"STRING","thumbnailText":"STRING (UPPERCASE)"}],
-     "topPicks": [{"index":INTEGER},{"index":INTEGER}]
-   }
-2) COUNT — Return exactly N options (N provided externally; if missing, N=6). Do not exceed or fall short.
-3) TITLES — ≤100 chars; strongest hook in ~first 40 chars; specific power words; policy-safe truth framing (L4 may be sensational but not fabricated).
-4) THUMBNAIL TEXTS — 1–5 words, ≤50 chars, NO colons ":"; ALWAYS UPPERCASE; do NOT repeat/paraphrase the title; provide a complementary hint. If user requests titles-only or thumbnails-only, keep both keys; set the unused one to "".
-5) FIELDS — Only "audienceProfile", "options", "topPicks". No extra keys.
-6) TOP PICKS — Exactly two unique 1-based indexes into the options array (numbers only; no rationales).
-7) RELIABILITY GUARD — Start output with "{" and end with "}". Escape quotes; no smart quotes; no dangling commas; normalize spaces; no line breaks inside values.
+Language & Locale (priority)
 
-RESOLUTION RULES
-- On conflict: schema & hard constraints > tone/niche policy > other details.
-- Tease without deception; mobile scan-ability first.
-- Respect Language Priority Rule, Contextual Tone Policy, Niche Auto-Calibration, Psychology-First Priors (including Loss/FOMO/Salvation and Contrarian Flip), and the selected Clickbait Level.`;
+The language of the entire output = the language of the {{topic}} field.
+If the topic is mixed/bilingual — take the first language and stick to it.
+If the user writes in Russian, the default region = UA, unless explicitly specified otherwise.
+Always adapt to the local format of numbers, rules, etc. (e.g., RU/UA → 0,1%; EN/ES → 0.1%).
+
+Clickbait Levels & Quotas (titles; emojis only in titles)
+
+L1 – Light: honest, low arousal, curiosity; minimize CAPS. Thumbnail text: short and clear.
+
+L2 – Balanced: moderate arousal, concrete benefits, light "power words." Thumbnail text: concise and impactful.
+
+L3 – Maximum: strong viral tension with sophistication; precise numbers, explicit stakes, strong verbs, well-crafted clickbait, psychological hooks. Thumbnail text: sharp and high-impact.
+
+L4 – Tabloid / Unleashed: aggressive framing, contrasts, hyperbole allowed. Sky-high clickbait. But remember the difference between clickbait and deception.
+Example: clickbait = "I'll teach you guitar in 10 minutes."
+Deception = "I'll teach you guitar in 10 minutes," but the video is about cooking pilaf.
+Thumbnail text: bold and striking.
+
+For all: emojis only in 1–3 titles. NEVER in thumbnails.
+
+Tone
+
+Entertainment/Gaming → conversational allowed
+
+Tech/Finance/Education/Health/News/Professional → premium, clear, evidence-forward
+
+Hook Styles (mandatory choice; one or two per option)
+
+Curiosity Gap – curiosity gap with promise of closure
+
+FOMO (Fear of Missing Out) – fear of missed opportunity
+
+Loss Aversion / Negativity Bias – focus on risk, error, penalty, loss
+
+Salvation / Positive Payoff – promise of relief, upgrade, improvement
+
+Blueprint / Roadmap – ready-made plan or step-by-step recipe
+
+Expectation Inversion – "it's not what it seems," flipping expectations
+
+Contrarian Flip – provocation: "everyone thinks X, but truth is Y"
+
+Numerical / Specificity Hook – precise numbers, metrics, facts
+
+Status & Competence – mastery, insider angle, level-check
+
+Narrative Energy & Agency – explicit hero + strong action verb
+
+Diversity (mandatory)
+
+Cover ≥6 different styles, must include: Curiosity Gap, FOMO, Loss Aversion/Negativity, Salvation/Positive Payoff; plus ≥1 of {Expectation Inversion | Contrarian Flip}, ≥1 Numerical/Specificity.
+Keep semantic overlap low.
+
+Title Rules
+
+≤80 characters
+
+strongest hook in ~first 40
+
+one idea only
+
+specificity (numbers/names/dates), explicit agent, strong verbs
+
+special characters/emojis only per quota
+
+no fabrications/toxicity
+
+For L3/L4: within the first ~40 chars include ≥2 of: precise number, strong verb, explicit stake/risk.
+
+Almost always highlight 1–3 key words in CAPS (Cyrillic CAPS allowed). Combine this with other techniques (numbers, strong verbs, curiosity gaps, etc.).
+
+Title Case (Each Word Capitalized, MrBeast style) is acceptable when it improves readability or emphasis.
+
+Thumbnail Text Rules
+
+Thumbnail text should be ultra-scannable. Usually short (1–8 words), but you may go shorter or longer if it improves clarity, stakes, or emotional punch.
+
+NO emojis, NO colons.
+
+All words ALWAYS CAPS.
+
+Do NOT repeat/rephrase the title (≤60% overlap).
+
+Add the missing piece: stake, metric, verdict, or micro-question.
+
+Variation guideline: in each batch, about half of the thumbnails must be very short (1–3 words), and the other half must be clearly longer (4–8 words). Do not treat 3–4 words as "long." Longer texts are allowed if they improve clarity or emotional impact.
+
+If only titles or only thumbnails requested → leave the other key "".
+
+Hints for titles and thumbnails (subtle techniques + psychology)
+
+Notation:
+
+PS = psychology (why it works)
+
+EX = examples (sample phrasings)
+
+PATTERN BREAK
+PS: the brain expects predictability; breaking it = "WTF effect."
+EX: "Eat more to lose weight"; "Learn faster if you sleep longer"; "Shawarma is the key to weight loss."
+
+OPEN LOOP (Zeigarnik effect)
+PS: unfinished = tension → click for closure.
+EX: "I learned 10,000 words and…"; "After that call I didn't sleep for 3 nights."
+
+SOCIAL TRIGGER
+PS: people fear isolation/shame, want to be "insiders."
+EX: "7 phrases that expose a newbie"; "The method trainers keep silent about"; "If you type like this you waste years"; "Embarrassing not to know this in the US."
+
+LOSS & RISK
+PS: fear of loss > desire to gain.
+EX: "If you type like this — you lose ×2 time"; "90% make this mistake and lose money."
+
+FOMO / LIMITED CHANCE
+PS: missed opportunity = click pressure.
+EX: "Only 7 people will make it"; "This disappears in a week."
+
+MICRO DETAIL
+PS: oddly specific detail enhances realism.
+EX: "I spent 731 hours learning"; "He quit over one apple."
+
+EMOTION CONTRAST
+PS: combining opposites creates intrigue.
+EX: "The funniest tragedy"; "Sweet mistake."
+
+AUTHORITY EFFECT
+PS: trust in experts/unusual confessions.
+EX: "Psychologist said: forget the advice"; "Trainer admitted he does the opposite."
+
+PRECISE DETAILS
+PS: numbers, dates, places = credibility.
+EX: "372 days in Germany" instead of "a year in Germany."
+
+PARTIAL INCOMPLETENESS
+PS: incompleteness sparks curiosity.
+EX: "He did this at the worst possible moment…"
+
+EXPECTATION INVERSION
+PS: "not as it should be."
+EX: "Why 90% of diets DON'T work"; "Touch typing? Two fingers is the best way!"
+
+PARADOXICAL FORMULATIONS
+PS: brain stumbles over contradictions.
+EX: "Slower = faster."
+
+FOCUS ON REACTION
+PS: emotions/consequences > event itself.
+EX: "Everyone went silent after this phrase" instead of "He said a phrase."
+
+ANTI-ADVICE / ANTI-NORM
+PS: categorical claim against "common sense."
+EX: "Type only with two fingers"; "Eat shawarma to lose weight."
+
+CONTRAST TO TITLE
+PS: add timeframe, number, hidden stake.
+EX: "How to save ₴50,000" → "in 14 months."
+
+MICRO VERDICT
+PS: short sharp word = instant focus.
+EX: "BAN"; "Mistake №1"; "Forget it."
+
+UNEXPECTED DETAIL
+PS: odd actor/detail attracts attention.
+EX: "The cat decided"; "11 seconds of silence changed my life."
+
+QUESTION PROVOCATION
+PS: doubt or challenge triggers self-reflection.
+EX: "What if the opposite?"; "Do you do this?"
+
+SUPER-FORMULA (combination)
+PS: combining hooks amplifies effect.
+Formula: [Pattern Break] + [Open Loop] = max click.
+EX: "I worked 2 hours a day and outpaced all colleagues" → "Secret in silence."
+EX: "Why smart people never cram words" → "They do THIS."
+
+CONCRETE EMOTION INSTEAD OF "SHOCK"
+PS: abstract words ("shock," "wow," "amazing") = cliché; concrete emotional manifestations feel real.
+EX: "My hands were shaking when I pressed Enter"; "Everyone went silent"; "I didn't sleep 3 nights"; "The mistake cost ₴372,000"; "Pulled off air after 12 minutes."
+
+DRY DELIVERY
+PS: deliberately plain/technical tone feels more credible than hype.
+EX: "The file was 1.43 GB"; "The experiment lasted 27 days"; "Errors at 0.8%."
+
+COMPARISON WITH THE INCOMMENSURABLE
+PS: odd comparisons break perception and add contrast.
+EX: "One bug cost more than a Tesla"; "Less than a cup of coffee (€2.1)."
+
+SALVATION / POSITIVE PAYOFF
+PS: promise of relief or upgrade.
+EX: "How to remove stress in 3 minutes"; "Lose 2kg in a week without diets."
+
+BLUEPRINT / ROADMAP
+PS: step-by-step recipe = control.
+EX: "3 steps to perfect memory"; "14-day plan."
+
+TEST / CHECK
+PS: people enjoy "passing a test."
+EX: "If you get this meme — you're a zoomer"; "This puzzle is asked at Google interviews. Can you solve it?"
+
+NAMES / ENTITIES
+PS: brands, people, objects = concreteness and recognition.
+EX: "What Musk said at the meeting"; "Apple hid this feature."
+
+PERSONAL STAKES
+PS: framing as personal raises relevance.
+EX: "You lose ₴372 every day"; "This trick saves you years."
+
+COUNTERFACTUAL HOOK
+PS: "What if…" forces the brain to imagine alternatives.
+EX: "What if the Internet vanished tomorrow?"; "What if everything's the opposite?"
+
+PROCESSING FLUENCY
+PS: short words, numbers, simple structure = quick readability.
+EX: "24 hours without food"; "×3 in a month."
+
+IMPORTANT:
+All "EX" are examples. They are given to show the essence of the technique (how the style/trigger works).
+You must understand the logic and apply it to the user's topic, but not copy them word-for-word.
+Final titles and thumbnails must be original.
+
+Process
+
+Immediately generate N final options per the rules above and select the two best: output their indices (1-based) in topPicks.
+
+Output contract (STRICTLY JSON, no extra keys)
+{
+  "audienceProfile": "3–6 benefit-focused sentences (if unclear — start with 'Assumptions: …')",
+  "options": [
+    {"title": "STRING", "thumbnailText": "STRING", "style": "STYLE_FROM_LIST"}
+  ],
+  "topPicks": [{"index": NUMBER}, {"index": NUMBER}]
+}
+
+Conflict resolution
+
+JSON contract & validation > language/locale rule > levels/quotas > other.
+
+Validation (internal, do not output)
+
+Single language from {{topic}}
+
+UA default
+
+Correct number/currency format
+
+Field lengths
+
+CAPS/emoji quotas
+
+Style coverage
+
+ThumbnailText: no ":" or emoji
+
+Title↔thumbnail overlap ≤60%
+
+topPicks = two unique numbers in [1..N]
+
+Strings without line breaks / smart quotes / trailing commas`;
+
 
 /* ================= USER PROMPT BUILDER ================= */
+function buildUserBlockWithAudience({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel}){
+  const onlyTitles = wantTitles && !wantThumbs ? "true" : "false";
+  const onlyThumbs = wantThumbs && !wantTitles ? "true" : "false";
+  
+  const clickbaitLevelNames = {
+    1: "L1",
+    2: "L2", 
+    3: "L3",
+    4: "L4"
+  };
+  
+  const lines = [
+    `VIDEO_TOPIC: ${escapeForPrompt(topic)}`,
+    `FORMAT: ${escapeForPrompt(format || t.notSpecified)}`,
+    `AUDIENCE: ${escapeForPrompt(audience)}`,
+    `CLICKBAIT_LVL: ${clickbaitLevelNames[clickbaitLevel] || "L3"}`,
+    `N: ${count}`,
+    `ONLY_TITLES: ${onlyTitles}`,
+    `ONLY_THUMBS: ${onlyThumbs}`
+  ];
+  
+  return lines.join('\n');
+}
+
 function buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel}){
   const comp =
     wantTitles && wantThumbs ? t.titlesAndThumbnails :
@@ -1079,9 +1268,10 @@ function normalizeOutput(o, opts){
   const { wantTitles, wantThumbs, count, source } = opts;
   const options = (o.options||[]).slice(0, count).map(x=> ({
     title: wantTitles ? (x.title||"").trim().slice(0,100) : "",
-    thumbnailText: wantThumbs ? (x.thumbnailText||"").replace(/:/g,"").trim().slice(0,50).toUpperCase() : ""
+    thumbnailText: wantThumbs ? (x.thumbnailText||"").replace(/:/g,"").trim().slice(0,50).toUpperCase() : "",
+    style: (x.style||"").trim() || "Unknown"
   }));
-  while(options.length < count) options.push({ title: wantTitles ? "" : "", thumbnailText: wantThumbs ? "" : "" });
+  while(options.length < count) options.push({ title: wantTitles ? "" : "", thumbnailText: wantThumbs ? "" : "", style: "Unknown" });
 
   // Разделяем TopPicks пополам между моделями (по 1 на каждую)
   const allTopPicks = Array.isArray(o.topPicks) ? o.topPicks
@@ -1094,17 +1284,11 @@ function normalizeOutput(o, opts){
   return { audienceProfile: (o.audienceProfile||"").trim(), options, topPicks: tp };
 }
 
+/* ================= AUDIENCE ANALYSIS ================= */
+
 /* ================= NETWORK ================= */
 async function callGemini(payload, tries=RETRIES){
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
-  
-  // Логируем информацию о модели в консоль
-  console.log(`🤖 Gemini API Request: Using model "${GEMINI_MODEL}"`);
-  console.log(`📊 Request details:`, {
-    model: GEMINI_MODEL,
-    contents: payload.contents?.length || 0,
-    generationConfig: payload.generationConfig ? 'configured' : 'default'
-  });
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(decryptApiKey(GEMINI_API_KEY))}`;
   
   let lastErr;
   for(let i=0;i<tries;i++){
@@ -1130,15 +1314,6 @@ async function callOpenAI(payload, tries=RETRIES){
   const url = "https://api.openai.com/v1/chat/completions";
   const model = payload.model || OPENAI_MODEL;
   
-  // Логируем информацию о модели в консоль
-  console.log(`🚀 OpenAI API Request: Using model "${model}"`);
-  console.log(`📊 Request details:`, {
-    model: model,
-    messages: payload.messages?.length || 0,
-    temperature: payload.temperature || 'default',
-    max_tokens: payload.max_tokens || 'default'
-  });
-  
   let lastErr;
   for(let i=0;i<tries;i++){
     try{
@@ -1146,15 +1321,14 @@ async function callOpenAI(payload, tries=RETRIES){
         method:"POST", 
         headers:{ 
           "Content-Type":"application/json",
-          "Authorization": `Bearer ${OPENAI_API_KEY}`
+          "Authorization": `Bearer ${decryptApiKey(OPENAI_API_KEY)}`
         }, 
         body: JSON.stringify(payload) 
       });
       if(!res.ok){ const txt = await res.text().catch(()=> ""); throw new Error(`HTTP ${res.status}: ${txt||res.statusText}`) }
       
-      const result = await res.json();
-      console.log(`✅ OpenAI API Response: Model "${model}" completed successfully`);
-      return result;
+        const result = await res.json();
+        return result;
     }catch(err){
       lastErr = err;
       console.warn(`⚠️ OpenAI API Attempt ${i+1}/${tries} failed:`, err.message);
@@ -1271,9 +1445,9 @@ function rowHTML(i, opt, topSet, showTitle, showThumb){
   const thumbVal = opt.thumbnailText || '';
   const source = opt.source || '';
   
-  // Generate analysis on client side
+  // Use style from model response or generate analysis on client side
+  const styleVal = opt.style || analyzeTitle(titleVal, thumbVal).style;
   const analysis = analyzeTitle(titleVal, thumbVal);
-  const styleVal = analysis.style;
   const triggersVal = analysis.triggers;
   const synergyVal = analysis.synergy;
   
@@ -1316,22 +1490,25 @@ function rowHTML(i, opt, topSet, showTitle, showThumb){
   </div>`;
 }
 
-function sessionHTML(session){
+function sessionHTML(session, showCloseButton = true){
   const { output, view, input } = session;
   const showTitle = view.wantTitles, showThumb = view.wantThumbs;
   const topSet = new Set((output.topPicks||[]).map(x=> x.index));
   const list = (output.options||[]).map((o,i)=> rowHTML(i,o,topSet,showTitle,showThumb)).filter(Boolean).join('');
   const cardTitle = getFirstSentence(input.topic);
   
-  return `
-  <article class="session collapsed" role="region" aria-label="Result session" data-id="${session.id}">
-    <div class="session-head">
-      <span class="session-title">${cardTitle}</span>
+  const closeButton = showCloseButton ? `
       <div class="session-actions">
         <button class="iconbtn close" title="${t.removeResult}" aria-label="${t.removeResult}">
           <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
         </button>
-      </div>
+    </div>` : '';
+  
+  return `
+  <article class="session collapsed" role="region" aria-label="Result session" data-id="${session.id}">
+    <div class="session-head">
+      <span class="session-title">${cardTitle}</span>
+      ${closeButton}
     </div>
     <div class="audience" data-label="${t.audienceProfile}">${output.audienceProfile||''}</div>
     <div class="list">${list}</div>
@@ -1343,9 +1520,7 @@ function skeletonCard(){
   wrap.className = 'session';
   wrap.innerHTML = `
     <div class="session-head">
-      <button class="iconbtn sk-close" title="${t.dismiss}" aria-label="${t.dismiss}">
-        <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
-      </button>
+      <span class="session-title">${t.loading}</span>
     </div>
     <div class="skeleton">
       <div class="pulse"></div><div class="pulse"></div><div class="pulse"></div>
@@ -1453,6 +1628,33 @@ function attachSessionControls(scope=document){
         card.remove(); 
         if(id) store.deleteSession(id); 
         setup3DCards();
+        
+        // Проверяем, остались ли сессии, и обрабатываем соответственно
+        const remainingSessions = store.loadSessions();
+        const resultsPanel = document.querySelector('.panel.results');
+        if (remainingSessions.length === 0 && resultsPanel) {
+          if (isMobileDevice()) {
+            // На мобильных скрываем блок
+            resultsPanel.style.opacity = '0';
+            resultsPanel.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+              resultsPanel.style.display = 'none';
+            }, 300);
+          } else {
+            // На ПК показываем placeholder
+            const container = document.querySelector('#stream');
+            container.innerHTML = '';
+            const placeholder = document.createElement('div');
+            placeholder.className = 'history-placeholder';
+            placeholder.innerHTML = `
+              <div class="placeholder-content">
+                <div class="placeholder-icon">📝</div>
+                <div class="placeholder-text">${t.historyPlaceholder}</div>
+              </div>
+            `;
+            container.appendChild(placeholder);
+          }
+        }
       }, 300);
     };
   });
@@ -1539,119 +1741,32 @@ function setBtnBusy(btn, on){
 }
 
 async function generateDualModels(topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel) {
-  // Разделяем количество запросов пополам
-  const halfCount = Math.floor(count / 2);
-  const openaiCount = halfCount; // Первая половина всегда ChatGPT
-  const geminiCount = count - halfCount; // Вторая половина Gemini
+  // Создаем промпт для генерации контента только через Gemini
+  const geminiPrompt = buildUserBlockWithAudience({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel});
   
-  console.log(`🎯 Dual Model Generation Started:`);
-  console.log(`📝 Topic: "${topic}"`);
-  console.log(`🔢 Total variants: ${count}`);
-  console.log(`🤖 OpenAI (${OPENAI_MODEL}): ${openaiCount} variants`);
-  console.log(`🤖 Gemini (${GEMINI_MODEL}): ${geminiCount} variants`);
-  console.log(`📊 Components: ${wantTitles ? 'Titles' : ''}${wantTitles && wantThumbs ? ' + ' : ''}${wantThumbs ? 'Thumbnails' : ''}`);
-  
-  // Сначала получаем анализ аудитории от Gemini
-  const audienceAnalysisPrompt = `Analyze the target audience for this video topic and provide a detailed audience profile (3-6 sentences):
-
-VIDEO TOPIC: ${escapeForPrompt(topic)}
-FORMAT: ${escapeForPrompt(format || t.notSpecified)}
-TARGET AUDIENCE: ${escapeForPrompt(audience || t.notSpecified)}
-
-Respond with a JSON object containing only "audienceProfile" field.`;
-  
-  // Создаем промпты для генерации контента
-  const openaiPrompt = buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count: openaiCount, clickbaitLevel});
-  const geminiPrompt = buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count: geminiCount, clickbaitLevel});
-  
-  // Параллельные запросы к обеим моделям
-  const [audienceResult, openaiResult, geminiResult] = await Promise.allSettled([
-    // Gemini для анализа аудитории
-    callGemini({
-      systemInstruction: { parts: [{ text: "You are an expert in audience analysis. Provide detailed audience profiles for video content." }] },
-      contents: [{ role: "user", parts: [{ text: audienceAnalysisPrompt }] }],
-      generationConfig: GENCFG_HQ
-    }),
-    // ChatGPT для первой половины вариантов
-    callOpenAI({
-      model: OPENAI_MODEL,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: openaiPrompt }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.85,
-      max_tokens: 4000
-    }),
-    // Gemini для второй половины вариантов
-    callGemini({
-      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      contents: [{ role: "user", parts: [{ text: geminiPrompt }] }],
-      generationConfig: GENCFG_HQ
-    })
-  ]);
+  // Запрос только к Gemini
+  const geminiResult = await callGemini({
+    contents: [{ role: "user", parts: [{ text: SYSTEM_PROMPT + '\n\n' + geminiPrompt }] }],
+    generationConfig: GENCFG_HQ
+  });
   
   const results = [];
-  let audienceProfile = '';
   
-  // Обрабатываем анализ аудитории от Gemini
-  if (audienceResult.status === 'fulfilled') {
-    try {
-      const audienceData = audienceResult.value;
-      const first = (audienceData.candidates||[])[0];
-      const text = joinParts(first?.content?.parts);
-      let parsed = safeParseJSON(text);
-      
-      if (parsed && parsed.audienceProfile) {
-        audienceProfile = parsed.audienceProfile;
-      }
-    } catch (err) {
-      console.warn('Audience analysis error:', err);
+  // Обрабатываем результат Gemini
+  try {
+    const geminiData = geminiResult;
+    const first = (geminiData.candidates||[])[0];
+    const text = joinParts(first?.content?.parts);
+    let parsed = safeParseJSON(text);
+    
+    if (parsed && Array.isArray(parsed.options)) {
+      const normalized = normalizeOutput(parsed, { wantTitles, wantThumbs, count, source: 'Gemini' });
+      // Используем ЦА от Gemini
+      results.push({ source: 'Gemini', data: normalized, order: 1 });
     }
+  } catch (err) {
+    console.warn('Gemini parsing error:', err);
   }
-  
-  // Обрабатываем результат OpenAI (первая половина)
-  if (openaiResult.status === 'fulfilled') {
-    try {
-      const openaiData = openaiResult.value;
-      const text = openaiData.choices?.[0]?.message?.content;
-      let parsed = safeParseJSON(text);
-      
-              if (parsed && Array.isArray(parsed.options)) {
-                const normalized = normalizeOutput(parsed, { wantTitles, wantThumbs, count: openaiCount, source: 'OpenAI' });
-                // Добавляем аудиторию от Gemini
-                normalized.audienceProfile = audienceProfile;
-                results.push({ source: 'OpenAI', data: normalized, order: 1 });
-              }
-    } catch (err) {
-      console.warn('OpenAI parsing error:', err);
-    }
-  }
-  
-  // Обрабатываем результат Gemini (вторая половина)
-  if (geminiResult.status === 'fulfilled') {
-    try {
-      const geminiData = geminiResult.value;
-      const first = (geminiData.candidates||[])[0];
-      const text = joinParts(first?.content?.parts);
-      let parsed = safeParseJSON(text);
-      
-              if (parsed && Array.isArray(parsed.options)) {
-                const normalized = normalizeOutput(parsed, { wantTitles, wantThumbs, count: geminiCount, source: 'Gemini' });
-                // Добавляем аудиторию от Gemini
-                normalized.audienceProfile = audienceProfile;
-                results.push({ source: 'Gemini', data: normalized, order: 2 });
-              }
-    } catch (err) {
-      console.warn('Gemini parsing error:', err);
-    }
-  }
-  
-  console.log(`🎉 Dual Model Generation Completed:`);
-  console.log(`✅ Results: ${results.length} models responded`);
-  results.forEach(result => {
-    console.log(`📊 ${result.source}: ${result.data.options.length} options, ${result.data.topPicks.length} top picks`);
-  });
   
   return results;
 }
@@ -1721,42 +1836,42 @@ async function generate(){
       throw new Error('No models responded successfully');
     }
     
-    // Объединяем результаты в правильном порядке (ChatGPT первым)
+    // Объединяем результаты от Gemini
     let combinedOptions = [];
     let combinedTopPicks = [];
     let audienceProfile = '';
     
-    // Сортируем результаты по порядку (order: 1 = ChatGPT, order: 2 = Gemini)
-    const sortedResults = results.sort((a, b) => (a.order || 0) - (b.order || 0));
-    
-    sortedResults.forEach((result, index) => {
-      const { data } = result;
+    // Берем результат от Gemini
+    const geminiResult = results.find(r => r.source === 'Gemini');
+    if (geminiResult && geminiResult.data) {
+      const { data } = geminiResult;
+      
       if (data.options) {
-        // Добавляем опции с префиксом источника
+        // Добавляем опции от Gemini
         data.options.forEach((option, optIndex) => {
           combinedOptions.push({
             ...option,
-            source: result.source,
+            source: 'Gemini',
             originalIndex: optIndex
           });
         });
       }
       
       if (data.topPicks) {
-        // Корректируем индексы top picks для объединенного массива
-        const offset = combinedOptions.length - data.options.length;
+        // Добавляем top picks от Gemini
         data.topPicks.forEach(pick => {
           combinedTopPicks.push({
-            index: pick.index + offset,
-            source: result.source
+            index: pick.index,
+            source: 'Gemini'
           });
         });
       }
       
-      if (data.audienceProfile && !audienceProfile) {
+      // Берем ЦА от Gemini
+      if (data.audienceProfile) {
         audienceProfile = data.audienceProfile;
       }
-    });
+    }
     
     // Создаем финальный результат
     const finalOutput = {
@@ -1774,8 +1889,19 @@ async function generate(){
     };
     store.addSession(session);
 
+    // Показываем блок истории, если он был скрыт или показываем placeholder
+    const resultsPanel = stream.closest('.panel.results');
+    if (resultsPanel && (resultsPanel.style.display === 'none' || stream.querySelector('.history-placeholder'))) {
+      resultsPanel.style.display = '';
+      // Плавное появление
+      setTimeout(() => {
+        resultsPanel.style.opacity = '1';
+        resultsPanel.style.transform = 'translateY(0)';
+      }, 50);
+    }
+
     const cardWrap = document.createElement('div'); 
-    cardWrap.innerHTML = sessionHTML(session);
+    cardWrap.innerHTML = sessionHTML(session, false); // Создаем без кнопки закрытия
     const newSession = cardWrap.firstElementChild;
     stream.replaceChild(newSession, skel);
     
@@ -1783,6 +1909,23 @@ async function generate(){
     attachCopyHandlers(stream);
     attachSessionControls(stream);
     setup3DCards();
+    
+    // Добавляем кнопку закрытия после завершения генерации
+    setTimeout(() => {
+      const sessionHead = newSession.querySelector('.session-head');
+      if (sessionHead && !sessionHead.querySelector('.session-actions')) {
+        const closeButtonHTML = `
+          <div class="session-actions" style="opacity: 0; animation: fadeInActions 0.5s ease forwards;">
+            <button class="iconbtn close" title="${t.removeResult}" aria-label="${t.removeResult}">
+              <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
+            </button>
+          </div>`;
+        sessionHead.insertAdjacentHTML('beforeend', closeButtonHTML);
+        
+        // Re-attach controls for the new close button
+        attachSessionControls(newSession);
+      }
+    }, 800); // Задержка для появления кнопки после завершения генерации
     
     // Auto-expand the new card
     setTimeout(() => {
@@ -1828,17 +1971,68 @@ async function generate(){
 }
 
 /* ================= INIT ================= */
+// Определяем тип устройства
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+         window.innerWidth <= 768;
+}
+
 function renderAll(){
   const container = $("#stream"); 
+  const resultsPanel = container.closest('.panel.results');
+  const sessions = store.loadSessions();
+  
   container.innerHTML = "";
-  store.loadSessions().forEach(s => {
+  
+  if (sessions.length === 0) {
+    if (isMobileDevice()) {
+      // На мобильных скрываем блок истории, если нет данных
+      if (resultsPanel) {
+        resultsPanel.style.opacity = '0';
+        resultsPanel.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+          resultsPanel.style.display = 'none';
+        }, 300);
+      }
+    } else {
+      // На ПК показываем placeholder
+      if (resultsPanel) {
+        resultsPanel.style.display = '';
+        resultsPanel.style.opacity = '1';
+        resultsPanel.style.transform = 'translateY(0)';
+        
+        // Добавляем placeholder
+        const placeholder = document.createElement('div');
+        placeholder.className = 'history-placeholder';
+        placeholder.innerHTML = `
+          <div class="placeholder-content">
+            <div class="placeholder-icon">📝</div>
+            <div class="placeholder-text">${t.historyPlaceholder}</div>
+          </div>
+        `;
+        container.appendChild(placeholder);
+      }
+    }
+  } else {
+    // Показываем блок истории и рендерим сессии
+    if (resultsPanel) {
+      resultsPanel.style.display = '';
+      // Небольшая задержка для плавного появления
+      setTimeout(() => {
+        resultsPanel.style.opacity = '1';
+        resultsPanel.style.transform = 'translateY(0)';
+      }, 50);
+    }
+    
+    sessions.forEach(s => {
     const wrap = document.createElement("div"); 
-    wrap.innerHTML = sessionHTML(s);
+      wrap.innerHTML = sessionHTML(s, true); // Существующие сессии показываем с кнопкой
     container.appendChild(wrap.firstElementChild);
   });
   attachCopyHandlers(container);
   attachSessionControls(container);
   setup3DCards();
+  }
 }
 
 function bindUI(){
@@ -1978,7 +2172,7 @@ function bindUI(){
   
   titleCheck.addEventListener("click", () => {
     titleCheck.classList.add('ripple');
-    haptic.light();
+      haptic.light();
     setTimeout(() => titleCheck.classList.remove('ripple'), 600);
     
     // Проверяем после изменения состояния
@@ -2128,6 +2322,14 @@ function initClickbaitSlider() {
     label.addEventListener('click', () => {
       const level = parseInt(label.getAttribute('data-level'));
       updateClickbaitSlider(level);
+      haptic.light();
+    });
+    
+    label.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const level = parseInt(label.getAttribute('data-level'));
+      updateClickbaitSlider(level);
+      haptic.light();
     });
   });
 
@@ -2160,10 +2362,30 @@ function initClickbaitSlider() {
   thumb.addEventListener('touchstart', (e) => {
     isDragging = true;
     e.preventDefault();
+    e.stopPropagation();
+    haptic.light();
+  });
+
+  track.addEventListener('touchstart', (e) => {
+    const rect = track.getBoundingClientRect();
+    const touchX = e.touches[0].clientX - rect.left;
+    const percentage = (touchX / rect.width) * 100;
+    
+    let level;
+    if (percentage < 25) level = 1;
+    else if (percentage < 50) level = 2;
+    else if (percentage < 75) level = 3;
+    else level = 4;
+    
+    updateClickbaitSlider(level);
+    haptic.light();
   });
 
   document.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
     
     const rect = track.getBoundingClientRect();
     const touchX = e.touches[0].clientX - rect.left;
@@ -2171,14 +2393,18 @@ function initClickbaitSlider() {
     
     let level;
     if (percentage < 25) level = 1;
-    else if (percentage < 75) level = 2;
-    else level = 3;
+    else if (percentage < 50) level = 2;
+    else if (percentage < 75) level = 3;
+    else level = 4;
     
     updateClickbaitSlider(level);
   });
 
-  document.addEventListener('touchend', () => {
+  document.addEventListener('touchend', (e) => {
+    if (isDragging) {
     isDragging = false;
+      haptic.light();
+    }
   });
   
   // Initialize with level 3 (maximum)
@@ -2214,6 +2440,14 @@ function initCountSlider() {
     label.addEventListener('click', () => {
       const value = parseInt(label.getAttribute('data-value'));
       updateCountSlider(value);
+      haptic.light();
+    });
+    
+    label.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const value = parseInt(label.getAttribute('data-value'));
+      updateCountSlider(value);
+      haptic.light();
     });
   });
 
@@ -2246,10 +2480,29 @@ function initCountSlider() {
   thumb.addEventListener('touchstart', (e) => {
     isDragging = true;
     e.preventDefault();
+    e.stopPropagation();
+    haptic.light();
+  });
+
+  track.addEventListener('touchstart', (e) => {
+    const rect = track.getBoundingClientRect();
+    const touchX = e.touches[0].clientX - rect.left;
+    const percentage = (touchX / rect.width) * 100;
+    
+    // Convert percentage to value (6-16 range, even numbers only)
+    const rawValue = 6 + (percentage / 100) * 10;
+    const value = Math.round(rawValue / 2) * 2; // Round to nearest even number
+    const clampedValue = clamp(value, 6, 16);
+    
+    updateCountSlider(clampedValue);
+    haptic.light();
   });
 
   document.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
     
     const rect = track.getBoundingClientRect();
     const touchX = e.touches[0].clientX - rect.left;
@@ -2263,8 +2516,11 @@ function initCountSlider() {
     updateCountSlider(clampedValue);
   });
 
-  document.addEventListener('touchend', () => {
-    isDragging = false;
+  document.addEventListener('touchend', (e) => {
+    if (isDragging) {
+      isDragging = false;
+      haptic.light();
+    }
   });
   
   // Initialize with default value
