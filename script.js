@@ -1672,7 +1672,7 @@ function attachSessionControls(scope=document){
 
 /* ================= FLOW ================= */
 function updateCountSlider(value){
-  const countValue = document.getElementById('countValue');
+  const countValue = document.getElementById('count-value');
   const thumb = document.getElementById('count-thumb');
   if (!countValue || !thumb) return;
   
@@ -1785,7 +1785,7 @@ async function generate(){
   let wantTitles = $("#wantTitles").checked, wantThumbs = $("#wantThumbs").checked;
   
   // Get count from slider
-  const countValue = document.getElementById('countValue');
+  const countValue = document.getElementById('count-value');
   let count = parseInt(countValue?.textContent || "8", 10) || 8;
   count = clamp(count, 6, 16);
   // Ensure count is even
