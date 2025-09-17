@@ -1246,10 +1246,8 @@ function normalizeOutput(o, opts){
     const thumbnailText = wantThumbs ? (x.thumbnailText||"").replace(/:/g,"").trim().slice(0,50).toUpperCase() : "";
     
     // Используем только стиль и триггеры от модели, без дополнительного анализа
-    console.log('🔍 Option data:', x);
     const style = (x.style||"").trim() || "Unknown";
     const triggers = (x.triggers||"").trim() || "Unknown";
-    console.log('🔍 Style:', style, 'Triggers:', triggers);
     
     return {
       title,
@@ -1284,7 +1282,6 @@ async function callGemini(payload, tries=RETRIES){
       if(!res.ok){ const txt = await res.text().catch(()=> ""); throw new Error(`HTTP ${res.status}: ${txt||res.statusText}`) }
       
       const result = await res.json();
-      console.log(`✅ Gemini API Response: Model "${GEMINI_MODEL}" completed successfully`);
       return result;
     }catch(err){
       lastErr = err;
@@ -1763,11 +1760,6 @@ async function generateDualModels(topic, format, audience, wantTitles, wantThumb
   // Формируем полный промпт для отправки
   const fullPrompt = SYSTEM_PROMPT + '\n\n' + geminiPrompt;
   
-  // Логируем полный промпт в консоль
-  console.log('🚀 ПОЛНЫЙ ПРОМПТ ДЛЯ GEMINI:');
-  console.log('='.repeat(80));
-  console.log(fullPrompt);
-  console.log('='.repeat(80));
   
   // Запрос только к Gemini
   const geminiResult = await callGemini({
@@ -1782,13 +1774,10 @@ async function generateDualModels(topic, format, audience, wantTitles, wantThumb
     const geminiData = geminiResult;
     const first = (geminiData.candidates||[])[0];
     const text = joinParts(first?.content?.parts);
-    console.log('🔍 Raw Gemini response:', text);
     let parsed = safeParseJSON(text);
-    console.log('🔍 Parsed JSON:', parsed);
     
     if (parsed && Array.isArray(parsed.options)) {
       const normalized = normalizeOutput(parsed, { wantTitles, wantThumbs, count, source: 'Gemini' });
-      console.log('🔍 Normalized data:', normalized);
       // Используем ЦА от Gemini
       results.push({ source: 'Gemini', data: normalized, order: 1 });
     }
