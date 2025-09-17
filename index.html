@@ -33,6 +33,7 @@
     <div class="pl-card">
       <img class="pl-logo" src="https://i.imgur.com/NAlA829.jpeg" alt="TITLE CRAFT logo" width="80" height="80" />
       <div class="pl-bar"><span></span></div>
+      <div class="pl-text">Loading...</div>
     </div>
   </div>
 
@@ -115,17 +116,22 @@
               </label>
             </div>
             <div class="controls">
-              <div class="ctrl">
-                <label for="count" data-i18n="countLabel">Count (5–15)</label>
-                <input 
-                  type="number" 
-                  id="count" 
-                  min="5" 
-                  max="15" 
-                  value="8" 
-                  inputmode="numeric"
-                  onblur="this.value = Math.min(15, Math.max(5, this.value || 5));"
-                />
+              <div class="count-slider-container">
+                <div class="count-display">
+                  <div class="count-current-value" id="countValue">8</div>
+                  <div class="count-label" data-i18n="countLabel">Count (6–16)</div>
+                </div>
+                <div class="count-slider-track">
+                  <div class="count-slider-thumb" id="count-thumb"></div>
+                </div>
+                <div class="count-labels">
+                  <span class="count-label-item" data-value="6">6</span>
+                  <span class="count-label-item" data-value="8">8</span>
+                  <span class="count-label-item" data-value="10">10</span>
+                  <span class="count-label-item" data-value="12">12</span>
+                  <span class="count-label-item" data-value="14">14</span>
+                  <span class="count-label-item" data-value="16">16</span>
+                </div>
               </div>
             </div>
           </div>
