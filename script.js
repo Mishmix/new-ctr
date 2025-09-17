@@ -1085,18 +1085,6 @@ All "EX" are examples. They are given to show the essence of the technique (how 
 You must understand the logic and apply it to the user's topic, but not copy them word-for-word.
 Final titles and thumbnails must be original.
 
-Process
-
-Immediately generate N final options per the rules above and select the two best: output their indices (1-based) in topPicks.
-
-Output contract (STRICTLY JSON, no extra keys)
-{
-  "audienceProfile": "3–6 benefit-focused sentences (if unclear — start with 'Assumptions: …')",
-  "options": [
-    {"title": "STRING", "thumbnailText": "STRING", "style": "STYLE_FROM_LIST"}
-  ],
-  "topPicks": [{"index": NUMBER}, {"index": NUMBER}]
-}
 
 Conflict resolution
 
@@ -1105,8 +1093,6 @@ JSON contract & validation > language/locale rule > levels/quotas > other.
 Validation (internal, do not output)
 
 Single language from {{topic}}
-
-UA default
 
 Correct number/currency format
 
@@ -1122,7 +1108,23 @@ Title↔thumbnail overlap ≤60%
 
 topPicks = two unique numbers in [1..N]
 
-Strings without line breaks / smart quotes / trailing commas`;
+Process
+
+Immediately generate N final options per the rules above and select the two best: output their indices (1-based) in topPicks.
+
+Output contract (STRICTLY JSON, no extra keys)
+{
+  "audienceProfile": "3–6 benefit-focused sentences (if unclear — start with 'Assumptions: …')",
+  "options": [
+    {"title": "STRING", "thumbnailText": "STRING", "style": "DESCRIPTIVE_STYLE_NAME", "triggers": "PSYCHOLOGICAL_TRIGGERS"}
+  ],
+  "topPicks": [{"index": NUMBER}, {"index": NUMBER}]
+}
+
+IMPORTANT: For each option in the json response, you MUST specify both "style" and "triggers" fields. 
+- "style": Use one of the Hook Styles listed above OR create your own descriptive style name that best describes the psychological approach used in that title.
+- "triggers": List the specific psychological triggers used (e.g., "Curiosity, FOMO, Status", "Loss Aversion, Authority", "Social Proof," etc).
+`;
 
 
 /* ================= USER PROMPT BUILDER ================= */
@@ -1150,60 +1152,31 @@ function buildUserBlockWithAudience({topic, format, audience, wantTitles, wantTh
   return lines.join('\n');
 }
 
-function buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel}){
-  const comp =
-    wantTitles && wantThumbs ? t.titlesAndThumbnails :
-    wantTitles ? t.titlesOnly :
-    wantThumbs ? t.thumbnailsOnly : t.titlesAndThumbnails;
-  
-  const clickbaitLevelNames = {
-    1: t.clickbaitLevel1,
-    2: t.clickbaitLevel2, 
-    3: t.clickbaitLevel3,
-    4: t.clickbaitLevel4
-  };
-  
-  const lines = [
-    `VIDEO TOPIC: ${escapeForPrompt(topic)}`,
-    `FORMAT: ${escapeForPrompt(format || t.notSpecified)}`,
-    `TARGET AUDIENCE: ${escapeForPrompt(audience || t.notSpecified)}`,
-    `CLICKBAIT LEVEL: ${clickbaitLevelNames[clickbaitLevel] || "Maximum (Level 3)"}`,
-    `LANGUAGE: auto-detect from topic (current interface language: ${t.languageMarker})`,
-    `REQUESTED COMPONENTS: ${comp}`,
-    `NUMBER OF VARIANTS: ${count}`,
-    `OUTPUT REQUIREMENTS:
-• Return exactly ${count} options with the requested components
-• Include Audience Profile (3-6 sentences about the target viewers)
-• Include Top Picks (2 best options by index)
-• IMPORTANT: Respond in the same language as the topic text
-• Follow the specified clickbait level guidelines from system instructions
-• For Level 1: Use 3-4 words in thumbnail texts, compelling and intriguing but honest style
-• For Level 2: Use 2-4 words in thumbnail texts, moderate engagement  
-• For Level 3: Use maximum viral impact (1-3 words), embrace strong viral language, focus on high CTR potential
-• For Level 4: Use 1-5 words in thumbnail texts (NOT forced to 1-2), aggressive framing with eye-catching CAPS, NO emojis in thumbnails
-`
-  ];
-  return lines.join("\n");
-}
 
-function responseSchema(){
+function responseSchema(N) {
   return {
     type: "OBJECT",
     properties: {
       audienceProfile: { type: "STRING" },
       options: {
         type: "ARRAY",
+        minItems: N, // если хочешь зафиксировать ровно N
+        maxItems: N,
         items: {
           type: "OBJECT",
           properties: {
             title: { type: "STRING" },
-            thumbnailText: { type: "STRING" }
+            thumbnailText: { type: "STRING" },
+            style: { type: "STRING" },      // 🔥 добавлено
+            triggers: { type: "STRING" }    // 🔥 добавлено
           },
-          required: ["title", "thumbnailText"]
+          required: ["title", "thumbnailText", "style", "triggers"] // 🔥 теперь обязательные
         }
       },
       topPicks: {
         type: "ARRAY",
+        minItems: 2,
+        maxItems: 2,
         items: {
           type: "OBJECT",
           properties: {
@@ -1213,18 +1186,20 @@ function responseSchema(){
         }
       }
     },
-    required: ["audienceProfile","options","topPicks"]
+    required: ["audienceProfile", "options", "topPicks"]
   };
 }
 
-const GENCFG_HQ = {
-  temperature: 0.85,
-  topP: 0.92,
-  maxOutputTokens: 65535,
-  responseMimeType: "application/json",
-  responseSchema: responseSchema(),
-  thinkingConfig: { includeThoughts: false, thinkingBudget: 32768 }
-};
+function GENCFG_HQ(N) {
+  return {
+    temperature: 0.85,
+    topP: 0.92,
+    maxOutputTokens: 65535,
+    responseMimeType: "application/json",
+    responseSchema: responseSchema(N),
+    thinkingConfig: { includeThoughts: false, thinkingBudget: 32768 }
+  };
+}
 
 /* ================= STORAGE ================= */
 const store = {
@@ -1266,20 +1241,32 @@ function getFirstSentence(text) {
 /* ================= NORMALIZE OUTPUT ================= */
 function normalizeOutput(o, opts){
   const { wantTitles, wantThumbs, count, source } = opts;
-  const options = (o.options||[]).slice(0, count).map(x=> ({
-    title: wantTitles ? (x.title||"").trim().slice(0,100) : "",
-    thumbnailText: wantThumbs ? (x.thumbnailText||"").replace(/:/g,"").trim().slice(0,50).toUpperCase() : "",
-    style: (x.style||"").trim() || "Unknown"
-  }));
-  while(options.length < count) options.push({ title: wantTitles ? "" : "", thumbnailText: wantThumbs ? "" : "", style: "Unknown" });
+  const options = (o.options||[]).slice(0, count).map(x=> {
+    const title = wantTitles ? (x.title||"").trim().slice(0,100) : "";
+    const thumbnailText = wantThumbs ? (x.thumbnailText||"").replace(/:/g,"").trim().slice(0,50).toUpperCase() : "";
+    
+    // Используем только стиль и триггеры от модели, без дополнительного анализа
+    console.log('🔍 Option data:', x);
+    const style = (x.style||"").trim() || "Unknown";
+    const triggers = (x.triggers||"").trim() || "Unknown";
+    console.log('🔍 Style:', style, 'Triggers:', triggers);
+    
+    return {
+      title,
+      thumbnailText,
+      style,
+      triggers
+    };
+  });
+  while(options.length < count) options.push({ title: wantTitles ? "" : "", thumbnailText: wantThumbs ? "" : "", style: "Unknown", triggers: "Unknown" });
 
-  // Разделяем TopPicks пополам между моделями (по 1 на каждую)
+  // Возвращаем все TopPicks (до 2 лучших вариантов)
   const allTopPicks = Array.isArray(o.topPicks) ? o.topPicks
               .filter(v => Number.isInteger(v.index))
               .map(v => ({ index: clamp(parseInt(v.index,10)||1, 1, options.length) }))
               .slice(0, 2) : [];
   
-  const tp = source === 'OpenAI' ? allTopPicks.slice(0, 1) : allTopPicks.slice(1, 2);
+  const tp = allTopPicks; // Возвращаем все доступные topPicks
 
   return { audienceProfile: (o.audienceProfile||"").trim(), options, topPicks: tp };
 }
@@ -1385,7 +1372,24 @@ function analyzeTitle(title, thumbnail) {
     styles.push(additionalStyles[Math.floor(Math.random() * additionalStyles.length)]);
   }
   
-  const style = styles.length > 0 ? styles[Math.floor(Math.random() * styles.length)] : 'Curiosity Gap';
+  // Более умное определение стиля
+  let style;
+  if (styles.length > 0) {
+    style = styles[Math.floor(Math.random() * styles.length)];
+  } else {
+    // Если не найдено совпадений, попробуем определить по общим паттернам
+    if (titleLower.includes('?') || titleLower.includes('как') || titleLower.includes('почему') || titleLower.includes('что')) {
+      style = 'Q&A';
+    } else if (titleLower.includes('я ') || titleLower.includes('мой ') || titleLower.includes('мы ')) {
+      style = 'Personal Experience';
+    } else if (/\d+/.test(title) || titleLower.includes('топ') || titleLower.includes('лучшие')) {
+      style = 'Lists';
+    } else if (titleLower.includes('новый') || titleLower.includes('2024') || titleLower.includes('2025')) {
+      style = 'Trend/Innovation';
+    } else {
+      style = 'Curiosity Gap';
+    }
+  }
   
   // More diverse trigger detection
   const triggers = [];
@@ -1423,8 +1427,20 @@ function analyzeTitle(title, thumbnail) {
     triggers.push(additionalTriggers[Math.floor(Math.random() * additionalTriggers.length)]);
   }
   
+  // Более умное определение триггеров
   if (triggers.length === 0) {
+    // Попробуем определить триггер по общим паттернам
+    if (titleLower.includes('?') || titleLower.includes('как') || titleLower.includes('почему') || titleLower.includes('что')) {
+      triggers.push('Curiosity');
+    } else if (titleLower.includes('я ') || titleLower.includes('мой ') || titleLower.includes('мы ')) {
+      triggers.push('Social Proof');
+    } else if (/\d+/.test(title) || titleLower.includes('топ') || titleLower.includes('лучшие')) {
+      triggers.push('Status');
+    } else if (titleLower.includes('новый') || titleLower.includes('2024') || titleLower.includes('2025')) {
+      triggers.push('Trend/Urgency');
+    } else {
     triggers.push('Curiosity');
+    }
   }
   
   // Generate synergy
@@ -1445,10 +1461,10 @@ function rowHTML(i, opt, topSet, showTitle, showThumb){
   const thumbVal = opt.thumbnailText || '';
   const source = opt.source || '';
   
-  // Use style from model response or generate analysis on client side
-  const styleVal = opt.style || analyzeTitle(titleVal, thumbVal).style;
+  // Use only style and triggers from model response
+  const styleVal = opt.style || "Unknown";
+  const triggersVal = opt.triggers || "Unknown";
   const analysis = analyzeTitle(titleVal, thumbVal);
-  const triggersVal = analysis.triggers;
   const synergyVal = analysis.synergy;
   
   const titleHTML = showTitle && titleVal ? `
@@ -1744,10 +1760,19 @@ async function generateDualModels(topic, format, audience, wantTitles, wantThumb
   // Создаем промпт для генерации контента только через Gemini
   const geminiPrompt = buildUserBlockWithAudience({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel});
   
+  // Формируем полный промпт для отправки
+  const fullPrompt = SYSTEM_PROMPT + '\n\n' + geminiPrompt;
+  
+  // Логируем полный промпт в консоль
+  console.log('🚀 ПОЛНЫЙ ПРОМПТ ДЛЯ GEMINI:');
+  console.log('='.repeat(80));
+  console.log(fullPrompt);
+  console.log('='.repeat(80));
+  
   // Запрос только к Gemini
   const geminiResult = await callGemini({
-    contents: [{ role: "user", parts: [{ text: SYSTEM_PROMPT + '\n\n' + geminiPrompt }] }],
-    generationConfig: GENCFG_HQ
+    contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
+    generationConfig: GENCFG_HQ(count)
   });
   
   const results = [];
@@ -1757,10 +1782,13 @@ async function generateDualModels(topic, format, audience, wantTitles, wantThumb
     const geminiData = geminiResult;
     const first = (geminiData.candidates||[])[0];
     const text = joinParts(first?.content?.parts);
+    console.log('🔍 Raw Gemini response:', text);
     let parsed = safeParseJSON(text);
+    console.log('🔍 Parsed JSON:', parsed);
     
     if (parsed && Array.isArray(parsed.options)) {
       const normalized = normalizeOutput(parsed, { wantTitles, wantThumbs, count, source: 'Gemini' });
+      console.log('🔍 Normalized data:', normalized);
       // Используем ЦА от Gemini
       results.push({ source: 'Gemini', data: normalized, order: 1 });
     }
