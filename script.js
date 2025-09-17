@@ -369,7 +369,7 @@ const translations = {
     componentsCount: 'Components & Count',
     titles: 'Titles',
     thumbnailTexts: 'Thumbnail texts',
-    countLabel: 'Count (5–15)',
+    countLabel: 'Count (6–16)',
     send: 'Send',
     clearHistory: '🗑 Clear history',
     copyAllTitles: '⧉ Copy all titles',
@@ -379,6 +379,7 @@ const translations = {
     copied: 'Copied',
     copyFailed: 'Copy failed',
     topicRequired: 'Topic is required',
+    atLeastOneComponent: 'At least one component must be selected',
     pleaseWait: 'Please wait — processing',
     working: 'Working',
     analyzingTopic: 'Analyzing your topic',
@@ -403,7 +404,36 @@ const translations = {
     collapseExpand: 'Collapse/Expand',
     removeResult: 'Remove result',
     dismiss: 'Dismiss',
-    languageMarker: 'English'
+    languageMarker: 'English',
+    pageTitle: 'TITLE CRAFT — by Genial Design',
+    inputsTitle: 'Inputs',
+    resultsTitle: 'Results',
+    titlesOnly: 'Titles only',
+    thumbnailsOnly: 'Thumbnail texts only',
+    titlesAndThumbnails: 'Titles & Thumbnail texts',
+    clickbaitLevel1: 'Subtle (Level 1)',
+    clickbaitLevel2: 'Balanced (Level 2)',
+    clickbaitLevel3: 'Maximum (Level 3)',
+    clickbaitLevel4: 'НЕЗЕМНОЙ (Level 4)',
+    notSpecified: '(not specified)',
+    loading: 'Loading',
+    clearField: 'Clear field',
+    components: 'Components',
+    scrollToTop: 'Scroll to top',
+    byGemini: 'by Gemini',
+    logoAlt: 'TITLE CRAFT logo',
+    loadingPhrases: [
+      'Let\'s improve your CTR? 🚀',
+      'We\'ll boost your views 😊',
+      'Their clicks will be unstoppable! 🔥',
+      'Let\'s work on video packaging?',
+      'Let\'s maximize engagement! 💪',
+      'Create irresistible titles? ✨',
+      'Make your content viral? 🔥',
+      'We\'ll craft click-worthy content! 🎯',
+      'We\'ll boost your reach? 🌟',
+      'We\'ll make content irresistible! ⚡'
+    ]
   },
   es: {
     videoTopic: 'Tema del video <span class="req" aria-hidden="true">*</span>',
@@ -424,7 +454,7 @@ const translations = {
     componentsCount: 'Componentes y cantidad',
     titles: 'Títulos',
     thumbnailTexts: 'Textos de miniatura',
-    countLabel: 'Cantidad (5–15)',
+    countLabel: 'Cantidad (6–16)',
     send: 'Enviar',
     clearHistory: '🗑 Borrar historial',
     copyAllTitles: '⧉ Copiar todos los títulos',
@@ -434,6 +464,7 @@ const translations = {
     copied: 'Copiado',
     copyFailed: 'Error al copiar',
     topicRequired: 'El tema es obligatorio',
+    atLeastOneComponent: 'Al menos un componente debe estar seleccionado',
     pleaseWait: 'Por favor espera — procesando',
     working: 'Trabajando',
     analyzingTopic: 'Analizando tu tema',
@@ -458,7 +489,36 @@ const translations = {
     collapseExpand: 'Colapsar/Expandir',
     removeResult: 'Eliminar resultado',
     dismiss: 'Cerrar',
-    languageMarker: 'Spanish/Español'
+    languageMarker: 'Spanish/Español',
+    pageTitle: 'TITLE CRAFT — por Genial Design',
+    inputsTitle: 'Entradas',
+    resultsTitle: 'Resultados',
+    titlesOnly: 'Solo títulos',
+    thumbnailsOnly: 'Solo textos de miniatura',
+    titlesAndThumbnails: 'Títulos y textos de miniatura',
+    clickbaitLevel1: 'Sutil (Nivel 1)',
+    clickbaitLevel2: 'Equilibrado (Nivel 2)',
+    clickbaitLevel3: 'Máximo (Nivel 3)',
+    clickbaitLevel4: 'НЕЗЕМНОЙ (Nivel 4)',
+    notSpecified: '(no especificado)',
+    loading: 'Cargando',
+    clearField: 'Limpiar campo',
+    components: 'Componentes',
+    scrollToTop: 'Desplazar hacia arriba',
+    byGemini: 'por Gemini',
+    logoAlt: 'Logo de TITLE CRAFT',
+    loadingPhrases: [
+      '¿Vamos a mejorar tu CTR? 🚀',
+      'Aumentaremos tus vistas 😊',
+      '¡Sus clics serán imparables! 🔥',
+      '¿Trabajaremos en el empaque del video?',
+      '¡Vamos a maximizar el engagement! 💪',
+      '¿Crear títulos irresistibles? ✨',
+      '¿Hacer tu contenido viral? 🔥',
+      '¡Crearemos contenido irresistible! 🎯',
+      '¿Impulsaremos tu alcance? 🌟',
+      '¡Haremos el contenido irresistible! ⚡'
+    ]
   },
   ru: {
     videoTopic: 'Тема видео <span class="req" aria-hidden="true">*</span>',
@@ -479,7 +539,7 @@ const translations = {
     componentsCount: 'Компоненты и количество',
     titles: 'Заголовки',
     thumbnailTexts: 'Тексты превью',
-    countLabel: 'Количество (5–15)',
+    countLabel: 'Количество (6–16)',
     send: 'Отправить',
     clearHistory: '🗑 Очистить историю',
     copyAllTitles: '⧉ Копировать все заголовки',
@@ -489,6 +549,7 @@ const translations = {
     copied: 'Скопировано',
     copyFailed: 'Ошибка копирования',
     topicRequired: 'Тема обязательна',
+    atLeastOneComponent: 'Должен быть выбран хотя бы один компонент',
     pleaseWait: 'Пожалуйста, подождите — обработка',
     working: 'Работаю',
     analyzingTopic: 'Анализирую тему',
@@ -513,7 +574,36 @@ const translations = {
     collapseExpand: 'Свернуть/Развернуть',
     removeResult: 'Удалить результат',
     dismiss: 'Закрыть',
-    languageMarker: 'Russian/Русский'
+    languageMarker: 'Russian/Русский',
+    pageTitle: 'TITLE CRAFT — от Genial Design',
+    inputsTitle: 'Вводы',
+    resultsTitle: 'Результаты',
+    titlesOnly: 'Только заголовки',
+    thumbnailsOnly: 'Только тексты превью',
+    titlesAndThumbnails: 'Заголовки и тексты превью',
+    clickbaitLevel1: 'Сдержанный (Уровень 1)',
+    clickbaitLevel2: 'Сбалансированный (Уровень 2)',
+    clickbaitLevel3: 'Максимальный (Уровень 3)',
+    clickbaitLevel4: 'НЕЗЕМНОЙ (Уровень 4)',
+    notSpecified: '(не указано)',
+    loading: 'Загрузка',
+    clearField: 'Очистить поле',
+    components: 'Компоненты',
+    scrollToTop: 'Прокрутить вверх',
+    byGemini: 'от Gemini',
+    logoAlt: 'Логотип TITLE CRAFT',
+    loadingPhrases: [
+      'Давай улучшим твой CTR? 🚀',
+      'Увеличим твои просмотры 😊',
+      'Их клики будет не остановить! 🔥',
+      'Поработаем над упаковкой видео?',
+      'Давай максимизируем вовлечение! 💪',
+      'Создадим неотразимые заголовки? ✨',
+      'Сделаем твой контент вирусным? 🔥',
+      'Создадим кликабельный контент! 🎯',
+      'Увеличим охват? 🌟',
+      'Сделаем контент неотразимым! ⚡'
+    ]
   },
   uk: {
     videoTopic: 'Тема відео <span class="req" aria-hidden="true">*</span>',
@@ -534,7 +624,7 @@ const translations = {
     componentsCount: 'Компоненти та кількість',
     titles: 'Заголовки',
     thumbnailTexts: 'Тексти прев\'ю',
-    countLabel: 'Кількість (5–15)',
+    countLabel: 'Кількість (6–16)',
     send: 'Відправити',
     clearHistory: '🗑 Очистити історію',
     copyAllTitles: '⧉ Копіювати всі заголовки',
@@ -544,6 +634,7 @@ const translations = {
     copied: 'Скопійовано',
     copyFailed: 'Помилка копіювання',
     topicRequired: 'Тема обов\'язкова',
+    atLeastOneComponent: 'Повинен бути обраний хоча б один компонент',
     pleaseWait: 'Будь ласка, зачекайте — обробка',
     working: 'Працюю',
     analyzingTopic: 'Аналізую тему',
@@ -568,9 +659,44 @@ const translations = {
     collapseExpand: 'Згорнути/Розгорнути',
     removeResult: 'Видалити результат',
     dismiss: 'Закрити',
-    languageMarker: 'Ukrainian/Українська'
+    languageMarker: 'Ukrainian/Українська',
+    pageTitle: 'TITLE CRAFT — від Genial Design',
+    inputsTitle: 'Вводи',
+    resultsTitle: 'Результати',
+    titlesOnly: 'Тільки заголовки',
+    thumbnailsOnly: 'Тільки тексти прев\'ю',
+    titlesAndThumbnails: 'Заголовки і тексти прев\'ю',
+    clickbaitLevel1: 'Стриманий (Рівень 1)',
+    clickbaitLevel2: 'Збалансований (Рівень 2)',
+    clickbaitLevel3: 'Максимальний (Рівень 3)',
+    clickbaitLevel4: 'НЕЗЕМНОЙ (Рівень 4)',
+    notSpecified: '(не вказано)',
+    loading: 'Завантаження',
+    clearField: 'Очистити поле',
+    components: 'Компоненти',
+    scrollToTop: 'Прокрутити вгору',
+    byGemini: 'від Gemini',
+    logoAlt: 'Логотип TITLE CRAFT',
+    loadingPhrases: [
+      'Давай покращимо твій CTR? 🚀',
+      'Збільшимо твої перегляди 😊',
+      'Їхні кліки буде не зупинити! 🔥',
+      'Попрацюємо над упаковкою відео?',
+      'Давай максимізуємо залучення! 💪',
+      'Створимо невіддільні заголовки? ✨',
+      'Зробимо твій контент вірусним? 🔥',
+      'Створимо клікабельний контент! 🎯',
+      'Збільшимо охоплення? 🌟',
+      'Зробимо контент невіддільним! ⚡'
+    ]
   }
 };
+
+function getRandomLoadingPhrase() {
+  const phrases = t.loadingPhrases || [];
+  if (phrases.length === 0) return 'Loading...';
+  return phrases[Math.floor(Math.random() * phrases.length)];
+}
 
 function detectLanguage() {
   const browserLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
@@ -584,6 +710,40 @@ let currentLang = detectLanguage();
 let t = translations[currentLang];
 
 function applyTranslations() {
+  // Обновляем заголовок страницы
+  document.title = t.pageTitle;
+  
+  // Обновляем скрытые заголовки
+  const inputsTitle = document.getElementById('inputs-title');
+  const resultsTitle = document.getElementById('results-title');
+  if (inputsTitle) inputsTitle.textContent = t.inputsTitle;
+  if (resultsTitle) resultsTitle.textContent = t.resultsTitle;
+  
+  // Обновляем toast
+  const toast = document.getElementById('toast');
+  if (toast) toast.textContent = t.copied;
+  
+  // Обновляем aria-label атрибуты
+  const pageloader = document.getElementById('pageloader');
+  if (pageloader) pageloader.setAttribute('aria-label', t.loading);
+  
+  const componentsGroup = document.querySelector('[aria-label="Components"]');
+  if (componentsGroup) componentsGroup.setAttribute('aria-label', t.components);
+  
+  const fabBtn = document.getElementById('fabBtn');
+  if (fabBtn) fabBtn.setAttribute('aria-label', t.scrollToTop);
+  
+  // Обновляем title атрибуты для кнопок очистки
+  document.querySelectorAll('[title="Clear field"]').forEach(el => {
+    el.title = t.clearField;
+  });
+  
+  // Обновляем alt атрибуты для логотипов
+  document.querySelectorAll('img[alt*="TITLE CRAFT logo"]').forEach(el => {
+    el.alt = t.logoAlt;
+  });
+  
+  
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (t[key]) {
@@ -618,9 +778,50 @@ function applyTranslations() {
   document.documentElement.lang = currentLang;
 }
 
+function updateLoadingPhrase() {
+  const loadingPhrase = document.querySelector('.pl-text');
+  const pageloader = document.getElementById('pageloader');
+  
+  // Обновляем фразу только если загрузчик еще виден
+  if (loadingPhrase && pageloader && !pageloader.classList.contains('hidden')) {
+    loadingPhrase.textContent = getRandomLoadingPhrase();
+  }
+}
+
+function startLoadingPhraseRotation() {
+  const loadingPhrase = document.querySelector('.pl-text');
+  if (!loadingPhrase) return;
+  
+  // Сразу устанавливаем первую фразу
+  updateLoadingPhrase();
+  
+  // Обновляем фразу каждые 2.5 секунды
+  const interval = setInterval(() => {
+    const pageloader = document.getElementById('pageloader');
+    if (pageloader && pageloader.classList.contains('hidden')) {
+      clearInterval(interval);
+      return;
+    }
+    updateLoadingPhrase();
+  }, 2500);
+}
+
+// Функция для обновления фразы при смене языка
+function updateLoadingPhraseOnLanguageChange() {
+  const loadingPhrase = document.querySelector('.pl-text');
+  const pageloader = document.getElementById('pageloader');
+  
+  // Обновляем фразу только если загрузчик еще виден
+  if (loadingPhrase && pageloader && !pageloader.classList.contains('hidden')) {
+    loadingPhrase.textContent = getRandomLoadingPhrase();
+  }
+}
+
 /* ================= CONFIG ================= */
-const API_KEY = "AIzaSyCgv5MX641xl7q62YJ1isoyxkptWBuXgIc";
-const MODEL   = "gemini-2.5-pro";
+const GEMINI_API_KEY = "AIzaSyCgv5MX641xl7q62YJ1isoyxkptWBuXgIc";
+const OPENAI_API_KEY = "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";
+const GEMINI_MODEL = "gemini-2.5-pro";
+const OPENAI_MODEL = "gpt-5-chat-latest"; // GPT-5 модель
 const RETRIES = 5;
 const BASE_DELAY = 800;
 
@@ -683,6 +884,7 @@ TITLE RULES (defaults; model should naturally comply)
 
 THUMBNAIL TEXT RULES (words on the image only)
 - Ultra-short, scannable tokens (prefer 1–3 words; L1 up to 4; L4 up to 1–5). ≤50 chars. No colons ":".
+- ALWAYS use UPPERCASE (CAPS) for all thumbnail texts - they will be displayed in caps.
 - Do NOT repeat or paraphrase the title (>70% overlap). Add the missing piece: stakes, metric, constraint, verdict, or a micro-question.
 - Favor high-processing tokens: numerals, symbols, short units (0,1% / 0.1%, −10M, ×3, 24 год).
 - Loss/polar cues allowed when appropriate. NO emojis in thumbnails.
@@ -743,12 +945,12 @@ Mini-plan: detect niche/tone → pick 1–2 emotional levers + 1 specificity →
    Return exactly ONE JSON object:
    {
      "audienceProfile": "STRING (3–6 concise, benefit-focused sentences)",
-     "options": [{"title":"STRING","thumbnailText":"STRING"}],
+     "options": [{"title":"STRING","thumbnailText":"STRING (UPPERCASE)"}],
      "topPicks": [{"index":INTEGER},{"index":INTEGER}]
    }
 2) COUNT — Return exactly N options (N provided externally; if missing, N=6). Do not exceed or fall short.
 3) TITLES — ≤100 chars; strongest hook in ~first 40 chars; specific power words; policy-safe truth framing (L4 may be sensational but not fabricated).
-4) THUMBNAIL TEXTS — 1–5 words, ≤50 chars, NO colons ":"; 1–2 ALL-CAPS words allowed; do NOT repeat/paraphrase the title; provide a complementary hint. If user requests titles-only or thumbnails-only, keep both keys; set the unused one to "".
+4) THUMBNAIL TEXTS — 1–5 words, ≤50 chars, NO colons ":"; ALWAYS UPPERCASE; do NOT repeat/paraphrase the title; provide a complementary hint. If user requests titles-only or thumbnails-only, keep both keys; set the unused one to "".
 5) FIELDS — Only "audienceProfile", "options", "topPicks". No extra keys.
 6) TOP PICKS — Exactly two unique 1-based indexes into the options array (numbers only; no rationales).
 7) RELIABILITY GUARD — Start output with "{" and end with "}". Escape quotes; no smart quotes; no dangling commas; normalize spaces; no line breaks inside values.
@@ -761,21 +963,21 @@ RESOLUTION RULES
 /* ================= USER PROMPT BUILDER ================= */
 function buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel}){
   const comp =
-    wantTitles && wantThumbs ? "Titles & Thumbnail texts" :
-    wantTitles ? "Titles only" :
-    wantThumbs ? "Thumbnail texts only" : "Titles & Thumbnail texts";
+    wantTitles && wantThumbs ? t.titlesAndThumbnails :
+    wantTitles ? t.titlesOnly :
+    wantThumbs ? t.thumbnailsOnly : t.titlesAndThumbnails;
   
   const clickbaitLevelNames = {
-    1: "Subtle (Level 1)",
-    2: "Balanced (Level 2)", 
-    3: "Maximum (Level 3)",
-    4: "НЕЗЕМНОЙ (Level 4)"
+    1: t.clickbaitLevel1,
+    2: t.clickbaitLevel2, 
+    3: t.clickbaitLevel3,
+    4: t.clickbaitLevel4
   };
   
   const lines = [
     `VIDEO TOPIC: ${escapeForPrompt(topic)}`,
-    `FORMAT: ${escapeForPrompt(format || "(not specified)")}`,
-    `TARGET AUDIENCE: ${escapeForPrompt(audience || "(not specified)")}`,
+    `FORMAT: ${escapeForPrompt(format || t.notSpecified)}`,
+    `TARGET AUDIENCE: ${escapeForPrompt(audience || t.notSpecified)}`,
     `CLICKBAIT LEVEL: ${clickbaitLevelNames[clickbaitLevel] || "Maximum (Level 3)"}`,
     `LANGUAGE: auto-detect from topic (current interface language: ${t.languageMarker})`,
     `REQUESTED COMPONENTS: ${comp}`,
@@ -874,36 +1076,93 @@ function getFirstSentence(text) {
 
 /* ================= NORMALIZE OUTPUT ================= */
 function normalizeOutput(o, opts){
-  const { wantTitles, wantThumbs, count } = opts;
+  const { wantTitles, wantThumbs, count, source } = opts;
   const options = (o.options||[]).slice(0, count).map(x=> ({
     title: wantTitles ? (x.title||"").trim().slice(0,100) : "",
-    thumbnailText: wantThumbs ? (x.thumbnailText||"").replace(/:/g,"").trim().slice(0,50) : ""
+    thumbnailText: wantThumbs ? (x.thumbnailText||"").replace(/:/g,"").trim().slice(0,50).toUpperCase() : ""
   }));
   while(options.length < count) options.push({ title: wantTitles ? "" : "", thumbnailText: wantThumbs ? "" : "" });
 
-  const tp = Array.isArray(o.topPicks) ? o.topPicks
+  // Разделяем TopPicks пополам между моделями (по 1 на каждую)
+  const allTopPicks = Array.isArray(o.topPicks) ? o.topPicks
               .filter(v => Number.isInteger(v.index))
               .map(v => ({ index: clamp(parseInt(v.index,10)||1, 1, options.length) }))
               .slice(0, 2) : [];
+  
+  const tp = source === 'OpenAI' ? allTopPicks.slice(0, 1) : allTopPicks.slice(1, 2);
 
   return { audienceProfile: (o.audienceProfile||"").trim(), options, topPicks: tp };
 }
 
 /* ================= NETWORK ================= */
 async function callGemini(payload, tries=RETRIES){
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(API_KEY)}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+  
+  // Логируем информацию о модели в консоль
+  console.log(`🤖 Gemini API Request: Using model "${GEMINI_MODEL}"`);
+  console.log(`📊 Request details:`, {
+    model: GEMINI_MODEL,
+    contents: payload.contents?.length || 0,
+    generationConfig: payload.generationConfig ? 'configured' : 'default'
+  });
+  
   let lastErr;
   for(let i=0;i<tries;i++){
     try{
       const res = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
       if(!res.ok){ const txt = await res.text().catch(()=> ""); throw new Error(`HTTP ${res.status}: ${txt||res.statusText}`) }
-      return await res.json();
+      
+      const result = await res.json();
+      console.log(`✅ Gemini API Response: Model "${GEMINI_MODEL}" completed successfully`);
+      return result;
     }catch(err){
       lastErr = err;
+      console.warn(`⚠️ Gemini API Attempt ${i+1}/${tries} failed:`, err.message);
       const delay = BASE_DELAY * Math.pow(2, i) + Math.random()*300;
       await new Promise(r => setTimeout(r, delay));
     }
   }
+  console.error(`❌ Gemini API Failed after ${tries} attempts:`, lastErr.message);
+  throw lastErr;
+}
+
+async function callOpenAI(payload, tries=RETRIES){
+  const url = "https://api.openai.com/v1/chat/completions";
+  const model = payload.model || OPENAI_MODEL;
+  
+  // Логируем информацию о модели в консоль
+  console.log(`🚀 OpenAI API Request: Using model "${model}"`);
+  console.log(`📊 Request details:`, {
+    model: model,
+    messages: payload.messages?.length || 0,
+    temperature: payload.temperature || 'default',
+    max_tokens: payload.max_tokens || 'default'
+  });
+  
+  let lastErr;
+  for(let i=0;i<tries;i++){
+    try{
+      const res = await fetch(url, { 
+        method:"POST", 
+        headers:{ 
+          "Content-Type":"application/json",
+          "Authorization": `Bearer ${OPENAI_API_KEY}`
+        }, 
+        body: JSON.stringify(payload) 
+      });
+      if(!res.ok){ const txt = await res.text().catch(()=> ""); throw new Error(`HTTP ${res.status}: ${txt||res.statusText}`) }
+      
+      const result = await res.json();
+      console.log(`✅ OpenAI API Response: Model "${model}" completed successfully`);
+      return result;
+    }catch(err){
+      lastErr = err;
+      console.warn(`⚠️ OpenAI API Attempt ${i+1}/${tries} failed:`, err.message);
+      const delay = BASE_DELAY * Math.pow(2, i) + Math.random()*300;
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  console.error(`❌ OpenAI API Failed after ${tries} attempts:`, lastErr.message);
   throw lastErr;
 }
 
@@ -1010,6 +1269,7 @@ function rowHTML(i, opt, topSet, showTitle, showThumb){
   const n = i+1; const isTop = topSet.has(n);
   const titleVal = opt.title || '';
   const thumbVal = opt.thumbnailText || '';
+  const source = opt.source || '';
   
   // Generate analysis on client side
   const analysis = analyzeTitle(titleVal, thumbVal);
@@ -1029,6 +1289,8 @@ function rowHTML(i, opt, topSet, showTitle, showThumb){
     </div>` : '';
   
   if (!titleHTML && !thumbHTML) return '';
+  
+  // Source indicator removed - no model badges
   
   // Analysis section - always show client-generated analysis
   const analysisHTML = `
@@ -1207,13 +1469,29 @@ function attachSessionControls(scope=document){
 }
 
 /* ================= FLOW ================= */
-function clampCountInput(){
-  const el = $("#count");
-  let val = parseInt(el.value||"10",10);
-  if(isNaN(val)) val = 10;
-  if(val < 1) val = 1;
-  if(val > 15) val = 15;
-  el.value = String(val);
+function updateCountSlider(value){
+  const countValue = document.getElementById('countValue');
+  const thumb = document.getElementById('count-thumb');
+  if (!countValue || !thumb) return;
+  
+  // Ensure value is even and in range 6-16
+  value = Math.max(6, Math.min(16, value));
+  if (value % 2 !== 0) {
+    value = Math.round(value / 2) * 2;
+  }
+  
+  countValue.textContent = value;
+  
+  // Calculate position (6-16 range maps to 0-100%)
+  const percentage = ((value - 6) / (16 - 6)) * 100;
+  thumb.style.left = percentage + '%';
+  
+  // Save to storage
+  const inputs = store.loadInputs();
+  store.saveInputs({ ...inputs, count: value });
+  
+  // Haptic feedback
+  if (navigator.vibrate) navigator.vibrate(30);
 }
 
 function blinkFields(){
@@ -1260,6 +1538,124 @@ function setBtnBusy(btn, on){
   }
 }
 
+async function generateDualModels(topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel) {
+  // Разделяем количество запросов пополам
+  const halfCount = Math.floor(count / 2);
+  const openaiCount = halfCount; // Первая половина всегда ChatGPT
+  const geminiCount = count - halfCount; // Вторая половина Gemini
+  
+  console.log(`🎯 Dual Model Generation Started:`);
+  console.log(`📝 Topic: "${topic}"`);
+  console.log(`🔢 Total variants: ${count}`);
+  console.log(`🤖 OpenAI (${OPENAI_MODEL}): ${openaiCount} variants`);
+  console.log(`🤖 Gemini (${GEMINI_MODEL}): ${geminiCount} variants`);
+  console.log(`📊 Components: ${wantTitles ? 'Titles' : ''}${wantTitles && wantThumbs ? ' + ' : ''}${wantThumbs ? 'Thumbnails' : ''}`);
+  
+  // Сначала получаем анализ аудитории от Gemini
+  const audienceAnalysisPrompt = `Analyze the target audience for this video topic and provide a detailed audience profile (3-6 sentences):
+
+VIDEO TOPIC: ${escapeForPrompt(topic)}
+FORMAT: ${escapeForPrompt(format || t.notSpecified)}
+TARGET AUDIENCE: ${escapeForPrompt(audience || t.notSpecified)}
+
+Respond with a JSON object containing only "audienceProfile" field.`;
+  
+  // Создаем промпты для генерации контента
+  const openaiPrompt = buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count: openaiCount, clickbaitLevel});
+  const geminiPrompt = buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count: geminiCount, clickbaitLevel});
+  
+  // Параллельные запросы к обеим моделям
+  const [audienceResult, openaiResult, geminiResult] = await Promise.allSettled([
+    // Gemini для анализа аудитории
+    callGemini({
+      systemInstruction: { parts: [{ text: "You are an expert in audience analysis. Provide detailed audience profiles for video content." }] },
+      contents: [{ role: "user", parts: [{ text: audienceAnalysisPrompt }] }],
+      generationConfig: GENCFG_HQ
+    }),
+    // ChatGPT для первой половины вариантов
+    callOpenAI({
+      model: OPENAI_MODEL,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: openaiPrompt }
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.85,
+      max_tokens: 4000
+    }),
+    // Gemini для второй половины вариантов
+    callGemini({
+      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      contents: [{ role: "user", parts: [{ text: geminiPrompt }] }],
+      generationConfig: GENCFG_HQ
+    })
+  ]);
+  
+  const results = [];
+  let audienceProfile = '';
+  
+  // Обрабатываем анализ аудитории от Gemini
+  if (audienceResult.status === 'fulfilled') {
+    try {
+      const audienceData = audienceResult.value;
+      const first = (audienceData.candidates||[])[0];
+      const text = joinParts(first?.content?.parts);
+      let parsed = safeParseJSON(text);
+      
+      if (parsed && parsed.audienceProfile) {
+        audienceProfile = parsed.audienceProfile;
+      }
+    } catch (err) {
+      console.warn('Audience analysis error:', err);
+    }
+  }
+  
+  // Обрабатываем результат OpenAI (первая половина)
+  if (openaiResult.status === 'fulfilled') {
+    try {
+      const openaiData = openaiResult.value;
+      const text = openaiData.choices?.[0]?.message?.content;
+      let parsed = safeParseJSON(text);
+      
+              if (parsed && Array.isArray(parsed.options)) {
+                const normalized = normalizeOutput(parsed, { wantTitles, wantThumbs, count: openaiCount, source: 'OpenAI' });
+                // Добавляем аудиторию от Gemini
+                normalized.audienceProfile = audienceProfile;
+                results.push({ source: 'OpenAI', data: normalized, order: 1 });
+              }
+    } catch (err) {
+      console.warn('OpenAI parsing error:', err);
+    }
+  }
+  
+  // Обрабатываем результат Gemini (вторая половина)
+  if (geminiResult.status === 'fulfilled') {
+    try {
+      const geminiData = geminiResult.value;
+      const first = (geminiData.candidates||[])[0];
+      const text = joinParts(first?.content?.parts);
+      let parsed = safeParseJSON(text);
+      
+              if (parsed && Array.isArray(parsed.options)) {
+                const normalized = normalizeOutput(parsed, { wantTitles, wantThumbs, count: geminiCount, source: 'Gemini' });
+                // Добавляем аудиторию от Gemini
+                normalized.audienceProfile = audienceProfile;
+                results.push({ source: 'Gemini', data: normalized, order: 2 });
+              }
+    } catch (err) {
+      console.warn('Gemini parsing error:', err);
+    }
+  }
+  
+  console.log(`🎉 Dual Model Generation Completed:`);
+  console.log(`✅ Results: ${results.length} models responded`);
+  results.forEach(result => {
+    console.log(`📊 ${result.source}: ${result.data.options.length} options, ${result.data.topPicks.length} top picks`);
+  });
+  
+  return results;
+}
+
 async function generate(){
   const btn = $("#send");
   if(btn.getAttribute('aria-busy')==='true'){ 
@@ -1272,13 +1668,34 @@ async function generate(){
   const format = clampStr($("#format").value, MAX_CHARS_FORMAT);
   const audience = clampStr($("#audience").value, MAX_CHARS_AUDIENCE);
   let wantTitles = $("#wantTitles").checked, wantThumbs = $("#wantThumbs").checked;
-  clampCountInput();
-  let count = clamp(parseInt($("#count").value||"10",10)||10, 1, 15);
+  
+  // Get count from slider
+  const countValue = document.getElementById('countValue');
+  let count = parseInt(countValue?.textContent || "8", 10) || 8;
+  count = clamp(count, 6, 16);
+  // Ensure count is even
+  if (count % 2 !== 0) {
+    count = Math.round(count / 2) * 2;
+  }
   
   // Get selected clickbait level
   const clickbaitLevel = getCurrentClickbaitLevel();
 
-  if(!wantTitles && !wantThumbs){ wantTitles = true; }
+  if(!wantTitles && !wantThumbs){ 
+    // Принудительно включаем заголовки, если оба отключены
+    wantTitles = true;
+    $("#wantTitles").checked = true;
+    
+    // Добавляем визуальную анимацию предупреждения
+    const titleCheck = $("#checkTitles");
+    titleCheck.classList.add('forced-check');
+    setTimeout(() => {
+      titleCheck.classList.remove('forced-check');
+    }, 600);
+    
+    toast("atLeastOneComponent");
+    haptic.error();
+  }
   if(!topic){ 
     $("#topic").focus(); 
     toast("topicRequired"); 
@@ -1296,38 +1713,64 @@ async function generate(){
   const skel = skeletonCard(); 
   stream.prepend(skel);
 
-  const userPrompt = buildUserBlock({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel});
-  
-  // Use Gemini API
-  const payload = {
-    systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-    contents: [{ role: "user", parts: [{ text: userPrompt }] }],
-    generationConfig: GENCFG_HQ
-  };
-  const json = await callGemini(payload);
-
-  try{
-    const first = (json.candidates||[])[0];
-    const text = joinParts(first?.content?.parts);
-    // Try to parse JSON directly
-    let parsed;
-    try {
-      parsed = JSON.parse(text);
-    } catch (parseError) {
-      parsed = safeParseJSON(text);
+  try {
+    // Используем двойную модель
+    const results = await generateDualModels(topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel);
+    
+    if (results.length === 0) {
+      throw new Error('No models responded successfully');
     }
     
-    if(!parsed || !Array.isArray(parsed.options)) {
-      throw new Error('Invalid model response - not a valid JSON array');
-    }
-
-    const normalized = normalizeOutput(parsed, { wantTitles, wantThumbs, count });
+    // Объединяем результаты в правильном порядке (ChatGPT первым)
+    let combinedOptions = [];
+    let combinedTopPicks = [];
+    let audienceProfile = '';
+    
+    // Сортируем результаты по порядку (order: 1 = ChatGPT, order: 2 = Gemini)
+    const sortedResults = results.sort((a, b) => (a.order || 0) - (b.order || 0));
+    
+    sortedResults.forEach((result, index) => {
+      const { data } = result;
+      if (data.options) {
+        // Добавляем опции с префиксом источника
+        data.options.forEach((option, optIndex) => {
+          combinedOptions.push({
+            ...option,
+            source: result.source,
+            originalIndex: optIndex
+          });
+        });
+      }
+      
+      if (data.topPicks) {
+        // Корректируем индексы top picks для объединенного массива
+        const offset = combinedOptions.length - data.options.length;
+        data.topPicks.forEach(pick => {
+          combinedTopPicks.push({
+            index: pick.index + offset,
+            source: result.source
+          });
+        });
+      }
+      
+      if (data.audienceProfile && !audienceProfile) {
+        audienceProfile = data.audienceProfile;
+      }
+    });
+    
+    // Создаем финальный результат
+    const finalOutput = {
+      audienceProfile,
+      options: combinedOptions,
+      topPicks: combinedTopPicks.slice(0, 2) // Берем только первые 2
+    };
+    
     const session = { 
       id: uid(), 
       createdAt: nowStr(), 
       input:{topic,format,audience}, 
       view:{ wantTitles, wantThumbs, count }, 
-      output: normalized 
+      output: finalOutput 
     };
     store.addSession(session);
 
@@ -1367,7 +1810,7 @@ async function generate(){
     }, 100);
     
     haptic.success();
-  }catch(err){
+  } catch(err) {
     const message = err?.message||'Unknown error';
     skel.innerHTML = `<div class="session-head">
         <button class="iconbtn sk-close" title="${t.dismiss}" aria-label="${t.dismiss}">
@@ -1379,8 +1822,8 @@ async function generate(){
       </div>`;
     attachSessionControls(skel);
     haptic.error();
-  }finally{
-    setBtnBusy(btn,false);
+  } finally {
+    setBtnBusy(btn, false);
   }
 }
 
@@ -1401,6 +1844,11 @@ function renderAll(){
 function bindUI(){
   // Apply translations first
   applyTranslations();
+  
+  // Start loading phrase rotation after translations
+  setTimeout(() => {
+    startLoadingPhraseRotation();
+  }, 100);
   
   // Initialize particles background
   setTimeout(() => {
@@ -1428,7 +1876,16 @@ function bindUI(){
   if(inputs.audience) $("#audience").value=inputs.audience;
   if(typeof inputs.wantTitles==="boolean") $("#wantTitles").checked=inputs.wantTitles;
   if(typeof inputs.wantThumbs==="boolean") $("#wantThumbs").checked=inputs.wantThumbs;
-  if(inputs.count) $("#count").value = clamp(parseInt(inputs.count,10)||10, 1, 15);
+  if(inputs.count) {
+    let savedCount = parseInt(inputs.count,10)||8;
+    savedCount = clamp(savedCount, 6, 16);
+    if (savedCount % 2 !== 0) {
+      savedCount = Math.round(savedCount / 2) * 2;
+    }
+    updateCountSlider(savedCount);
+  } else {
+    updateCountSlider(8); // Default value
+  }
   
   // Load clickbait level
   if(inputs.clickbaitLevel) {
@@ -1436,13 +1893,8 @@ function bindUI(){
   }
 
 
-  // Count input handlers
-  const countEl = $("#count");
-  countEl.addEventListener('input', clampCountInput);
-  countEl.addEventListener('blur', clampCountInput);
-  countEl.addEventListener('keydown', (e)=> {
-    if(e.key==='-' || e.key==='e' || e.key==='E' || e.key==='+') e.preventDefault();
-  });
+  // Count slider handlers
+  initCountSlider();
 
   // Clear field buttons
   $("#clearTopic").addEventListener("click", () => {
@@ -1493,14 +1945,57 @@ function bindUI(){
   });
   $("#clear-history").addEventListener("touchstart", () => haptic.light());
 
-  // Checkbox ripple effects
-  ["#checkTitles", "#checkThumbs"].forEach(id => {
-    const check = $(id);
-    check.addEventListener("click", () => {
-      check.classList.add('ripple');
-      haptic.light();
-      setTimeout(() => check.classList.remove('ripple'), 600);
-    });
+  // Checkbox ripple effects and validation
+  const titleCheck = $("#checkTitles");
+  const thumbCheck = $("#checkThumbs");
+  
+  function ensureAtLeastOneChecked(changedCheckbox) {
+    const titleChecked = $("#wantTitles").checked;
+    const thumbChecked = $("#wantThumbs").checked;
+    
+    if (!titleChecked && !thumbChecked) {
+      // Если оба отключены, включаем обратно измененный чекбокс
+      changedCheckbox.checked = true;
+      
+      // Обновляем визуальное состояние
+      if (changedCheckbox.id === 'wantTitles') {
+        titleCheck.classList.add('ripple', 'forced-check');
+        setTimeout(() => {
+          titleCheck.classList.remove('ripple', 'forced-check');
+        }, 600);
+      } else {
+        thumbCheck.classList.add('ripple', 'forced-check');
+        setTimeout(() => {
+          thumbCheck.classList.remove('ripple', 'forced-check');
+        }, 600);
+      }
+      
+      // Показываем уведомление
+      toast('atLeastOneComponent');
+      haptic.error();
+    }
+  }
+  
+  titleCheck.addEventListener("click", () => {
+    titleCheck.classList.add('ripple');
+    haptic.light();
+    setTimeout(() => titleCheck.classList.remove('ripple'), 600);
+    
+    // Проверяем после изменения состояния
+    setTimeout(() => {
+      ensureAtLeastOneChecked($("#wantTitles"));
+    }, 10);
+  });
+  
+  thumbCheck.addEventListener("click", () => {
+    thumbCheck.classList.add('ripple');
+    haptic.light();
+    setTimeout(() => thumbCheck.classList.remove('ripple'), 600);
+    
+    // Проверяем после изменения состояния
+    setTimeout(() => {
+      ensureAtLeastOneChecked($("#wantThumbs"));
+    }, 10);
   });
 
   // Initialize clickbait slider
@@ -1690,7 +2185,91 @@ function initClickbaitSlider() {
   updateClickbaitSlider(3);
 }
 
+// Count slider functions
+function initCountSlider() {
+  const thumb = document.getElementById('count-thumb');
+  const track = document.querySelector('.count-slider-track');
+  const labels = document.querySelectorAll('.count-label-item');
+  
+  if (!thumb || !track) return;
+  
+  let isDragging = false;
 
+  // Click on track
+  track.addEventListener('click', (e) => {
+    const rect = track.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = (clickX / rect.width) * 100;
+    
+    // Convert percentage to value (6-16 range, even numbers only)
+    const rawValue = 6 + (percentage / 100) * 10;
+    const value = Math.round(rawValue / 2) * 2; // Round to nearest even number
+    const clampedValue = clamp(value, 6, 16);
+    
+    updateCountSlider(clampedValue);
+  });
+
+  // Click on labels
+  labels.forEach(label => {
+    label.addEventListener('click', () => {
+      const value = parseInt(label.getAttribute('data-value'));
+      updateCountSlider(value);
+    });
+  });
+
+  // Drag functionality
+  thumb.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    
+    const rect = track.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (mouseX / rect.width) * 100));
+    
+    // Convert percentage to value (6-16 range, even numbers only)
+    const rawValue = 6 + (percentage / 100) * 10;
+    const value = Math.round(rawValue / 2) * 2; // Round to nearest even number
+    const clampedValue = clamp(value, 6, 16);
+    
+    updateCountSlider(clampedValue);
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  // Touch support
+  thumb.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    e.preventDefault();
+  });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    
+    const rect = track.getBoundingClientRect();
+    const touchX = e.touches[0].clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (touchX / rect.width) * 100));
+    
+    // Convert percentage to value (6-16 range, even numbers only)
+    const rawValue = 6 + (percentage / 100) * 10;
+    const value = Math.round(rawValue / 2) * 2; // Round to nearest even number
+    const clampedValue = clamp(value, 6, 16);
+    
+    updateCountSlider(clampedValue);
+  });
+
+  document.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+  
+  // Initialize with default value
+  updateCountSlider(8);
+}
 
 // Start app
 bindUI();
