@@ -6,7 +6,7 @@
   <title>TITLE CRAFT — by Genial Design</title>
 
 <!-- favicon -->
-<link rel="icon" type="image/x-icon" href="https://i.imgur.com/NAlA829.jpeg">
+<link rel="icon" type="image/png" href="logo.png">
 
   <meta name="color-scheme" content="dark" />
   <meta name="theme-color" content="#0b0d12" />
@@ -31,7 +31,7 @@
   <!-- Loader -->
   <div id="pageloader" role="status" aria-live="polite" aria-label="Loading">
     <div class="pl-card">
-      <img class="pl-logo" src="https://i.imgur.com/NAlA829.jpeg" alt="TITLE CRAFT logo" width="80" height="80" />
+      <img class="pl-logo" src="logo.png" alt="TITLE CRAFT logo" width="80" height="80" />
       <div class="pl-bar"><span></span></div>
       <div class="pl-text">Loading...</div>
     </div>
@@ -40,7 +40,7 @@
   <div class="app" aria-hidden="true" id="appRoot">
     <header>
       <div class="brand" id="brand">
-        <img class="logo" src="https://i.imgur.com/Q7CqyWC.jpeg" alt="TITLE CRAFT logo" width="44" height="44" decoding="async" loading="lazy" />
+        <img class="logo" src="logo.png" alt="TITLE CRAFT logo" width="44" height="44" decoding="async" loading="lazy" />
         <h1>
           <span class="main">TITLE CRAFT</span>
           <span class="sub" onclick="window.open('https://t.me/genial_design','_blank')" style="cursor:pointer;">
@@ -48,10 +48,26 @@
 </span>
         </h1>
       </div>
+
+      <div class="tab-switcher">
+        <button class="tab-btn active" data-tab="create" id="tabCreate">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path d="M12 2l1.8 4.6L18 8l-4.2 1.4L12 14l-1.8-4.6L6 8l4.2-1.4L12 2z"/>
+          </svg>
+          <span data-i18n="tabCreate">Create New</span>
+        </button>
+        <button class="tab-btn" data-tab="improve" id="tabImprove">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path d="M12 15.39l-3.76 2.27.99-4.28L6 10.5l4.47-.39L12 6.09l1.53 4.02L18 10.5l-3.23 2.88.99 4.28z"/>
+          </svg>
+          <span data-i18n="tabImprove">Improve Draft</span>
+        </button>
+      </div>
     </header>
 
-    <div class="grid">
-      <section class="panel inputs" aria-labelledby="inputs-title">
+    <div class="tab-content active" data-tab-content="create">
+      <div class="grid">
+        <section class="panel inputs" aria-labelledby="inputs-title">
         <h2 id="inputs-title" class="sr-only">Inputs</h2>
         <div class="cards">
           <div class="card">
@@ -150,6 +166,56 @@
         </div>
         <div id="stream"></div>
       </section>
+      </div>
+    </div>
+
+    <div class="tab-content" data-tab-content="improve">
+      <div class="grid">
+        <section class="panel inputs improvement-panel" aria-labelledby="improvement-title">
+          <h2 id="improvement-title" class="sr-only">Improve Drafts</h2>
+          <div class="cards">
+            <div class="card">
+              <h3 data-i18n="draftTitleLabel">Draft Title</h3>
+              <div class="field" id="draftTitleField">
+                <textarea id="draftTitle" rows="3" data-i18n-placeholder="draftTitlePlaceholder" placeholder="Enter your draft title to improve..."></textarea>
+                <div class="field-clear" id="clearDraftTitle" title="Clear field">
+                  <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </div>
+              </div>
+              <label class="check improvement-check" id="checkGenerateThumbnail">
+                <input type="checkbox" id="generateThumbnailForTitle" />
+                <span class="tag" data-i18n="generateThumbnailCheck">Create thumbnail text for title</span>
+                <span class="state data-on data-off" aria-hidden="true"></span>
+              </label>
+            </div>
+
+            <div class="card">
+              <h3 data-i18n="draftThumbnailLabel">Draft Thumbnail Text</h3>
+              <div class="field" id="draftThumbnailField">
+                <textarea id="draftThumbnail" rows="3" data-i18n-placeholder="draftThumbnailPlaceholder" placeholder="Enter your draft thumbnail text..."></textarea>
+                <div class="field-clear" id="clearDraftThumbnail" title="Clear field">
+                  <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <button id="improveBtn" class="btn btn-improve" aria-busy="false" disabled>
+              <svg class="spark" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path d="M12 15.39l-3.76 2.27.99-4.28L6 10.5l4.47-.39L12 6.09l1.53 4.02L18 10.5l-3.23 2.88.99 4.28z"/>
+              </svg>
+              <span class="btn-text" data-i18n="improveButton">Improve</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="panel results improvement-results-panel" aria-labelledby="improvement-results-title">
+          <h2 id="improvement-results-title" class="sr-only">Improvement Results</h2>
+          <div class="tools">
+            <button class="chip danger" id="clear-improvement-history" data-i18n="clearHistory">🗑 Clear history</button>
+          </div>
+          <div id="improvement-stream"></div>
+        </section>
+      </div>
     </div>
   </div>
 
