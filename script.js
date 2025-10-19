@@ -450,7 +450,34 @@ const translations = {
       'We\'ll craft click-worthy content! 🎯',
       'We\'ll boost your reach? 🌟',
       'We\'ll make content irresistible! ⚡'
-    ]
+    ],
+    tabCreate: 'Create New',
+    tabImprove: 'Improve Draft',
+    improvementTitle: 'Enhance Your Drafts',
+    draftTitleLabel: 'Draft Title',
+    draftTitlePlaceholder: 'Enter your draft title to improve...',
+    draftThumbnailLabel: 'Draft Thumbnail Text',
+    draftThumbnailPlaceholder: 'Enter your draft thumbnail text...',
+    generateThumbnailCheck: 'Create thumbnail text for title',
+    improveButton: 'Improve',
+    improvingText: 'Improving your content...',
+    improvementError: 'Failed to improve. Please try again.',
+    improvementMinLength: 'Enter at least 3 characters',
+    improvementAnalysis: 'Analysis',
+    detectedStyle: 'Detected Style',
+    improvementFocus: 'Improvement Focus',
+    improvedTitle: 'Improved Title',
+    improvedThumbnail: 'Improved Thumbnail',
+    improved: 'Improved',
+    changes: 'Changes',
+    triggers: 'Triggers',
+    function: 'Function',
+    psychology: 'Psychology',
+    analyzingDraft: 'Analyzing your draft',
+    findingImprovements: 'Finding improvements',
+    optimizingLanguage: 'Optimizing language',
+    enhancingPsychology: 'Enhancing psychology',
+    polishingResults: 'Polishing results'
   },
   es: {
     videoTopic: 'Tema del video <span class="req" aria-hidden="true">*</span>',
@@ -536,7 +563,34 @@ const translations = {
       '¡Crearemos contenido irresistible! 🎯',
       '¿Impulsaremos tu alcance? 🌟',
       '¡Haremos el contenido irresistible! ⚡'
-    ]
+    ],
+    tabCreate: 'Crear Nuevo',
+    tabImprove: 'Mejorar Borrador',
+    improvementTitle: 'Mejora tus borradores',
+    draftTitleLabel: 'Borrador del Título',
+    draftTitlePlaceholder: 'Ingresa tu borrador de título para mejorar...',
+    draftThumbnailLabel: 'Borrador del Texto de Miniatura',
+    draftThumbnailPlaceholder: 'Ingresa tu borrador de texto de miniatura...',
+    generateThumbnailCheck: 'Crear texto de miniatura para el título',
+    improveButton: 'Mejorar',
+    improvingText: 'Mejorando tu contenido...',
+    improvementError: 'Error al mejorar. Inténtalo de nuevo.',
+    improvementMinLength: 'Ingresa al menos 3 caracteres',
+    improvementAnalysis: 'Análisis',
+    detectedStyle: 'Estilo Detectado',
+    improvementFocus: 'Enfoque de Mejora',
+    improvedTitle: 'Título Mejorado',
+    improvedThumbnail: 'Miniatura Mejorada',
+    improved: 'Mejorado',
+    changes: 'Cambios',
+    triggers: 'Triggers',
+    function: 'Función',
+    psychology: 'Psicología',
+    analyzingDraft: 'Analizando tu borrador',
+    findingImprovements: 'Buscando mejoras',
+    optimizingLanguage: 'Optimizando lenguaje',
+    enhancingPsychology: 'Mejorando psicología',
+    polishingResults: 'Puliendo resultados'
   },
   ru: {
     videoTopic: 'Тема видео <span class="req" aria-hidden="true">*</span>',
@@ -622,7 +676,34 @@ const translations = {
       'Создадим кликабельный контент! 🎯',
       'Увеличим охват? 🌟',
       'Сделаем контент неотразимым! ⚡'
-    ]
+    ],
+    tabCreate: 'Создать новое',
+    tabImprove: 'Улучшить черновик',
+    improvementTitle: 'Улучши свои черновики',
+    draftTitleLabel: 'Черновик заголовка',
+    draftTitlePlaceholder: 'Введи черновик заголовка для улучшения...',
+    draftThumbnailLabel: 'Черновик текста превью',
+    draftThumbnailPlaceholder: 'Введи черновик текста превью...',
+    generateThumbnailCheck: 'Создать текст превью для заголовка',
+    improveButton: 'Улучшить',
+    improvingText: 'Улучшаю твой контент...',
+    improvementError: 'Не удалось улучшить. Попробуй еще раз.',
+    improvementMinLength: 'Введи минимум 3 символа',
+    improvementAnalysis: 'Анализ',
+    detectedStyle: 'Выявленный стиль',
+    improvementFocus: 'Фокус улучшения',
+    improvedTitle: 'Улучшенный заголовок',
+    improvedThumbnail: 'Улучшенное превью',
+    improved: 'Улучшено',
+    changes: 'Изменения',
+    triggers: 'Триггеры',
+    function: 'Функция',
+    psychology: 'Психология',
+    analyzingDraft: 'Анализирую твой черновик',
+    findingImprovements: 'Ищу улучшения',
+    optimizingLanguage: 'Оптимизирую язык',
+    enhancingPsychology: 'Улучшаю психологию',
+    polishingResults: 'Дорабатываю результаты'
   },
   uk: {
     videoTopic: 'Тема відео <span class="req" aria-hidden="true">*</span>',
@@ -708,7 +789,34 @@ const translations = {
       'Створимо клікабельний контент! 🎯',
       'Збільшимо охоплення? 🌟',
       'Зробимо контент невіддільним! ⚡'
-    ]
+    ],
+    tabCreate: 'Створити нове',
+    tabImprove: 'Покращити чернетку',
+    improvementTitle: 'Покращ свої чернетки',
+    draftTitleLabel: 'Чернетка заголовка',
+    draftTitlePlaceholder: 'Введи чернетку заголовка для покращення...',
+    draftThumbnailLabel: 'Чернетка тексту прев\'ю',
+    draftThumbnailPlaceholder: 'Введи чернетку тексту прев\'ю...',
+    generateThumbnailCheck: 'Створити текст прев\'ю для заголовка',
+    improveButton: 'Покращити',
+    improvingText: 'Покращую твій контент...',
+    improvementError: 'Не вдалося покращити. Спробуй ще раз.',
+    improvementMinLength: 'Введи мінімум 3 символи',
+    improvementAnalysis: 'Аналіз',
+    detectedStyle: 'Виявлений стиль',
+    improvementFocus: 'Фокус покращення',
+    improvedTitle: 'Покращений заголовок',
+    improvedThumbnail: 'Покращене прев\'ю',
+    improved: 'Покращено',
+    changes: 'Зміни',
+    triggers: 'Тригери',
+    function: 'Функція',
+    psychology: 'Психологія',
+    analyzingDraft: 'Аналізую твою чернетку',
+    findingImprovements: 'Шукаю покращення',
+    optimizingLanguage: 'Оптимізую мову',
+    enhancingPsychology: 'Покращую психологію',
+    polishingResults: 'Доопрацьовую результати'
   }
 };
 
@@ -1208,7 +1316,11 @@ const store = {
   addSession(s){ const all = store.loadSessions(); all.unshift(s); localStorage.setItem("tc_sessions_v7", JSON.stringify(all)); },
   loadSessions(){ try{ return JSON.parse(localStorage.getItem("tc_sessions_v7"))||[] }catch{ return [] } },
   clearSessions(){ localStorage.setItem("tc_sessions_v7", JSON.stringify([])); },
-  deleteSession(id){ const all = store.loadSessions().filter(x => x.id !== id); localStorage.setItem("tc_sessions_v7", JSON.stringify(all)); }
+  deleteSession(id){ const all = store.loadSessions().filter(x => x.id !== id); localStorage.setItem("tc_sessions_v7", JSON.stringify(all)); },
+  addImprovementSession(s){ const all = store.loadImprovementSessions(); all.unshift(s); localStorage.setItem("tc_improvement_sessions_v1", JSON.stringify(all)); },
+  loadImprovementSessions(){ try{ return JSON.parse(localStorage.getItem("tc_improvement_sessions_v1"))||[] }catch{ return [] } },
+  clearImprovementSessions(){ localStorage.setItem("tc_improvement_sessions_v1", JSON.stringify([])); },
+  deleteImprovementSession(id){ const all = store.loadImprovementSessions().filter(x => x.id !== id); localStorage.setItem("tc_improvement_sessions_v1", JSON.stringify(all)); }
 };
 
 /* ================= UTILS ================= */
@@ -1216,14 +1328,32 @@ const $ = s => document.querySelector(s);
 const clamp = (n,min,max)=> Math.max(min, Math.min(max, n));
 const clampStr = (s,n)=> (s||"").trim().slice(0,n);
 const MAX_CHARS_TOPIC=800, MAX_CHARS_FORMAT=300, MAX_CHARS_AUDIENCE=300;
-const toast = (msg)=>{ 
-  const actualMsg = t[msg] || msg || t.copied; 
-  const el=$("#toast"); 
-  el.textContent=actualMsg; 
-  el.classList.add("show"); 
+
+// Global operation lock to prevent simultaneous create/improve operations
+let isOperationInProgress = false;
+const toast = (msg)=>{
+  const actualMsg = t[msg] || msg || t.copied;
+  const el=$("#toast");
+  el.textContent=actualMsg;
+  el.classList.add("show");
   haptic.notification();
   setTimeout(()=> el.classList.remove("show"), 1600);
 };
+
+function copyToClipboard(text) {
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    toast('copied');
+    haptic.success();
+  }).catch(() => {
+    toast('copyFailed');
+    haptic.error();
+  });
+}
+
+function showToast(msg) {
+  toast(msg);
+}
 function escapeForPrompt(s){ return (s||"").replace(/[<>]/g, m => ({'<':'&lt;','>':'&gt;'}[m])) }
 function nowStr(){ try{ return new Date().toLocaleString('en-GB', { hour12:false, timeZone:'Europe/London' }); }catch{ return new Date().toLocaleString(); } }
 function joinParts(parts){ return (parts||[]).map(p=> p.text).filter(Boolean).join("") }
@@ -1543,20 +1673,21 @@ function skeletonCard(){
 
 /* ================= 3D CARD SYSTEM ================= */
 let cardClickHandler = null;
+let improvementCardClickHandler = null;
 
 function setup3DCards() {
   const stream = $('#stream');
-  
+
   // Remove old handler if exists
   if (cardClickHandler) {
     stream.removeEventListener('click', cardClickHandler);
   }
-  
+
   // Update stack indices for collapsed cards
   function updateStackIndices() {
     const sessions = [...stream.querySelectorAll('.session')];
     let stackIndex = 0;
-    
+
     sessions.forEach(session => {
       if (session.classList.contains('collapsed')) {
         session.style.setProperty('--stack-index', stackIndex);
@@ -1566,15 +1697,15 @@ function setup3DCards() {
       }
     });
   }
-  
+
   // Create new handler
   cardClickHandler = (e) => {
     const session = e.target.closest('.session');
     if (!session || e.target.closest('.iconbtn')) return;
-    
+
     const isExpanded = session.classList.contains('expanded');
     const allSessions = [...stream.querySelectorAll('.session')];
-    
+
     if (isExpanded) {
       // Collapse the card
       session.classList.remove('expanded');
@@ -1592,14 +1723,74 @@ function setup3DCards() {
       session.classList.remove('collapsed', 'pushed-down');
       session.classList.add('expanded');
     }
-    
+
     haptic.medium();
     setTimeout(updateStackIndices, 50);
   };
-  
+
   // Add new handler
   stream.addEventListener('click', cardClickHandler);
-  
+
+  updateStackIndices();
+}
+
+function setupImprovement3DCards() {
+  const stream = document.getElementById('improvement-stream');
+  if (!stream) return;
+
+  // Remove old handler if exists
+  if (improvementCardClickHandler) {
+    stream.removeEventListener('click', improvementCardClickHandler);
+  }
+
+  // Update stack indices for collapsed cards
+  function updateStackIndices() {
+    const sessions = [...stream.querySelectorAll('.session')];
+    let stackIndex = 0;
+
+    sessions.forEach(session => {
+      if (session.classList.contains('collapsed')) {
+        session.style.setProperty('--stack-index', stackIndex);
+        stackIndex++;
+      } else {
+        session.style.setProperty('--stack-index', 0);
+      }
+    });
+  }
+
+  // Create new handler
+  improvementCardClickHandler = (e) => {
+    const session = e.target.closest('.session');
+    if (!session || e.target.closest('.iconbtn')) return;
+
+    const isExpanded = session.classList.contains('expanded');
+    const allSessions = [...stream.querySelectorAll('.session')];
+
+    if (isExpanded) {
+      // Collapse the card
+      session.classList.remove('expanded');
+      session.classList.add('collapsed');
+      allSessions.forEach(s => s.classList.remove('pushed-down'));
+    } else {
+      // Expand this card and push others down
+      allSessions.forEach(s => {
+        s.classList.remove('expanded');
+        s.classList.add('collapsed');
+        if (s !== session) {
+          s.classList.add('pushed-down');
+        }
+      });
+      session.classList.remove('collapsed', 'pushed-down');
+      session.classList.add('expanded');
+    }
+
+    haptic.medium();
+    setTimeout(updateStackIndices, 50);
+  };
+
+  // Add new handler
+  stream.addEventListener('click', improvementCardClickHandler);
+
   updateStackIndices();
 }
 
@@ -1632,19 +1823,33 @@ function attachSessionControls(scope=document){
   scope.querySelectorAll('.session .close').forEach(btn=>{
     btn.onclick = (e) => {
       e.stopPropagation();
-      const card = btn.closest('.session'); 
+      const card = btn.closest('.session');
       const id = card?.dataset?.id;
-      card.style.transform='scale(.95)'; 
+      card.style.transform='scale(.95)';
       card.style.opacity='0';
       haptic.medium();
-      setTimeout(()=>{ 
-        card.remove(); 
-        if(id) store.deleteSession(id); 
+      setTimeout(()=>{
+        card.remove();
+
+        // Определяем, из какого stream удаляется сессия
+        const isImprovementSession = card.closest('#improvement-stream') !== null;
+
+        if(id) {
+          if (isImprovementSession) {
+            store.deleteImprovementSession(id);
+          } else {
+            store.deleteSession(id);
+          }
+        }
+
         setup3DCards();
-        
+
         // Проверяем, остались ли сессии, и обрабатываем соответственно
-        const remainingSessions = store.loadSessions();
-        const resultsPanel = document.querySelector('.panel.results');
+        const remainingSessions = isImprovementSession ? store.loadImprovementSessions() : store.loadSessions();
+        const resultsPanel = isImprovementSession
+          ? document.querySelector('.improvement-results-panel')
+          : document.querySelector('.panel.results:not(.improvement-results-panel)');
+
         if (remainingSessions.length === 0 && resultsPanel) {
           if (isMobileDevice()) {
             // На мобильных скрываем блок
@@ -1655,7 +1860,9 @@ function attachSessionControls(scope=document){
             }, 300);
           } else {
             // На ПК показываем placeholder
-            const container = document.querySelector('#stream');
+            const container = isImprovementSession
+              ? document.querySelector('#improvement-stream')
+              : document.querySelector('#stream');
             container.innerHTML = '';
             const placeholder = document.createElement('div');
             placeholder.className = 'history-placeholder';
@@ -1719,17 +1926,19 @@ function blinkFields(){
 }
 
 let btnMsgTimer=null;
+let improveBtnMsgTimer=null;
+
 function setBtnBusy(btn, on){
   if(on){
-    btn.setAttribute('aria-busy','true'); 
-    btn.classList.add('processing'); 
+    btn.setAttribute('aria-busy','true');
+    btn.classList.add('processing');
     btn.disabled=true;
     const msgs = [
-      t.working, 
-      t.analyzingTopic, 
-      t.understandingAudience, 
-      t.findingPatterns, 
-      t.craftingTitles, 
+      t.working,
+      t.analyzingTopic,
+      t.understandingAudience,
+      t.findingPatterns,
+      t.craftingTitles,
       t.optimizingEngagement,
       t.addingTriggers,
       t.testingCTR,
@@ -1739,17 +1948,48 @@ function setBtnBusy(btn, on){
     let i=0;
     btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
     clearInterval(btnMsgTimer);
-    btnMsgTimer = setInterval(()=>{ 
-      i=(i+1)%msgs.length; 
-      btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`; 
+    btnMsgTimer = setInterval(()=>{
+      i=(i+1)%msgs.length;
+      btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
     }, 10000); // 10 seconds per status
   }else{
-    btn.setAttribute('aria-busy','false'); 
-    btn.classList.remove('processing'); 
+    btn.setAttribute('aria-busy','false');
+    btn.classList.remove('processing');
     btn.disabled=false;
-    clearInterval(btnMsgTimer); 
+    clearInterval(btnMsgTimer);
     btnMsgTimer=null;
     btn.querySelector('.btn-text').textContent = t.send;
+  }
+}
+
+function setImproveBtnBusy(btn, on){
+  if(on){
+    btn.setAttribute('aria-busy','true');
+    btn.classList.add('processing');
+    btn.disabled=true;
+    const msgs = [
+      t.improvingText || 'Improving',
+      t.analyzingDraft || 'Analyzing your draft',
+      t.findingImprovements || 'Finding improvements',
+      t.optimizingLanguage || 'Optimizing language',
+      t.enhancingPsychology || 'Enhancing psychology',
+      t.polishingResults || 'Polishing results',
+      t.almostReady || 'Almost ready'
+    ];
+    let i=0;
+    btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
+    clearInterval(improveBtnMsgTimer);
+    improveBtnMsgTimer = setInterval(()=>{
+      i=(i+1)%msgs.length;
+      btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
+    }, 8000); // 8 seconds per status
+  }else{
+    btn.setAttribute('aria-busy','false');
+    btn.classList.remove('processing');
+    btn.disabled=false;
+    clearInterval(improveBtnMsgTimer);
+    improveBtnMsgTimer=null;
+    btn.querySelector('.btn-text').textContent = t.improveButton || 'Improve';
   }
 }
 
@@ -1790,10 +2030,17 @@ async function generateDualModels(topic, format, audience, wantTitles, wantThumb
 
 async function generate(){
   const btn = $("#send");
-  if(btn.getAttribute('aria-busy')==='true'){ 
-    toast('pleaseWait'); 
+  if(btn.getAttribute('aria-busy')==='true'){
+    toast('pleaseWait');
     haptic.error();
-    return; 
+    return;
+  }
+
+  // Check if another operation is in progress
+  if(isOperationInProgress) {
+    toast('pleaseWait');
+    haptic.error();
+    return;
   }
 
   const topic = clampStr($("#topic").value, MAX_CHARS_TOPIC);
@@ -1838,11 +2085,19 @@ async function generate(){
   store.saveInputs({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel});
 
   setBtnBusy(btn, true);
+  isOperationInProgress = true;
   blinkFields();
   haptic.medium();
 
-  const stream = $("#stream"); 
-  const skel = skeletonCard(); 
+  const stream = $("#stream");
+
+  // Remove placeholder if it exists
+  const placeholder = stream.querySelector('.history-placeholder');
+  if (placeholder) {
+    placeholder.remove();
+  }
+
+  const skel = skeletonCard();
   stream.prepend(skel);
 
   try {
@@ -1984,6 +2239,7 @@ async function generate(){
     haptic.error();
   } finally {
     setBtnBusy(btn, false);
+    isOperationInProgress = false;
   }
 }
 
@@ -2144,17 +2400,29 @@ function bindUI(){
   // Clear history
   $("#clear-history").addEventListener("click", ()=>{
     if(confirm(t.confirmClear)){
-      store.clearSessions(); 
+      store.clearSessions();
       store.saveInputs({}); // Also clear saved inputs
       // Force clear all localStorage to ensure fresh start
       localStorage.removeItem("tc_sessions_v7");
       localStorage.removeItem("tc_inputs_v7");
-      renderAll(); 
+      renderAll();
       toast("historyCleared");
       haptic.success();
     }
   });
   $("#clear-history").addEventListener("touchstart", () => haptic.light());
+
+  // Clear improvement history
+  $("#clear-improvement-history").addEventListener("click", ()=>{
+    if(confirm(t.confirmClear)){
+      store.clearImprovementSessions();
+      localStorage.removeItem("tc_improvement_sessions_v1");
+      loadImprovementHistory();
+      toast("historyCleared");
+      haptic.success();
+    }
+  });
+  $("#clear-improvement-history").addEventListener("touchstart", () => haptic.light());
 
   // Checkbox ripple effects and validation
   const titleCheck = $("#checkTitles");
@@ -2258,7 +2526,8 @@ function bindUI(){
 
   // Render all sessions
   renderAll();
-  
+  loadImprovementHistory();
+
   // Reduce animations on low battery
   if ('getBattery' in navigator) {
     navigator.getBattery().then(battery => {
@@ -2544,5 +2813,690 @@ function initCountSlider() {
   updateCountSlider(8);
 }
 
+/* ================= IMPROVEMENT SYSTEM PROMPT ================= */
+const IMPROVEMENT_SYSTEM_PROMPT = `You are an expert in viral YouTube optimization with deep understanding of click psychology, linguistic refinement, and audience adaptation (hundreds of A/B tests).
+
+Goal: take the user's draft title/thumbnail and improve it while preserving their original style and intent. Focus on grammar, psychology, readability, and audience adaptation.
+
+Input data
+
+DRAFT_TITLE: {{draft_title}}
+DRAFT_THUMBNAIL: {{draft_thumbnail}}
+VIDEO_TOPIC: {{topic}} ← optional context for better understanding
+FORMAT: {{format}} ← optional context
+AUDIENCE: {{audience}} ← optional context
+MODE: {{mode}} ← "improve_title" | "improve_thumbnail" | "improve_both"
+GENERATE_THUMBNAIL_FOR_TITLE: {{boolean}} ← if true, create thumbnail text for each improved title
+N: 3 ← always output exactly 3 improved versions
+
+Language & Locale (priority)
+
+The language of the entire output = the language of the draft input.
+Preserve the original language and tone of the user's draft.
+If the draft is in Russian, default region = UA, unless context suggests otherwise.
+Always adapt to the local format of numbers, rules, etc. (e.g., RU/UA → 0,1%; EN/ES → 0.1%).
+
+Core Improvement Principles
+
+PRESERVE USER'S STYLE AND INTENT
+- Maintain the original tone (casual/professional/energetic/dry)
+- Keep the clickbait level of the original draft
+- Preserve key phrases and unique voice elements
+- Don't change entertainment content to professional tone or vice versa
+- If user used emojis → keep similar emoji density (but improve placement)
+- If user avoided emojis → don't add them
+
+GRAMMAR & LANGUAGE
+- Fix spelling errors
+- Correct punctuation
+- Improve sentence structure without changing meaning
+- Remove redundant words
+- Fix awkward phrasing
+- Ensure proper capitalization (but respect intentional CAPS usage)
+
+PSYCHOLOGICAL OPTIMIZATION
+- Strengthen existing psychological triggers (don't add new unrelated ones)
+- Improve hook placement (strongest element in first ~40 characters for titles)
+- Enhance emotional impact without changing the emotion type
+- Add specificity where vague (numbers, names, concrete details)
+- Remove weak filler words
+- Strengthen verbs and action words
+
+READABILITY & CLARITY
+- Simplify complex/awkward constructions
+- Replace overly complex words with clearer alternatives (but don't oversimplify)
+- Ensure the message is immediately clear
+- Remove ambiguity
+- Improve rhythm and flow
+
+AUDIENCE ADAPTATION
+- If AUDIENCE specified → adjust vocabulary complexity to match
+  * Kids/teens → simpler language, more energy
+  * Professionals → clear but sophisticated
+  * General → balanced, accessible
+- Replace jargon with understandable terms (unless audience is specialized)
+- Adjust cultural references if needed
+- Maintain accessibility without dumbing down
+
+LENGTH OPTIMIZATION
+- Titles: aim for 40-80 characters (ideal: 50-65)
+- Thumbnail text: 2-5 words (max 7 for complex topics)
+- If draft is too long → condense without losing meaning
+- If draft is too short → add specificity/context
+
+Title Improvement Rules
+
+STRUCTURE:
+- Strongest hook in first ~40 characters
+- One clear idea only
+- Strong verb + explicit agent + specificity
+- No fabrications or exaggerations beyond original intent
+- Remove generic phrases ("you won't believe," "amazing," "incredible" unless user specifically used them)
+
+SPECIFICITY:
+- Vague numbers → precise numbers ("many" → "372")
+- Generic time → specific time ("long time" → "731 days")
+- Abstract → concrete ("improved a lot" → "×3 growth")
+- General → specific ("in Europe" → "in Germany")
+
+PSYCHOLOGICAL DEPTH:
+- Use original psychological triggers as base
+- Strengthen them with proven patterns
+- Add micro-details for credibility
+- Enhance emotional resonance
+
+EMOJI USAGE (titles only):
+- If draft has 0 emojis → add maximum 1-2 (and only if it genuinely helps)
+- If draft has emojis → optimize placement and relevance
+- Remove excessive or irrelevant emojis
+- Never use emojis in thumbnail text
+
+Thumbnail Text Improvement Rules
+
+CORE RULES:
+- 2-5 words maximum (exception: up to 7 for complex technical topics)
+- Must complement title, NOT duplicate it
+- No colons (:), no emojis, no punctuation except occasional "!", "?" or "%"
+- Must be readable on 320×180px thumbnail
+- High contrast with title (if title asks question → thumbnail states fact)
+
+STYLE:
+- Sharp, punchy, immediate impact
+- Single concept or number
+- CAPS allowed for 1-2 words max (if impactful)
+- Preserve the tone of original draft
+
+PSYCHOLOGICAL FUNCTION:
+- Add urgency, scale, or stakes
+- Provide missing context
+- Enhance curiosity
+- Create contrast or reinforcement
+
+Output Contract (STRICTLY JSON, no extra keys)
+
+FOR MODE = "improve_title" OR "improve_both":
+{
+  "analysis": {
+    "detectedStyle": "brief analysis of user's original style",
+    "identifiedTriggers": "psychological triggers present in the draft",
+    "improvementFocus": "what was improved and why"
+  },
+  "improvedTitles": [
+    {
+      "title": "STRING",
+      "thumbnailText": "STRING or null",
+      "changes": "brief explanation of key improvements",
+      "strengthenedTriggers": "triggers that were enhanced"
+    },
+    {
+      "title": "STRING",
+      "thumbnailText": "STRING or null",
+      "changes": "brief explanation of key improvements",
+      "strengthenedTriggers": "triggers that were enhanced"
+    },
+    {
+      "title": "STRING",
+      "thumbnailText": "STRING or null",
+      "changes": "brief explanation of key improvements",
+      "strengthenedTriggers": "triggers that were enhanced"
+    }
+  ]
+}
+
+FOR MODE = "improve_thumbnail":
+{
+  "analysis": {
+    "detectedStyle": "brief analysis of user's original style",
+    "identifiedPurpose": "what the thumbnail text is trying to achieve",
+    "improvementFocus": "what was improved and why"
+  },
+  "improvedThumbnails": [
+    {
+      "text": "STRING",
+      "changes": "brief explanation of key improvements",
+      "psychologicalFunction": "how this version enhances the title"
+    },
+    {
+      "text": "STRING",
+      "changes": "brief explanation of key improvements",
+      "psychologicalFunction": "how this version enhances the title"
+    },
+    {
+      "text": "STRING",
+      "changes": "brief explanation of key improvements",
+      "psychologicalFunction": "how this version enhances the title"
+    }
+  ]
+}
+
+CRITICAL RULES:
+- NEVER output in markdown format
+- NEVER add explanations outside JSON
+- ONLY valid JSON
+- All text fields in the same language as the input draft
+- "changes" and other explanation fields should be brief (1-2 sentences max)
+- If GENERATE_THUMBNAIL_FOR_TITLE is false → thumbnailText = null for all improved titles
+- Each improved version must be meaningfully different from others
+- All improvements must preserve the user's original intent and style
+`;
+
+/* ================= IMPROVEMENT FEATURE ================= */
+function renderImprovementSession(session) {
+  const stream = document.getElementById('improvement-stream');
+  if (!stream) {
+    console.error('improvement-stream not found!');
+    return;
+  }
+
+  const { id, timestamp, draftTitle, draftThumbnail, mode, generateThumbnail, result } = session;
+  const data = result;
+
+  console.log('Rendering session with data:', data);
+
+  // Create session title
+  let sessionTitle = mode === 'improve_title' ? (t.improvedTitle || 'Improved Title') :
+                     mode === 'improve_thumbnail' ? (t.improvedThumbnail || 'Improved Thumbnail') :
+                     (t.improved || 'Improved');
+
+  // Add draft info to title
+  if (draftTitle) {
+    sessionTitle += ` • ${truncate(draftTitle, 40)}`;
+  }
+
+  // Build list HTML using same structure as create
+  let listHTML = '';
+
+  // Render improved titles
+  if (data.improvedTitles && Array.isArray(data.improvedTitles) && data.improvedTitles.length > 0) {
+    data.improvedTitles.forEach((item, index) => {
+      let metaHTML = '';
+      if (item.changes || item.strengthenedTriggers) {
+        metaHTML = '<div class="meta-info" style="margin-top: 8px; font-size: 12px; color: var(--text-weak); line-height: 1.5;">';
+        if (item.changes) {
+          metaHTML += `<div style="margin-bottom: 4px;"><strong style="color: var(--brand-2);">${t.improved || 'Improved'}:</strong> ${item.changes}</div>`;
+        }
+        if (item.strengthenedTriggers) {
+          metaHTML += `<div style="opacity: 0.8;"><strong style="color: var(--brand-2);">${t.triggers || 'Triggers'}:</strong> ${item.strengthenedTriggers}</div>`;
+        }
+        metaHTML += '</div>';
+      }
+
+      listHTML += `
+        <div class="row" style="--row-index: ${index};">
+          <div class="txt" tabindex="0" role="button" aria-label="Copy title">${item.title}</div>
+          ${item.thumbnailText ? `
+            <div class="txt thumb" tabindex="0" role="button" aria-label="Copy thumbnail text" style="margin-top: 8px;">${item.thumbnailText}</div>
+          ` : ''}
+          ${metaHTML}
+        </div>
+      `;
+    });
+  }
+
+  // Render improved thumbnails
+  if (data.improvedThumbnails && Array.isArray(data.improvedThumbnails) && data.improvedThumbnails.length > 0) {
+    data.improvedThumbnails.forEach((item, index) => {
+      let metaHTML = '';
+      if (item.changes || item.psychologicalFunction) {
+        metaHTML = '<div class="meta-info" style="margin-top: 8px; font-size: 12px; color: var(--text-weak); line-height: 1.5;">';
+        if (item.changes) {
+          metaHTML += `<div style="margin-bottom: 4px;"><strong style="color: var(--brand-2);">${t.improved || 'Improved'}:</strong> ${item.changes}</div>`;
+        }
+        if (item.psychologicalFunction) {
+          metaHTML += `<div style="opacity: 0.8;"><strong style="color: var(--brand-2);">${t.psychology || 'Psychology'}:</strong> ${item.psychologicalFunction}</div>`;
+        }
+        metaHTML += '</div>';
+      }
+
+      listHTML += `
+        <div class="row" style="--row-index: ${index};">
+          <div class="txt thumb" tabindex="0" role="button" aria-label="Copy thumbnail text">${item.text}</div>
+          ${metaHTML}
+        </div>
+      `;
+    });
+  }
+
+  // Create draft info audience-style block
+  let draftInfoHTML = '';
+  if (draftTitle || draftThumbnail) {
+    draftInfoHTML = `<div class="audience" data-label="${t.original || 'Original Draft'}">`;
+    if (draftTitle) draftInfoHTML += `<div><strong>${t.title || 'Title'}:</strong> ${draftTitle}</div>`;
+    if (draftThumbnail) draftInfoHTML += `<div><strong>${t.thumbnail || 'Thumbnail'}:</strong> ${draftThumbnail}</div>`;
+    draftInfoHTML += `</div>`;
+  }
+
+  const card = document.createElement('article');
+  card.className = 'session collapsed';
+  card.setAttribute('role', 'region');
+  card.setAttribute('aria-label', 'Improvement session');
+  card.dataset.id = id;
+  card.innerHTML = `
+    <div class="session-head">
+      <span class="session-title">${sessionTitle}</span>
+    </div>
+    ${draftInfoHTML}
+    <div class="list">${listHTML}</div>
+  `;
+
+  console.log('Prepending card to stream');
+  stream.prepend(card);
+
+  attachCopyHandlers(card);
+  attachSessionControls(card);
+
+  console.log('Card rendered successfully');
+}
+
+function loadImprovementHistory() {
+  const sessions = store.loadImprovementSessions();
+  const stream = document.getElementById('improvement-stream');
+  const resultsPanel = document.querySelector('.improvement-results-panel');
+
+  if (!stream) return;
+
+  stream.innerHTML = '';
+
+  if (sessions.length === 0) {
+    if (isMobileDevice()) {
+      // На мобильных скрываем блок истории, если нет данных
+      if (resultsPanel) {
+        resultsPanel.style.opacity = '0';
+        resultsPanel.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+          resultsPanel.style.display = 'none';
+        }, 300);
+      }
+    } else {
+      // На ПК показываем placeholder
+      if (resultsPanel) {
+        resultsPanel.style.display = '';
+        resultsPanel.style.opacity = '1';
+        resultsPanel.style.transform = 'translateY(0)';
+      }
+
+      const placeholder = document.createElement('div');
+      placeholder.className = 'history-placeholder';
+      placeholder.innerHTML = `
+        <div class="placeholder-content">
+          <div class="placeholder-icon">✨</div>
+          <div class="placeholder-text">${t.historyPlaceholder || 'Results will appear here after improvement'}</div>
+        </div>
+      `;
+      stream.appendChild(placeholder);
+    }
+  } else {
+    // Показываем панель результатов
+    if (resultsPanel) {
+      resultsPanel.style.display = '';
+      resultsPanel.style.opacity = '1';
+      resultsPanel.style.transform = 'translateY(0)';
+    }
+
+    sessions.forEach(session => {
+      renderImprovementSession(session);
+    });
+
+    setupImprovement3DCards();
+  }
+}
+
+function bindImprovementFeature() {
+  const draftTitleField = document.getElementById('draftTitle');
+  const draftThumbnailField = document.getElementById('draftThumbnail');
+  const clearDraftTitle = document.getElementById('clearDraftTitle');
+  const clearDraftThumbnail = document.getElementById('clearDraftThumbnail');
+  const generateThumbnailCheck = document.getElementById('checkGenerateThumbnail');
+  const generateThumbnailInput = document.getElementById('generateThumbnailForTitle');
+  const improveBtn = document.getElementById('improveBtn');
+
+  if (!draftTitleField || !draftThumbnailField || !improveBtn) return;
+
+  // Track mouse movement for field effects
+  trackMouseOnField(document.getElementById('draftTitleField'));
+  trackMouseOnField(document.getElementById('draftThumbnailField'));
+
+  // Clear button handlers
+  clearDraftTitle.addEventListener('click', () => {
+    draftTitleField.value = '';
+    draftTitleField.focus();
+    updateImprovementUI();
+    haptic.light();
+  });
+
+  clearDraftThumbnail.addEventListener('click', () => {
+    draftThumbnailField.value = '';
+    draftThumbnailField.focus();
+    updateImprovementUI();
+    haptic.light();
+  });
+
+  // Update UI based on field state
+  function updateImprovementUI() {
+    const hasTitleDraft = draftTitleField.value.trim().length >= 3;
+    const hasThumbnailDraft = draftThumbnailField.value.trim().length >= 3;
+
+    // Show checkbox with animation only when title is entered and thumbnail is empty
+    if (hasTitleDraft && !hasThumbnailDraft) {
+      generateThumbnailCheck.classList.add('visible');
+    } else {
+      generateThumbnailCheck.classList.remove('visible');
+      generateThumbnailInput.checked = false;
+    }
+
+    // Enable button if at least one field has valid input
+    improveBtn.disabled = !(hasTitleDraft || hasThumbnailDraft);
+  }
+
+  // Listen to input changes
+  draftTitleField.addEventListener('input', updateImprovementUI);
+  draftThumbnailField.addEventListener('input', updateImprovementUI);
+
+  // Improve button handler
+  improveBtn.addEventListener('click', async () => {
+    // Check if another operation is in progress
+    if(isOperationInProgress) {
+      toast('pleaseWait');
+      haptic.error();
+      return;
+    }
+
+    const draftTitle = draftTitleField.value.trim();
+    const draftThumbnail = draftThumbnailField.value.trim();
+    const generateThumbnail = generateThumbnailInput.checked;
+
+    // Validate
+    if (draftTitle.length < 3 && draftThumbnail.length < 3) {
+      showToast(t.improvementMinLength || 'Enter at least 3 characters');
+      return;
+    }
+
+    // Determine mode
+    let mode = 'improve_title';
+    if (draftTitle && draftThumbnail) {
+      mode = 'improve_both';
+    } else if (draftThumbnail && !draftTitle) {
+      mode = 'improve_thumbnail';
+    }
+
+    // Get context from main inputs (optional)
+    const topic = document.getElementById('topic')?.value?.trim() || '';
+    const format = document.getElementById('format')?.value?.trim() || '';
+    const audience = document.getElementById('audience')?.value?.trim() || '';
+
+    // Show loading state
+    setImproveBtnBusy(improveBtn, true);
+    isOperationInProgress = true;
+
+    haptic.medium();
+
+    const stream = document.getElementById('improvement-stream');
+    const skel = skeletonCard();
+    stream.prepend(skel);
+
+    try {
+      const result = await callImprovementAPI({
+        mode,
+        draftTitle,
+        draftThumbnail,
+        generateThumbnail,
+        topic,
+        format,
+        audience
+      });
+
+      console.log('Improvement result:', result);
+
+      // Remove skeleton loader
+      skel.remove();
+
+      // Clear loading state
+      const resultsPanel = document.querySelector('.improvement-results-panel');
+
+      // Remove placeholder if it exists
+      const placeholder = stream?.querySelector('.history-placeholder');
+      if (placeholder) {
+        placeholder.remove();
+      }
+
+      // Show results panel
+      if (resultsPanel) {
+        resultsPanel.style.display = '';
+        resultsPanel.style.opacity = '1';
+        resultsPanel.style.transform = 'translateY(0)';
+      }
+
+      // Create session object
+      const session = {
+        id: uid(),
+        timestamp: Date.now(),
+        draftTitle,
+        draftThumbnail,
+        mode,
+        generateThumbnail,
+        result
+      };
+
+      // Save to history
+      console.log('Saving improvement session:', session);
+      store.addImprovementSession(session);
+
+      // Render as card in stream
+      console.log('Rendering improvement session');
+      renderImprovementSession(session);
+
+      // Setup 3D cards and auto-expand the new one
+      setupImprovement3DCards();
+
+      // Auto-expand the newest card and push down others
+      setTimeout(() => {
+        const stream = document.getElementById('improvement-stream');
+        const newestCard = stream?.querySelector('.session');
+        const allSessions = [...stream.querySelectorAll('.session')];
+
+        if (newestCard) {
+          // Collapse all and push down all except newest
+          allSessions.forEach(s => {
+            s.classList.remove('expanded');
+            s.classList.add('collapsed');
+            if (s !== newestCard) {
+              s.classList.add('pushed-down');
+            }
+          });
+
+          // Expand the newest card
+          newestCard.classList.remove('collapsed', 'pushed-down');
+          newestCard.classList.add('expanded');
+        }
+      }, 100);
+
+      haptic.success();
+    } catch (error) {
+      console.error('Improvement error:', error);
+      console.error('Error stack:', error.stack);
+      console.error('Error message:', error.message);
+
+      // Remove skeleton loader on error
+      skel.remove();
+
+      // Show detailed error in alert for debugging
+      alert(`Improvement error: ${error.message}\n\nCheck console for details.`);
+
+      toast('improvementError');
+      haptic.error();
+    } finally {
+      setImproveBtnBusy(improveBtn, false);
+      isOperationInProgress = false;
+      updateImprovementUI();
+    }
+  });
+
+  // Initialize
+  updateImprovementUI();
+}
+
+async function callImprovementAPI(params) {
+  const { mode, draftTitle, draftThumbnail, generateThumbnail, topic, format, audience } = params;
+
+  // Build user prompt
+  let userPrompt = `MODE: ${mode}\n`;
+  if (draftTitle) userPrompt += `DRAFT_TITLE: ${draftTitle}\n`;
+  if (draftThumbnail) userPrompt += `DRAFT_THUMBNAIL: ${draftThumbnail}\n`;
+  if (topic) userPrompt += `VIDEO_TOPIC: ${topic}\n`;
+  if (format) userPrompt += `FORMAT: ${format}\n`;
+  if (audience) userPrompt += `AUDIENCE: ${audience}\n`;
+  userPrompt += `GENERATE_THUMBNAIL_FOR_TITLE: ${generateThumbnail}\n`;
+  userPrompt += `\nPlease analyze and improve according to the instructions. Output ONLY valid JSON.`;
+
+  const fullPrompt = IMPROVEMENT_SYSTEM_PROMPT + '\n\n' + userPrompt;
+
+  // Try Gemini first
+  try {
+    const geminiResult = await callGemini({
+      contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
+      generationConfig: {
+        temperature: 0.85,
+        topP: 0.92,
+        maxOutputTokens: 4096,
+        responseMimeType: "application/json"
+      }
+    });
+
+    // Parse Gemini response
+    const first = (geminiResult.candidates || [])[0];
+    const text = joinParts(first?.content?.parts);
+
+    console.log('Gemini raw response:', text);
+
+    const parsed = safeParseJSON(text);
+
+    if (!parsed) {
+      console.error('Failed to parse Gemini response. Raw text:', text);
+      throw new Error('Failed to parse Gemini response');
+    }
+
+    console.log('Gemini parsed data:', parsed);
+    return parsed;
+  } catch (geminiError) {
+    console.warn('Gemini failed, trying OpenAI:', geminiError);
+
+    // Fallback to OpenAI
+    try {
+      const openaiResult = await callOpenAI({
+        model: OPENAI_MODEL,
+        messages: [{ role: "user", content: fullPrompt }],
+        temperature: 0.8,
+        max_tokens: 2048
+      });
+
+      // Parse OpenAI response
+      const text = openaiResult.choices?.[0]?.message?.content || '';
+
+      console.log('OpenAI raw response:', text);
+
+      const parsed = safeParseJSON(text);
+
+      if (!parsed) {
+        console.error('Failed to parse OpenAI response. Raw text:', text);
+        throw new Error('Failed to parse OpenAI response');
+      }
+
+      console.log('OpenAI parsed data:', parsed);
+      return parsed;
+    } catch (openaiError) {
+      console.error('Both APIs failed. Gemini error:', geminiError.message, 'OpenAI error:', openaiError.message);
+      throw new Error(`All API attempts failed: ${geminiError.message} | ${openaiError.message}`);
+    }
+  }
+}
+
+/* ================= TAB SWITCHING ================= */
+function bindTabSwitching() {
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  console.log('bindTabSwitching: Found', tabBtns.length, 'tab buttons and', tabContents.length, 'tab contents');
+
+  if (tabBtns.length === 0) {
+    console.error('No tab buttons found!');
+    return;
+  }
+
+  tabBtns.forEach(btn => {
+    console.log('Binding click to tab button:', btn.getAttribute('data-tab'));
+    btn.addEventListener('click', (e) => {
+      console.log('Tab button clicked:', btn.getAttribute('data-tab'));
+      e.preventDefault();
+      e.stopPropagation();
+
+      const targetTab = btn.getAttribute('data-tab');
+
+      // Update buttons
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Update content
+      tabContents.forEach(content => {
+        const contentTab = content.getAttribute('data-tab-content');
+        if (contentTab === targetTab) {
+          content.classList.add('active');
+          console.log('Showing tab content:', contentTab);
+        } else {
+          content.classList.remove('active');
+        }
+      });
+
+      // Haptic feedback
+      haptic.medium();
+
+      // Save current tab to localStorage
+      try {
+        localStorage.setItem('tc_active_tab', targetTab);
+      } catch (e) {
+        console.warn('Failed to save active tab:', e);
+      }
+    });
+  });
+
+  // Restore last active tab
+  try {
+    const savedTab = localStorage.getItem('tc_active_tab');
+    if (savedTab) {
+      // Use setTimeout to ensure DOM is ready
+      setTimeout(() => {
+        const targetBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
+        if (targetBtn) {
+          console.log('Restoring saved tab:', savedTab);
+          targetBtn.click();
+        }
+      }, 100);
+    }
+  } catch (e) {
+    console.warn('Failed to restore active tab:', e);
+  }
+}
+
 // Start app
 bindUI();
+bindImprovementFeature();
+bindTabSwitching();
