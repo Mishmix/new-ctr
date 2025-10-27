@@ -3500,3 +3500,4 @@ function bindTabSwitching() {
 bindUI();
 bindImprovementFeature();
 bindTabSwitching();
+ 
