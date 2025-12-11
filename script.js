@@ -1,3503 +1,2248 @@
-/* ================= CAESAR CIPHER ENCRYPTION ================= */
-function caesarEncrypt(text, shift = 3) {
-  return text.replace(/[a-zA-Z]/g, function(char) {
-    const start = char <= 'Z' ? 65 : 97;
-    return String.fromCharCode(((char.charCodeAt(0) - start + shift) % 26 + 26) % 26 + start);
-  });
+:root{
+  --bg:#0b0d12; --panel:#101522e6; --card:#0e1423cc;
+  --muted:#9aa7bd; --text:#e8edf6; --text-weak:#c7d0dd;
+  --brand:#86a0ff; --brand-2:#6ee7ff; --ok:#67f3a2; --warn:#ffb85c; --err:#ff6b6b;
+  --gold:#ffd76a; --gold2:#ffefb0;
+  --glass: blur(16px) saturate(180%); --r-lg:20px; --r-sm:16px; --gap:16px; --tap:56px;
+  --shadow: 0 20px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+  --focus: 0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --safe-top: env(safe-area-inset-top);
 }
 
-function caesarDecrypt(text, shift = 3) {
-  return caesarEncrypt(text, -shift);
+*{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+html,body{height:100%; overscroll-behavior-y: contain;}
+body{
+  margin:0; 
+  background: var(--bg);
+  color:var(--text); 
+  font:500 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x:hidden;
+  -webkit-font-smoothing: antialiased;
+  touch-action: pan-y;
 }
 
-function decryptApiKey(encryptedKey, shift = 3) {
-  return caesarDecrypt(encryptedKey, shift);
+/* ===== ANIMATED BACKGROUND ===== */
+#particles-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.4;
 }
 
-/* ================= ACCESS CONTROL ================= */
-(function(){
-  const STORAGE_KEY   = "site_access_v2";
-  const USED_KEY      = "site_used_codes_v2";
-  const SHOW_DELAY_MS = 3000;
-  const REAUTH_EVERY_DAYS = 0;
+/* ===== ENHANCED PAGE LOADER ===== */
+#pageloader{
+  position:fixed; inset:0; 
+  background: var(--bg);
+  z-index:9999; display:grid; place-items:center;
+  transition: opacity .5s cubic-bezier(0.4, 0, 0.2, 1), transform .5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#pageloader.hidden{ 
+  opacity:0; 
+  transform: scale(1.1);
+  pointer-events: none;
+}
+.pl-card{ text-align:center; animation: float-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.pl-logo{
+  width:80px; height:80px; border-radius:24px; object-fit:cover;
+  box-shadow:0 20px 60px rgba(134,160,255,.5), 0 0 40px rgba(110,231,255,.3);
+  border:2px solid rgba(255,255,255,.2);
+  animation: logo-3d 3s ease-in-out infinite, glow-pulse 2s ease-in-out infinite alternate;
+  transform-style: preserve-3d;
+}
+@keyframes logo-3d { 
+  0%, 100% { transform: perspective(200px) rotateY(0deg) scale(1); }
+  50% { transform: perspective(200px) rotateY(15deg) scale(1.05); }
+}
+@keyframes glow-pulse { 
+  from{ box-shadow:0 20px 60px rgba(134,160,255,.5), 0 0 40px rgba(110,231,255,.3); }
+  to{ box-shadow:0 20px 80px rgba(134,160,255,.7), 0 0 60px rgba(110,231,255,.5); }
+}
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(30px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.pl-bar{
+  margin-top:24px; width:280px; height:8px; border-radius:999px; 
+  background:linear-gradient(90deg, #10182b, #1a2444); 
+  overflow:hidden; 
+  border:1px solid #2a4270;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.3);
+}
+.pl-bar > span{
+  display:block; height:100%; width:0%; 
+  background:linear-gradient(90deg,#6ee7ff,#86a0ff,#ff6ee7);
+  animation: loadline 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  box-shadow:0 0 20px rgba(110,231,255,.5);
+  position: relative;
+}
+.pl-bar > span::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 1s linear infinite;
+}
+@keyframes loadline{ 
+  0%{width:0%} 
+  50%{width:75%} 
+  100%{width:100%} 
+}
+@keyframes shimmer { 
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
 
-  const CODES = {
-  "boost-ctr-07": {
-    "ttlMs": 604800000,
-    "oneTime": true
-  },
-  "boost-ctr-30": {
-    "ttlMs": 2592000000,
-    "oneTime": true
-  },
-  "boost-ctr": {
-    "ttlMs": 0,
-    "oneTime": false
-  },
-  "temp": {
-    "ttlMs": 15000,
-    "oneTime": true
-  },
-  "trial": {
-    "ttlMs": 600000,
-    "oneTime": true
-  },
-  "daniel-boost-ctr": {
-    "ttlMs": 0,
-    "oneTime": false
-  },
-  "denys-lifetime": {
-    "ttlMs": 0,
-    "oneTime": false
-  },
-  "vova-test": {
-    "ttlMs": 0,
-    "oneTime": true
-  }
-};
+.pl-text {
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  opacity: 0.9;
+  animation: pl-text-fade 3s ease-in-out infinite;
+  max-width: 320px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  const SUP = ["en","ru","uk","es"];
-  const STR = {
-    en:{title:'Access Required', desc:'Enter access code to continue', ph:'Enter access code', btn:'Enter',
-        ok:'✓ Access granted!', err:'✗ Invalid access code', used:'✗ This code was already used', expired:'✗ Code expired'},
-    ru:{title:'Требуется доступ', desc:'Введите код доступа для продолжения', ph:'Введите код доступа', btn:'Войти',
-        ok:'✓ Доступ разрешён!', err:'✗ Неверный код доступа', used:'✗ Этот код уже использован', expired:'✗ Срок кода истёк'},
-    uk:{title:'Потрібен доступ', desc:'Введіть код доступу для продовження', ph:'Введіть код доступу', btn:'Увійти',
-        ok:'✓ Доступ надано!', err:'✗ Невірний код', used:'✗ Цей код уже використано', expired:'✗ Термін дії коду вичерпано'},
-    es:{title:'Acceso requerido', desc:'Ingresa el código para continuar', ph:'Código de acceso', btn:'Entrar',
-        ok:'✓ ¡Acceso concedido!', err:'✗ Código inválido', used:'✗ Este código ya fue usado', expired:'✗ Código expirado'}
-  };
+@keyframes pl-text-fade {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
 
-  function pickLang(){
-    const html=(document.documentElement.getAttribute('lang')||'').toLowerCase();
-    let saved='';try{saved=(localStorage.getItem('ui_lang')||'').toLowerCase();}catch{}
-    const wcur=(typeof window.currentLang==='string'&&window.currentLang.toLowerCase())||'';
-    const nav=(navigator.language||'en').toLowerCase().split('-')[0];
-    return [html,saved,wcur,nav].find(l=>SUP.includes(l))||'en';
-  }
-  function T(){
-    const lang=pickLang();
-    try{const tt=window?.translations?.gate?.[lang]||window?.translations?.[lang];if(tt&&tt.title)return tt;}catch{}
-    return STR[lang]||STR.en;
-  }
+/* ===== MAIN APP ===== */
+.app{ 
+  max-width:1180px; 
+  margin-inline:auto; 
+  padding: calc(18px + var(--safe-top)) 14px calc(24px + var(--safe-bottom)); 
+  animation: app-slide-up 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+}
+@keyframes app-slide-up {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-  function now(){return Date.now();}
-  function loadState(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null")}catch{return null}}
-  function saveState(s){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s));}catch{}}
-  function clearState(){try{localStorage.removeItem(STORAGE_KEY);}catch{}}
-  function loadUsed(){try{return JSON.parse(localStorage.getItem(USED_KEY)||"{}")}catch{return {}}}
-  function markUsed(code){const u=loadUsed();u[code]=now();try{localStorage.setItem(USED_KEY,JSON.stringify(u));}catch{}}
-  function isUsed(code){return !!loadUsed()[code];}
+header{
+  display:flex;
+  flex-direction: column;
+  gap:16px;
+  margin-bottom:20px;
+  animation: header-slide 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+  position: relative;
+  z-index: 9999;
+}
+@keyframes header-slide {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
 
-  function hasAccess(){
-    const s=loadState();if(!s||!s.granted)return false;
-    const reauthMs=REAUTH_EVERY_DAYS>0?REAUTH_EVERY_DAYS*24*60*60*1000:0;
-    const maxAlive=reauthMs?(s.grantedAt+reauthMs):Infinity;
-    const until=s.expiresAt>0?Math.min(s.expiresAt,maxAlive):maxAlive;
-    if(now()<until)return true; clearState();return false;
-  }
-  function grant(code,meta){
-    const grantedAt=now();
-    const reauthMs=REAUTH_EVERY_DAYS>0?REAUTH_EVERY_DAYS*24*60*60*1000:0;
-    const ttlMs=meta.ttlMs||0;
-    const expCode=ttlMs?(grantedAt+ttlMs):0;
-    const expPolicy=reauthMs?(grantedAt+reauthMs):0;
-    const expiresAt=expCode&&expPolicy?Math.min(expCode,expPolicy):(expCode||expPolicy||0);
-    saveState({granted:true,code,grantedAt,expiresAt,version:2});
-    if(meta.oneTime)markUsed(code);
-  }
-
-  function showGate(){
-    if(hasAccess())return;
-    const host=document.createElement('div');
-    host.style.position='fixed';host.style.inset='0';host.style.zIndex='2147483000';
-    document.body.appendChild(host);
-    const root=host.attachShadow({mode:'open'});
-    root.innerHTML=`<style>
-      :host{all:initial;}
-      .wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-            background:rgba(0,0,0,.08);backdrop-filter:blur(12px) saturate(140%);
-            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
-      .card{width:min(460px,calc(100% - 40px));border-radius:20px;padding:24px 20px;text-align:center;
-            color:#e8edf6;background:rgba(16,21,34,.92);border:1px solid rgba(255,255,255,.1);
-            box-shadow:0 20px 60px rgba(0,0,0,.5);backdrop-filter:blur(16px) saturate(180%);
-            animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
-      .logo{width:72px;height:72px;margin:0 auto 16px;border-radius:22px;background:linear-gradient(135deg,#86a0ff,#6ee7ff);
-            display:grid;place-items:center;font-size:32px;animation:pulse 2s ease-in-out infinite}
-      h2{margin:0 0 8px;font-weight:900;font-size:22px}
-      p{margin:0 0 14px;color:#9aa7bd;font-size:13px}
-      input{width:100%;box-sizing:border-box;background:rgba(15,21,38,.85);border:2px solid rgba(31,42,68,.85);
-            border-radius:14px;padding:14px;color:#e8edf6;font-weight:600;font-size:16px;margin-bottom:12px}
-      button{width:100%;padding:14px;border:0;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,#86a0ff,#6ee7ff);
-             color:#0a0d14;font-weight:800;font-size:16px;box-shadow:0 12px 30px rgba(134,160,255,.35);transition:transform .18s}
-      button:active{transform:scale(.98)}
-      .msg{min-height:18px;margin-top:10px;font-size:13px;font-weight:700;opacity:0;transition:opacity .25s}
-      @keyframes pop{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-      @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-    </style>
-    <div class="wrap"><div class="card">
-      <div class="logo">🔐</div>
-      <h2 id="t"></h2><p id="d"></p>
-      <input id="inp" type="text" autocomplete="off" inputmode="text" maxlength="64"/>
-      <button id="btn"></button>
-      <div id="msg" class="msg"></div>
-    </div></div>`;
-    const els={t:root.getElementById('t'),d:root.getElementById('d'),inp:root.getElementById('inp'),btn:root.getElementById('btn'),msg:root.getElementById('msg')};
-    function applyI18n(){const l=T();els.t.textContent=l.title;els.d.textContent=l.desc;els.inp.placeholder=l.ph;els.btn.textContent=l.btn;}
-    function toast(txt,ok){els.msg.textContent=txt;els.msg.style.color=ok?"#67f3a2":"#ff6b6b";els.msg.style.opacity="1";setTimeout(()=>els.msg.style.opacity="0",2000);}
-    function close(){host.remove();}
-    applyI18n();setTimeout(()=>els.inp.focus(),50);
-    const mo=new MutationObserver(m=>{if(m.some(x=>x.attributeName==='lang'))applyI18n();});
-    mo.observe(document.documentElement,{attributes:true});
-    els.btn.addEventListener('click',()=>{
-      const raw=(els.inp.value||'').trim().toLowerCase();
-      const meta=CODES[raw];const l=T();
-      if(!meta){toast(l.err,false);els.inp.focus();els.inp.select();return;}
-      if(meta.oneTime&&isUsed(raw)){toast(l.used,false);els.inp.focus();els.inp.select();return;}
-      const expiresAt=meta.ttlMs?now()+meta.ttlMs:0;
-      if(expiresAt&&expiresAt<now()){toast(l.expired,false);return;}
-      grant(raw,meta);toast(l.ok,true);setTimeout(close,160);
-    });
-    els.inp.addEventListener('keydown',e=>{if(e.key==="Enter")els.btn.click();});
-  }
-
-  function schedule(){if(hasAccess())return;setTimeout(showGate,SHOW_DELAY_MS);}
-  if(document.readyState==="complete")schedule(); else window.addEventListener("load",schedule,{once:true});
-})();
-
-/* ================= HAPTIC ENGINE ================= */
-class HapticEngine {
-  constructor() {
-    this.canVibrate = 'vibrate' in navigator;
-    this.enabled = true;
-  }
-  
-  light() {
-    if(this.canVibrate && this.enabled) {
-      try { navigator.vibrate(10); } catch(e) {}
-    }
-  }
-  
-  medium() {
-    if(this.canVibrate && this.enabled) {
-      try { navigator.vibrate(20); } catch(e) {}
-    }
-  }
-  
-  success() {
-    if(this.canVibrate && this.enabled) {
-      try { navigator.vibrate([30, 50, 30]); } catch(e) {}
-    }
-  }
-  
-  error() {
-    if(this.canVibrate && this.enabled) {
-      try { navigator.vibrate([100, 30, 100, 30, 100]); } catch(e) {}
-    }
-  }
-  
-  notification() {
-    if(this.canVibrate && this.enabled) {
-      try { navigator.vibrate([20, 100, 20]); } catch(e) {}
-    }
+@media (min-width: 640px) {
+  header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
 }
 
-const haptic = new HapticEngine();
+/* ===== TAB SWITCHER ===== */
+.tab-switcher {
+  display: flex;
+  gap: 6px;
+  background: rgba(10, 13, 20, 0.7);
+  border: 2px solid rgba(134, 160, 255, 0.15);
+  border-radius: 16px;
+  padding: 5px;
+  backdrop-filter: blur(16px) saturate(180%);
+  position: relative;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
 
-/* ================= PARTICLES BACKGROUND ================= */
-class ParticlesBackground {
-  constructor() {
-    this.canvas = document.getElementById('particles-bg');
-    this.ctx = this.canvas.getContext('2d');
-    this.particles = [];
-    this.particleCount = 50;
-    this.init();
-    this.animate();
-    window.addEventListener('resize', () => this.init());
+.tab-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: var(--text-weak);
+  cursor: pointer !important;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: visible;
+  pointer-events: auto !important;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 1000;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.tab-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.tab-btn span {
+  pointer-events: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--text);
+  background: rgba(134, 160, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.tab-btn:hover:not(.active) svg {
+  transform: scale(1.15) rotate(-5deg);
+  filter: drop-shadow(0 4px 8px rgba(134, 160, 255, 0.3));
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #86a0ff 0%, #6ee7ff 100%);
+  color: #0a0d14;
+  box-shadow: 0 8px 24px rgba(134, 160, 255, 0.5), 0 4px 12px rgba(110, 231, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.tab-btn.active svg {
+  fill: #0a0d14;
+  transform: scale(1.1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.tab-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, rgba(134, 160, 255, 0.3), rgba(110, 231, 255, 0.3));
+  border-radius: 14px;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.tab-btn.active::before {
+  opacity: 1;
+}
+
+.tab-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ===== TAB CONTENT ===== */
+.tab-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease-in-out,
+              visibility 0s linear 0.3s,
+              max-height 0s linear 0.3s;
+}
+
+.tab-content.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  max-height: none;
+  overflow: visible;
+  transition: opacity 0.3s ease-in-out,
+              visibility 0s linear 0s,
+              max-height 0s linear 0s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  
-  init() {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
-    this.particles = [];
-    
-    for(let i = 0; i < this.particleCount; i++) {
-      this.particles.push({
-        x: Math.random() * this.canvas.width,
-        y: Math.random() * this.canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        radius: Math.random() * 2 + 0.5,
-        opacity: Math.random() * 0.5 + 0.2
-      });
-    }
-  }
-  
-  animate() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    
-    // Draw particles
-    this.particles.forEach((p, i) => {
-      p.x += p.vx;
-      p.y += p.vy;
-      
-      if(p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
-      if(p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
-      
-      this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      this.ctx.fillStyle = `rgba(134, 160, 255, ${p.opacity})`;
-      this.ctx.fill();
-      
-      // Draw connections
-      this.particles.slice(i + 1).forEach(p2 => {
-        const dx = p.x - p2.x;
-        const dy = p.y - p2.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if(distance < 100) {
-          this.ctx.beginPath();
-          this.ctx.moveTo(p.x, p.y);
-          this.ctx.lineTo(p2.x, p2.y);
-          this.ctx.strokeStyle = `rgba(110, 231, 255, ${0.2 * (1 - distance / 100)})`;
-          this.ctx.stroke();
-        }
-      });
-    });
-    
-    requestAnimationFrame(() => this.animate());
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* ================= PULL TO REFRESH ================= */
-class PullToRefresh {
-  constructor() {
-    this.startY = 0;
-    this.pullDistance = 0;
-    this.threshold = 100;
-    this.indicator = document.getElementById('pullToRefresh');
-    this.init();
-  }
-  
-  init() {
-    let isRefreshing = false;
-    
-    document.addEventListener('touchstart', (e) => {
-      if(window.scrollY === 0 && !isRefreshing) {
-        this.startY = e.touches[0].clientY;
-      }
-    });
-    
-    document.addEventListener('touchmove', (e) => {
-      if(this.startY && !isRefreshing) {
-        this.pullDistance = e.touches[0].clientY - this.startY;
-        
-        if(this.pullDistance > 0 && this.pullDistance < 200) {
-          const progress = Math.min(this.pullDistance / this.threshold, 1);
-          document.body.style.transform = `translateY(${this.pullDistance * 0.5}px)`;
-          
-          if(this.pullDistance > 30) {
-            this.indicator.classList.add('visible');
-            this.indicator.style.transform = `translateX(-50%) scale(${progress})`;
-          }
-          
-          if(this.pullDistance > this.threshold * 0.5 && this.pullDistance < this.threshold * 0.6) {
-            haptic.light();
-          }
-          if(this.pullDistance > this.threshold && this.pullDistance < this.threshold * 1.1) {
-            haptic.medium();
-          }
-        }
-      }
-    });
-    
-    document.addEventListener('touchend', () => {
-      if(this.pullDistance > this.threshold && !isRefreshing) {
-        isRefreshing = true;
-        haptic.success();
-        this.indicator.classList.add('refreshing');
-        
-        setTimeout(() => {
-          location.reload();
-        }, 1000);
-      } else {
-        document.body.style.transform = '';
-        this.indicator.classList.remove('visible');
-        this.indicator.style.transform = '';
-      }
-      
-      this.pullDistance = 0;
-      this.startY = 0;
-    });
-  }
+.brand{ display:flex; align-items:center; gap:12px; cursor: pointer; transition: transform 0.3s ease; }
+.brand:active { transform: scale(0.95); }
+.brand .logo{ 
+  width:44px; height:44px; border-radius:14px; display:block; object-fit:cover;
+  box-shadow:0 12px 32px rgba(134,160,255,.4), 0 0 24px rgba(110,231,255,.2);
+  border:2px solid rgba(255,255,255,.15);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-
-/* ================= ENHANCED INTERACTIONS ================= */
-function addRippleEffect(element, e) {
-  const rect = element.getBoundingClientRect();
-  const ripple = document.createElement('div');
-  ripple.className = 'btn-ripple';
-  
-  const size = Math.max(rect.width, rect.height);
-  ripple.style.width = ripple.style.height = size + 'px';
-  
-  if(e.touches) {
-    ripple.style.left = (e.touches[0].clientX - rect.left - size / 2) + 'px';
-    ripple.style.top = (e.touches[0].clientY - rect.top - size / 2) + 'px';
-  } else {
-    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-  }
-  
-  element.appendChild(ripple);
-  setTimeout(() => ripple.remove(), 600);
+.brand:hover .logo { transform: rotate(10deg) scale(1.1); }
+.brand h1{ margin:0; font-size: clamp(24px, 5vw, 28px); font-weight:900; letter-spacing:1px }
+.brand h1 .main{ 
+  display:block; 
+  letter-spacing:1.2px;
+  background: linear-gradient(120deg, var(--text), var(--brand-2), var(--brand));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
+.brand h1 .sub{ display:block; font-size:12px; font-weight:800; letter-spacing:.4px; color:var(--muted); margin-top:2px }
 
-function trackMouseOnField(field) {
-  field.addEventListener('mousemove', (e) => {
-    const rect = field.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    field.style.setProperty('--mouse-x', x + '%');
-    field.style.setProperty('--mouse-y', y + '%');
-  });
+.grid{ display:grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 960px){ .grid{ grid-template-columns: 380px 1fr; } }
+
+/* ===== GLASS PANELS ===== */
+.panel{
+  background: var(--panel);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  backdrop-filter: var(--glass);
+  position: relative;
+  overflow: visible;
 }
-
-/* ================= TRANSLATIONS ================= */
-const translations = {
-  en: {
-    videoTopic: 'Video topic <span class="req" aria-hidden="true">*</span>',
-    topicPlaceholder: "What's the video about?",
-    format: 'Format (optional)',
-    formatPlaceholder: 'Documentary, Review, Investigation...',
-    targetAudience: 'Target audience (optional)',
-    audiencePlaceholder: 'Niche, age range, region...',
-    clickbaitLevel: 'Clickbait Level',
-    clickbaitLevel1Title: 'Subtle',
-    clickbaitLevel1Desc: 'Compelling but honest',
-    clickbaitLevel2Title: 'Balanced',
-    clickbaitLevel2Desc: 'Engaging but not extreme',
-    clickbaitLevel3Title: 'Maximum',
-    clickbaitLevel3Desc: 'Maximum viral impact',
-    clickbaitLevel4Title: 'OTHERWORLDLY',
-    clickbaitLevel4Desc: 'Aggressive viral framing',
-    componentsCount: 'Components & Count',
-    titles: 'Titles',
-    thumbnailTexts: 'Thumbnail texts',
-    countLabel: 'Count (6–16)',
-    send: 'Send',
-    clearHistory: '🗑 Clear history',
-    copyAllTitles: '⧉ Copy all titles',
-    copyAllThumbs: '⧉ Copy all thumbnails',
-    historyPlaceholder: 'Results will appear here after generation',
-    stateOn: 'ON',
-    stateOff: 'OFF',
-    copied: 'Copied',
-    copyFailed: 'Copy failed',
-    topicRequired: 'Topic is required',
-    atLeastOneComponent: 'At least one component must be selected',
-    pleaseWait: 'Please wait — processing',
-    working: 'Working',
-    analyzingTopic: 'Analyzing your topic',
-    understandingAudience: 'Understanding the audience',
-    findingPatterns: 'Finding viral patterns',
-    craftingTitles: 'Crafting click-worthy titles',
-    optimizingEngagement: 'Optimizing for engagement',
-    addingTriggers: 'Adding psychological triggers',
-    testingCTR: 'Testing CTR predictions',
-    finalizingOptions: 'Finalizing best options',
-    formatting: 'Formatting',
-    polishing: 'Polishing',
-    almostReady: 'Almost ready',
-    historyCleared: 'History cleared',
-    confirmClear: 'Clear all saved generations? This cannot be undone.',
-    requestFailed: 'Request failed.',
-    audienceProfile: 'Audience Profile',
-    titleLabel: 'Title',
-    thumbnailLabel: 'Thumbnail',
-    topPick: 'Top pick',
-    clickToCopy: 'Click to copy',
-    collapseExpand: 'Collapse/Expand',
-    removeResult: 'Remove result',
-    dismiss: 'Dismiss',
-    languageMarker: 'English',
-    pageTitle: 'TITLE CRAFT — by Genial Design',
-    inputsTitle: 'Inputs',
-    resultsTitle: 'Results',
-    titlesOnly: 'Titles only',
-    thumbnailsOnly: 'Thumbnail texts only',
-    titlesAndThumbnails: 'Titles & Thumbnail texts',
-    clickbaitLevel1: 'Subtle (Level 1)',
-    clickbaitLevel2: 'Balanced (Level 2)',
-    clickbaitLevel3: 'Maximum (Level 3)',
-    clickbaitLevel4: 'OTHERWORLDLY (Level 4)',
-    notSpecified: '(not specified)',
-    loading: 'Loading',
-    clearField: 'Clear field',
-    components: 'Components',
-    scrollToTop: 'Scroll to top',
-    byGemini: 'by Gemini',
-    logoAlt: 'TITLE CRAFT logo',
-    loadingPhrases: [
-      'Let\'s improve your CTR? 🚀',
-      'We\'ll boost your views 😊',
-      'Their clicks will be unstoppable! 🔥',
-      'Let\'s work on video packaging?',
-      'Let\'s maximize engagement! 💪',
-      'Create irresistible titles? ✨',
-      'Make your content viral? 🔥',
-      'We\'ll craft click-worthy content! 🎯',
-      'We\'ll boost your reach? 🌟',
-      'We\'ll make content irresistible! ⚡'
-    ],
-    tabCreate: 'Create New',
-    tabImprove: 'Improve Draft',
-    improvementTitle: 'Enhance Your Drafts',
-    draftTitleLabel: 'Draft Title',
-    draftTitlePlaceholder: 'Enter your draft title to improve...',
-    draftThumbnailLabel: 'Draft Thumbnail Text',
-    draftThumbnailPlaceholder: 'Enter your draft thumbnail text...',
-    generateThumbnailCheck: 'Create thumbnail text for title',
-    improveButton: 'Improve',
-    improvingText: 'Improving your content...',
-    improvementError: 'Failed to improve. Please try again.',
-    improvementMinLength: 'Enter at least 3 characters',
-    improvementAnalysis: 'Analysis',
-    detectedStyle: 'Detected Style',
-    improvementFocus: 'Improvement Focus',
-    improvedTitle: 'Improved Title',
-    improvedThumbnail: 'Improved Thumbnail',
-    improved: 'Improved',
-    changes: 'Changes',
-    triggers: 'Triggers',
-    function: 'Function',
-    psychology: 'Psychology',
-    analyzingDraft: 'Analyzing your draft',
-    findingImprovements: 'Finding improvements',
-    optimizingLanguage: 'Optimizing language',
-    enhancingPsychology: 'Enhancing psychology',
-    polishingResults: 'Polishing results'
-  },
-  es: {
-    videoTopic: 'Tema del video <span class="req" aria-hidden="true">*</span>',
-    topicPlaceholder: '¿De qué trata el video?',
-    format: 'Formato (opcional)',
-    formatPlaceholder: 'Documental, Reseña, Investigación...',
-    targetAudience: 'Audiencia objetivo (opcional)',
-    audiencePlaceholder: 'Nicho, rango de edad, región...',
-    clickbaitLevel: 'Nivel de Clickbait',
-    clickbaitLevel1Title: 'Sutil',
-    clickbaitLevel1Desc: 'Atractivos pero honestos',
-    clickbaitLevel2Title: 'Equilibrado',
-    clickbaitLevel2Desc: 'Atractivos pero no extremos',
-    clickbaitLevel3Title: 'Máximo',
-    clickbaitLevel3Desc: 'Máximo impacto viral',
-    clickbaitLevel4Title: 'EXTRATERRESTRE',
-    clickbaitLevel4Desc: 'Enmarcado viral agresivo',
-    componentsCount: 'Componentes y cantidad',
-    titles: 'Títulos',
-    thumbnailTexts: 'Textos de miniatura',
-    countLabel: 'Cantidad (6–16)',
-    send: 'Enviar',
-    clearHistory: '🗑 Borrar historial',
-    copyAllTitles: '⧉ Copiar todos los títulos',
-    copyAllThumbs: '⧉ Copiar todas las miniaturas',
-    historyPlaceholder: 'Los resultados aparecerán aquí después de la generación',
-    stateOn: 'SÍ',
-    stateOff: 'NO',
-    copied: 'Copiado',
-    copyFailed: 'Error al copiar',
-    topicRequired: 'El tema es obligatorio',
-    atLeastOneComponent: 'Al menos un componente debe estar seleccionado',
-    pleaseWait: 'Por favor espera — procesando',
-    working: 'Trabajando',
-    analyzingTopic: 'Analizando tu tema',
-    understandingAudience: 'Entendiendo la audiencia',
-    findingPatterns: 'Buscando patrones virales',
-    craftingTitles: 'Creando títulos atractivos',
-    optimizingEngagement: 'Optimizando para engagement',
-    addingTriggers: 'Añadiendo triggers psicológicos',
-    testingCTR: 'Probando predicciones CTR',
-    finalizingOptions: 'Finalizando mejores opciones',
-    formatting: 'Formateando',
-    polishing: 'Puliendo',
-    almostReady: 'Casi listo',
-    historyCleared: 'Historial borrado',
-    confirmClear: '¿Borrar todas las generaciones guardadas? Esto no se puede deshacer.',
-    requestFailed: 'Solicitud fallida.',
-    audienceProfile: 'Perfil de audiencia',
-    titleLabel: 'Título',
-    thumbnailLabel: 'Miniatura',
-    topPick: 'Mejor opción',
-    clickToCopy: 'Clic para copiar',
-    collapseExpand: 'Colapsar/Expandir',
-    removeResult: 'Eliminar resultado',
-    dismiss: 'Cerrar',
-    languageMarker: 'Spanish/Español',
-    pageTitle: 'TITLE CRAFT — por Genial Design',
-    inputsTitle: 'Entradas',
-    resultsTitle: 'Resultados',
-    titlesOnly: 'Solo títulos',
-    thumbnailsOnly: 'Solo textos de miniatura',
-    titlesAndThumbnails: 'Títulos y textos de miniatura',
-    clickbaitLevel1: 'Sutil (Nivel 1)',
-    clickbaitLevel2: 'Equilibrado (Nivel 2)',
-    clickbaitLevel3: 'Máximo (Nivel 3)',
-    clickbaitLevel4: 'EXTRATERRESTRE (Nivel 4)',
-    notSpecified: '(no especificado)',
-    loading: 'Cargando',
-    clearField: 'Limpiar campo',
-    components: 'Componentes',
-    scrollToTop: 'Desplazar hacia arriba',
-    byGemini: 'por Gemini',
-    logoAlt: 'Logo de TITLE CRAFT',
-    loadingPhrases: [
-      '¿Vamos a mejorar tu CTR? 🚀',
-      'Aumentaremos tus vistas 😊',
-      '¡Sus clics serán imparables! 🔥',
-      '¿Trabajaremos en el empaque del video?',
-      '¡Vamos a maximizar el engagement! 💪',
-      '¿Crear títulos irresistibles? ✨',
-      '¿Hacer tu contenido viral? 🔥',
-      '¡Crearemos contenido irresistible! 🎯',
-      '¿Impulsaremos tu alcance? 🌟',
-      '¡Haremos el contenido irresistible! ⚡'
-    ],
-    tabCreate: 'Crear Nuevo',
-    tabImprove: 'Mejorar Borrador',
-    improvementTitle: 'Mejora tus borradores',
-    draftTitleLabel: 'Borrador del Título',
-    draftTitlePlaceholder: 'Ingresa tu borrador de título para mejorar...',
-    draftThumbnailLabel: 'Borrador del Texto de Miniatura',
-    draftThumbnailPlaceholder: 'Ingresa tu borrador de texto de miniatura...',
-    generateThumbnailCheck: 'Crear texto de miniatura para el título',
-    improveButton: 'Mejorar',
-    improvingText: 'Mejorando tu contenido...',
-    improvementError: 'Error al mejorar. Inténtalo de nuevo.',
-    improvementMinLength: 'Ingresa al menos 3 caracteres',
-    improvementAnalysis: 'Análisis',
-    detectedStyle: 'Estilo Detectado',
-    improvementFocus: 'Enfoque de Mejora',
-    improvedTitle: 'Título Mejorado',
-    improvedThumbnail: 'Miniatura Mejorada',
-    improved: 'Mejorado',
-    changes: 'Cambios',
-    triggers: 'Triggers',
-    function: 'Función',
-    psychology: 'Psicología',
-    analyzingDraft: 'Analizando tu borrador',
-    findingImprovements: 'Buscando mejoras',
-    optimizingLanguage: 'Optimizando lenguaje',
-    enhancingPsychology: 'Mejorando psicología',
-    polishingResults: 'Puliendo resultados'
-  },
-  ru: {
-    videoTopic: 'Тема видео <span class="req" aria-hidden="true">*</span>',
-    topicPlaceholder: 'О чём видео?',
-    format: 'Формат (необязательно)',
-    formatPlaceholder: 'Документальный, Обзор, Расследование...',
-    targetAudience: 'Целевая аудитория (необязательно)',
-    audiencePlaceholder: 'Ниша, возраст, регион...',
-    clickbaitLevel: 'Уровень Кликбейта',
-    clickbaitLevel1Title: 'Сдержанный',
-    clickbaitLevel1Desc: 'Привлекательные, но честные',
-    clickbaitLevel2Title: 'Сбалансированный',
-    clickbaitLevel2Desc: 'Привлекательные, но не экстремальные',
-    clickbaitLevel3Title: 'Максимальный',
-    clickbaitLevel3Desc: 'Максимальный вирусный эффект',
-    clickbaitLevel4Title: 'НЕЗЕМНОЙ',
-    clickbaitLevel4Desc: 'Агрессивная вирусная подача',
-    componentsCount: 'Компоненты и количество',
-    titles: 'Заголовки',
-    thumbnailTexts: 'Тексты превью',
-    countLabel: 'Количество (6–16)',
-    send: 'Отправить',
-    clearHistory: '🗑 Очистить историю',
-    copyAllTitles: '⧉ Копировать все заголовки',
-    copyAllThumbs: '⧉ Копировать все превью',
-    historyPlaceholder: 'Результаты появятся здесь после генерации',
-    stateOn: 'ВКЛ',
-    stateOff: 'ВЫКЛ',
-    copied: 'Скопировано',
-    copyFailed: 'Ошибка копирования',
-    topicRequired: 'Тема обязательна',
-    atLeastOneComponent: 'Должен быть выбран хотя бы один компонент',
-    pleaseWait: 'Пожалуйста, подождите — обработка',
-    working: 'Работаю',
-    analyzingTopic: 'Анализирую тему',
-    understandingAudience: 'Изучаю аудиторию',
-    findingPatterns: 'Ищу вирусные паттерны',
-    craftingTitles: 'Создаю привлекательные заголовки',
-    optimizingEngagement: 'Оптимизирую для вовлечения',
-    addingTriggers: 'Добавляю психологические триггеры',
-    testingCTR: 'Тестирую прогнозы CTR',
-    finalizingOptions: 'Финализирую лучшие варианты',
-    formatting: 'Форматирую',
-    polishing: 'Дорабатываю',
-    almostReady: 'Почти готово',
-    historyCleared: 'История очищена',
-    confirmClear: 'Очистить все сохранённые генерации? Это действие нельзя отменить.',
-    requestFailed: 'Запрос не удался.',
-    audienceProfile: 'Профиль аудитории',
-    titleLabel: 'Заголовок',
-    thumbnailLabel: 'Превью',
-    topPick: 'Лучший вариант',
-    clickToCopy: 'Нажмите для копирования',
-    collapseExpand: 'Свернуть/Развернуть',
-    removeResult: 'Удалить результат',
-    dismiss: 'Закрыть',
-    languageMarker: 'Russian/Русский',
-    pageTitle: 'TITLE CRAFT — от Genial Design',
-    inputsTitle: 'Вводы',
-    resultsTitle: 'Результаты',
-    titlesOnly: 'Только заголовки',
-    thumbnailsOnly: 'Только тексты превью',
-    titlesAndThumbnails: 'Заголовки и тексты превью',
-    clickbaitLevel1: 'Сдержанный (Уровень 1)',
-    clickbaitLevel2: 'Сбалансированный (Уровень 2)',
-    clickbaitLevel3: 'Максимальный (Уровень 3)',
-    clickbaitLevel4: 'НЕЗЕМНОЙ (Уровень 4)',
-    notSpecified: '(не указано)',
-    loading: 'Загрузка',
-    clearField: 'Очистить поле',
-    components: 'Компоненты',
-    scrollToTop: 'Прокрутить вверх',
-    byGemini: 'от Gemini',
-    logoAlt: 'Логотип TITLE CRAFT',
-    loadingPhrases: [
-      'Давай улучшим твой CTR? 🚀',
-      'Увеличим твои просмотры 😊',
-      'Их клики будет не остановить! 🔥',
-      'Поработаем над упаковкой видео?',
-      'Давай максимизируем вовлечение! 💪',
-      'Создадим неотразимые заголовки? ✨',
-      'Сделаем твой контент вирусным? 🔥',
-      'Создадим кликабельный контент! 🎯',
-      'Увеличим охват? 🌟',
-      'Сделаем контент неотразимым! ⚡'
-    ],
-    tabCreate: 'Создать новое',
-    tabImprove: 'Улучшить черновик',
-    improvementTitle: 'Улучши свои черновики',
-    draftTitleLabel: 'Черновик заголовка',
-    draftTitlePlaceholder: 'Введи черновик заголовка для улучшения...',
-    draftThumbnailLabel: 'Черновик текста превью',
-    draftThumbnailPlaceholder: 'Введи черновик текста превью...',
-    generateThumbnailCheck: 'Создать текст превью для заголовка',
-    improveButton: 'Улучшить',
-    improvingText: 'Улучшаю твой контент...',
-    improvementError: 'Не удалось улучшить. Попробуй еще раз.',
-    improvementMinLength: 'Введи минимум 3 символа',
-    improvementAnalysis: 'Анализ',
-    detectedStyle: 'Выявленный стиль',
-    improvementFocus: 'Фокус улучшения',
-    improvedTitle: 'Улучшенный заголовок',
-    improvedThumbnail: 'Улучшенное превью',
-    improved: 'Улучшено',
-    changes: 'Изменения',
-    triggers: 'Триггеры',
-    function: 'Функция',
-    psychology: 'Психология',
-    analyzingDraft: 'Анализирую твой черновик',
-    findingImprovements: 'Ищу улучшения',
-    optimizingLanguage: 'Оптимизирую язык',
-    enhancingPsychology: 'Улучшаю психологию',
-    polishingResults: 'Дорабатываю результаты'
-  },
-  uk: {
-    videoTopic: 'Тема відео <span class="req" aria-hidden="true">*</span>',
-    topicPlaceholder: 'Про що відео?',
-    format: 'Формат (необов\'язково)',
-    formatPlaceholder: 'Документальний, Огляд, Розслідування...',
-    targetAudience: 'Цільова аудиторія (необов\'язково)',
-    audiencePlaceholder: 'Ніша, вік, регіон...',
-    clickbaitLevel: 'Рівень Клікбейту',
-    clickbaitLevel1Title: 'Стриманий',
-    clickbaitLevel1Desc: 'Привабливі, але чесні',
-    clickbaitLevel2Title: 'Збалансований',
-    clickbaitLevel2Desc: 'Привабливі, але не екстремальні',
-    clickbaitLevel3Title: 'Максимальний',
-    clickbaitLevel3Desc: 'Максимальний вірусний ефект',
-    clickbaitLevel4Title: 'НЕЗЕМНИЙ',
-    clickbaitLevel4Desc: 'Агресивна вірусна подача',
-    componentsCount: 'Компоненти та кількість',
-    titles: 'Заголовки',
-    thumbnailTexts: 'Тексти прев\'ю',
-    countLabel: 'Кількість (6–16)',
-    send: 'Відправити',
-    clearHistory: '🗑 Очистити історію',
-    copyAllTitles: '⧉ Копіювати всі заголовки',
-    copyAllThumbs: '⧉ Копіювати всі прев\'ю',
-    historyPlaceholder: 'Результати з\'являться тут після генерації',
-    stateOn: 'УВІМК',
-    stateOff: 'ВИМК',
-    copied: 'Скопійовано',
-    copyFailed: 'Помилка копіювання',
-    topicRequired: 'Тема обов\'язкова',
-    atLeastOneComponent: 'Повинен бути обраний хоча б один компонент',
-    pleaseWait: 'Будь ласка, зачекайте — обробка',
-    working: 'Працюю',
-    analyzingTopic: 'Аналізую тему',
-    understandingAudience: 'Вивчаю аудиторію',
-    findingPatterns: 'Шукаю вірусні патерни',
-    craftingTitles: 'Створюю привабливі заголовки',
-    optimizingEngagement: 'Оптимізую для залучення',
-    addingTriggers: 'Додаю психологічні тригери',
-    testingCTR: 'Тестую прогнози CTR',
-    finalizingOptions: 'Фіналізую найкращі варіанти',
-    formatting: 'Форматую',
-    polishing: 'Доопрацьовую',
-    almostReady: 'Майже готово',
-    historyCleared: 'Історію очищено',
-    confirmClear: 'Очистити всі збережені генерації? Цю дію не можна скасувати.',
-    requestFailed: 'Запит не вдався.',
-    audienceProfile: 'Профіль аудиторії',
-    titleLabel: 'Заголовок',
-    thumbnailLabel: 'Прев\'ю',
-    topPick: 'Найкращий варіант',
-    clickToCopy: 'Натисніть для копіювання',
-    collapseExpand: 'Згорнути/Розгорнути',
-    removeResult: 'Видалити результат',
-    dismiss: 'Закрити',
-    languageMarker: 'Ukrainian/Українська',
-    pageTitle: 'TITLE CRAFT — від Genial Design',
-    inputsTitle: 'Вводи',
-    resultsTitle: 'Результати',
-    titlesOnly: 'Тільки заголовки',
-    thumbnailsOnly: 'Тільки тексти прев\'ю',
-    titlesAndThumbnails: 'Заголовки і тексти прев\'ю',
-    clickbaitLevel1: 'Стриманий (Рівень 1)',
-    clickbaitLevel2: 'Збалансований (Рівень 2)',
-    clickbaitLevel3: 'Максимальний (Рівень 3)',
-    clickbaitLevel4: 'НЕЗЕМНИЙ (Рівень 4)',
-    notSpecified: '(не вказано)',
-    loading: 'Завантаження',
-    clearField: 'Очистити поле',
-    components: 'Компоненти',
-    scrollToTop: 'Прокрутити вгору',
-    byGemini: 'від Gemini',
-    logoAlt: 'Логотип TITLE CRAFT',
-    loadingPhrases: [
-      'Давай покращимо твій CTR? 🚀',
-      'Збільшимо твої перегляди 😊',
-      'Їхні кліки буде не зупинити! 🔥',
-      'Попрацюємо над упаковкою відео?',
-      'Давай максимізуємо залучення! 💪',
-      'Створимо невіддільні заголовки? ✨',
-      'Зробимо твій контент вірусним? 🔥',
-      'Створимо клікабельний контент! 🎯',
-      'Збільшимо охоплення? 🌟',
-      'Зробимо контент невіддільним! ⚡'
-    ],
-    tabCreate: 'Створити нове',
-    tabImprove: 'Покращити чернетку',
-    improvementTitle: 'Покращ свої чернетки',
-    draftTitleLabel: 'Чернетка заголовка',
-    draftTitlePlaceholder: 'Введи чернетку заголовка для покращення...',
-    draftThumbnailLabel: 'Чернетка тексту прев\'ю',
-    draftThumbnailPlaceholder: 'Введи чернетку тексту прев\'ю...',
-    generateThumbnailCheck: 'Створити текст прев\'ю для заголовка',
-    improveButton: 'Покращити',
-    improvingText: 'Покращую твій контент...',
-    improvementError: 'Не вдалося покращити. Спробуй ще раз.',
-    improvementMinLength: 'Введи мінімум 3 символи',
-    improvementAnalysis: 'Аналіз',
-    detectedStyle: 'Виявлений стиль',
-    improvementFocus: 'Фокус покращення',
-    improvedTitle: 'Покращений заголовок',
-    improvedThumbnail: 'Покращене прев\'ю',
-    improved: 'Покращено',
-    changes: 'Зміни',
-    triggers: 'Тригери',
-    function: 'Функція',
-    psychology: 'Психологія',
-    analyzingDraft: 'Аналізую твою чернетку',
-    findingImprovements: 'Шукаю покращення',
-    optimizingLanguage: 'Оптимізую мову',
-    enhancingPsychology: 'Покращую психологію',
-    polishingResults: 'Доопрацьовую результати'
-  }
-};
-
-function getRandomLoadingPhrase() {
-  const phrases = t.loadingPhrases || [];
-  if (phrases.length === 0) return 'Loading...';
-  return phrases[Math.floor(Math.random() * phrases.length)];
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+  pointer-events: none;
 }
-
-function detectLanguage() {
-  const browserLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-  if (browserLang.startsWith('es')) return 'es';
-  if (browserLang.startsWith('ru')) return 'ru';
-  if (browserLang.startsWith('uk')) return 'uk';
-  return 'en';
+.inputs{ 
+  padding:16px;
+  animation: panel-slide-left 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
 }
-
-let currentLang = detectLanguage();
-let t = translations[currentLang];
-
-function applyTranslations() {
-  // Обновляем заголовок страницы
-  document.title = t.pageTitle;
-  
-  // Обновляем скрытые заголовки
-  const inputsTitle = document.getElementById('inputs-title');
-  const resultsTitle = document.getElementById('results-title');
-  if (inputsTitle) inputsTitle.textContent = t.inputsTitle;
-  if (resultsTitle) resultsTitle.textContent = t.resultsTitle;
-  
-  // Обновляем toast
-  const toast = document.getElementById('toast');
-  if (toast) toast.textContent = t.copied;
-  
-  // Обновляем aria-label атрибуты
-  const pageloader = document.getElementById('pageloader');
-  if (pageloader) pageloader.setAttribute('aria-label', t.loading);
-  
-  const componentsGroup = document.querySelector('[aria-label="Components"]');
-  if (componentsGroup) componentsGroup.setAttribute('aria-label', t.components);
-  
-  const fabBtn = document.getElementById('fabBtn');
-  if (fabBtn) fabBtn.setAttribute('aria-label', t.scrollToTop);
-  
-  // Обновляем title атрибуты для кнопок очистки
-  document.querySelectorAll('[title="Clear field"]').forEach(el => {
-    el.title = t.clearField;
-  });
-  
-  // Обновляем alt атрибуты для логотипов
-  document.querySelectorAll('img[alt*="TITLE CRAFT logo"]').forEach(el => {
-    el.alt = t.logoAlt;
-  });
-  
-  // Обновляем placeholder текст истории
-  document.querySelectorAll('.placeholder-text').forEach(el => {
-    el.textContent = t.historyPlaceholder;
-  });
-  
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (t[key]) {
-      if (el.tagName === 'BUTTON' && el.querySelector('.btn-text')) {
-        el.querySelector('.btn-text').innerHTML = t[key];
-      } else {
-        el.innerHTML = t[key];
-      }
-    }
-  });
-  
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    const key = el.getAttribute('data-i18n-placeholder');
-    if (t[key]) {
-      el.placeholder = t[key];
-    }
-  });
-  
-  document.querySelectorAll('[title]').forEach(el => {
-    if (el.title === 'Click to copy') el.title = t.clickToCopy;
-    if (el.title === 'Collapse/Expand') el.title = t.collapseExpand;
-    if (el.title === 'Remove result') el.title = t.removeResult;
-    if (el.title === 'Dismiss') el.title = t.dismiss;
-    if (el.title === 'Top pick') el.title = t.topPick;
-  });
-  
-  document.querySelectorAll('.state').forEach(el => {
-    el.setAttribute('data-on', t.stateOn);
-    el.setAttribute('data-off', t.stateOff);
-  });
-  
-  document.documentElement.lang = currentLang;
-}
-
-function updateLoadingPhrase() {
-  const loadingPhrase = document.querySelector('.pl-text');
-  const pageloader = document.getElementById('pageloader');
-  
-  // Обновляем фразу только если загрузчик еще виден
-  if (loadingPhrase && pageloader && !pageloader.classList.contains('hidden')) {
-    loadingPhrase.textContent = getRandomLoadingPhrase();
-  }
-}
-
-function startLoadingPhraseRotation() {
-  const loadingPhrase = document.querySelector('.pl-text');
-  if (!loadingPhrase) return;
-  
-  // Сразу устанавливаем первую фразу
-  updateLoadingPhrase();
-  
-  // Обновляем фразу каждые 2.5 секунды
-  const interval = setInterval(() => {
-    const pageloader = document.getElementById('pageloader');
-    if (pageloader && pageloader.classList.contains('hidden')) {
-      clearInterval(interval);
-      return;
-    }
-    updateLoadingPhrase();
-  }, 2500);
-}
-
-// Функция для обновления фразы при смене языка
-function updateLoadingPhraseOnLanguageChange() {
-  const loadingPhrase = document.querySelector('.pl-text');
-  const pageloader = document.getElementById('pageloader');
-  
-  // Обновляем фразу только если загрузчик еще виден
-  if (loadingPhrase && pageloader && !pageloader.classList.contains('hidden')) {
-    loadingPhrase.textContent = getRandomLoadingPhrase();
-  }
-}
-
-/* ================= CONFIG ================= */
-const GEMINI_API_KEY = "DLcdVbFZpxZX_t4VgBNRZbWJbWZkGTQUACD4kSP";
-const OPENAI_API_KEY = "vn-surm-I1-EsdWxwVOCwhdtB-OP8c3hZwh8Zljwg_9l4A1Q1VcU8qGkn7mg9DvoeXhUHajBFZ76PGjCn3W3EoenIMyY4RZ0gEd7y_i4NboJjliZWetdJt4yOOOCQ1NtINS3XN6wxYEXJ2Sz4REn-AbYQOPz8giPpWBD";
-const GEMINI_MODEL = "gemini-2.5-pro";
-const OPENAI_MODEL = "gpt-5-chat-latest"; // GPT-5 модель
-const RETRIES = 5;
-const BASE_DELAY = 800;
-
-/* ================= SYSTEM PROMPT ================= */
-const SYSTEM_PROMPT = `You are an expert in viral YouTube titles and thumbnail texts with subtle click psychology (hundreds of A/B tests).
-Goal: based on the user's topic, generate a set of options that strictly match the selected clickbait level, boosting CTR.
-
-Input data
-
-VIDEO_TOPIC: {{topic}} ← the output language is defined ONLY from here
-FORMAT: {{format}}
-AUDIENCE: {{audience}}
-CLICKBAIT_LVL: {{1-4}}
-N: {{N|6}}
-ONLY_TITLES: {{only_titles}}
-ONLY_THUMBS: {{only_thumbs}}
-
-Language & Locale (priority)
-
-The language of the entire output = the language of the {{topic}} field.
-If the topic is mixed/bilingual — take the first language and stick to it.
-If the user writes in Russian, the default region = UA, unless explicitly specified otherwise.
-Always adapt to the local format of numbers, rules, etc. (e.g., RU/UA → 0,1%; EN/ES → 0.1%).
-
-Clickbait Levels & Quotas (titles; emojis only in titles)
-
-L1 – Light: honest, low arousal, curiosity; minimize CAPS. Thumbnail text: short and clear.
-
-L2 – Balanced: moderate arousal, concrete benefits, light "power words." Thumbnail text: concise and impactful.
-
-L3 – Maximum: strong viral tension with sophistication; precise numbers, explicit stakes, strong verbs, well-crafted clickbait, psychological hooks. Thumbnail text: sharp and high-impact.
-
-L4 – Tabloid / Unleashed: aggressive framing, contrasts, hyperbole allowed. Sky-high clickbait. But remember the difference between clickbait and deception.
-Example: clickbait = "I'll teach you guitar in 10 minutes."
-Deception = "I'll teach you guitar in 10 minutes," but the video is about cooking pilaf.
-Thumbnail text: bold and striking.
-
-For all: emojis only in 1–3 titles. NEVER in thumbnails.
-
-Tone
-
-Entertainment/Gaming → conversational allowed
-
-Tech/Finance/Education/Health/News/Professional → premium, clear, evidence-forward
-
-Hook Styles (mandatory choice; one or two per option)
-
-Curiosity Gap – curiosity gap with promise of closure
-
-FOMO (Fear of Missing Out) – fear of missed opportunity
-
-Loss Aversion / Negativity Bias – focus on risk, error, penalty, loss
-
-Salvation / Positive Payoff – promise of relief, upgrade, improvement
-
-Blueprint / Roadmap – ready-made plan or step-by-step recipe
-
-Expectation Inversion – "it's not what it seems," flipping expectations
-
-Contrarian Flip – provocation: "everyone thinks X, but truth is Y"
-
-Numerical / Specificity Hook – precise numbers, metrics, facts
-
-Status & Competence – mastery, insider angle, level-check
-
-Narrative Energy & Agency – explicit hero + strong action verb
-
-Diversity (mandatory)
-
-Cover ≥6 different styles, must include: Curiosity Gap, FOMO, Loss Aversion/Negativity, Salvation/Positive Payoff; plus ≥1 of {Expectation Inversion | Contrarian Flip}, ≥1 Numerical/Specificity.
-Keep semantic overlap low.
-
-Title Rules
-
-≤80 characters
-
-strongest hook in ~first 40
-
-one idea only
-
-specificity (numbers/names/dates), explicit agent, strong verbs
-
-special characters/emojis only per quota
-
-no fabrications/toxicity
-
-For L3/L4: within the first ~40 chars include ≥2 of: precise number, strong verb, explicit stake/risk.
-
-Almost always highlight 1–3 key words in CAPS (Cyrillic CAPS allowed). Combine this with other techniques (numbers, strong verbs, curiosity gaps, etc.).
-
-Title Case (Each Word Capitalized, MrBeast style) is acceptable when it improves readability or emphasis.
-
-Thumbnail Text Rules
-
-Thumbnail text should be ultra-scannable. Usually short (1–8 words), but you may go shorter or longer if it improves clarity, stakes, or emotional punch.
-
-NO emojis, NO colons.
-
-All words ALWAYS CAPS.
-
-Do NOT repeat/rephrase the title (≤60% overlap).
-
-Add the missing piece: stake, metric, verdict, or micro-question.
-
-Variation guideline: in each batch, about half of the thumbnails must be very short (1–3 words), and the other half must be clearly longer (4–8 words). Do not treat 3–4 words as "long." Longer texts are allowed if they improve clarity or emotional impact.
-
-If only titles or only thumbnails requested → leave the other key "".
-
-Hints for titles and thumbnails (subtle techniques + psychology)
-
-Notation:
-
-PS = psychology (why it works)
-
-EX = examples (sample phrasings)
-
-PATTERN BREAK
-PS: the brain expects predictability; breaking it = "WTF effect."
-EX: "Eat more to lose weight"; "Learn faster if you sleep longer"; "Shawarma is the key to weight loss."
-
-OPEN LOOP (Zeigarnik effect)
-PS: unfinished = tension → click for closure.
-EX: "I learned 10,000 words and…"; "After that call I didn't sleep for 3 nights."
-
-SOCIAL TRIGGER
-PS: people fear isolation/shame, want to be "insiders."
-EX: "7 phrases that expose a newbie"; "The method trainers keep silent about"; "If you type like this you waste years"; "Embarrassing not to know this in the US."
-
-LOSS & RISK
-PS: fear of loss > desire to gain.
-EX: "If you type like this — you lose ×2 time"; "90% make this mistake and lose money."
-
-FOMO / LIMITED CHANCE
-PS: missed opportunity = click pressure.
-EX: "Only 7 people will make it"; "This disappears in a week."
-
-MICRO DETAIL
-PS: oddly specific detail enhances realism.
-EX: "I spent 731 hours learning"; "He quit over one apple."
-
-EMOTION CONTRAST
-PS: combining opposites creates intrigue.
-EX: "The funniest tragedy"; "Sweet mistake."
-
-AUTHORITY EFFECT
-PS: trust in experts/unusual confessions.
-EX: "Psychologist said: forget the advice"; "Trainer admitted he does the opposite."
-
-PRECISE DETAILS
-PS: numbers, dates, places = credibility.
-EX: "372 days in Germany" instead of "a year in Germany."
-
-PARTIAL INCOMPLETENESS
-PS: incompleteness sparks curiosity.
-EX: "He did this at the worst possible moment…"
-
-EXPECTATION INVERSION
-PS: "not as it should be."
-EX: "Why 90% of diets DON'T work"; "Touch typing? Two fingers is the best way!"
-
-PARADOXICAL FORMULATIONS
-PS: brain stumbles over contradictions.
-EX: "Slower = faster."
-
-FOCUS ON REACTION
-PS: emotions/consequences > event itself.
-EX: "Everyone went silent after this phrase" instead of "He said a phrase."
-
-ANTI-ADVICE / ANTI-NORM
-PS: categorical claim against "common sense."
-EX: "Type only with two fingers"; "Eat shawarma to lose weight."
-
-CONTRAST TO TITLE
-PS: add timeframe, number, hidden stake.
-EX: "How to save ₴50,000" → "in 14 months."
-
-MICRO VERDICT
-PS: short sharp word = instant focus.
-EX: "BAN"; "Mistake №1"; "Forget it."
-
-UNEXPECTED DETAIL
-PS: odd actor/detail attracts attention.
-EX: "The cat decided"; "11 seconds of silence changed my life."
-
-QUESTION PROVOCATION
-PS: doubt or challenge triggers self-reflection.
-EX: "What if the opposite?"; "Do you do this?"
-
-SUPER-FORMULA (combination)
-PS: combining hooks amplifies effect.
-Formula: [Pattern Break] + [Open Loop] = max click.
-EX: "I worked 2 hours a day and outpaced all colleagues" → "Secret in silence."
-EX: "Why smart people never cram words" → "They do THIS."
-
-CONCRETE EMOTION INSTEAD OF "SHOCK"
-PS: abstract words ("shock," "wow," "amazing") = cliché; concrete emotional manifestations feel real.
-EX: "My hands were shaking when I pressed Enter"; "Everyone went silent"; "I didn't sleep 3 nights"; "The mistake cost ₴372,000"; "Pulled off air after 12 minutes."
-
-DRY DELIVERY
-PS: deliberately plain/technical tone feels more credible than hype.
-EX: "The file was 1.43 GB"; "The experiment lasted 27 days"; "Errors at 0.8%."
-
-COMPARISON WITH THE INCOMMENSURABLE
-PS: odd comparisons break perception and add contrast.
-EX: "One bug cost more than a Tesla"; "Less than a cup of coffee (€2.1)."
-
-SALVATION / POSITIVE PAYOFF
-PS: promise of relief or upgrade.
-EX: "How to remove stress in 3 minutes"; "Lose 2kg in a week without diets."
-
-BLUEPRINT / ROADMAP
-PS: step-by-step recipe = control.
-EX: "3 steps to perfect memory"; "14-day plan."
-
-TEST / CHECK
-PS: people enjoy "passing a test."
-EX: "If you get this meme — you're a zoomer"; "This puzzle is asked at Google interviews. Can you solve it?"
-
-NAMES / ENTITIES
-PS: brands, people, objects = concreteness and recognition.
-EX: "What Musk said at the meeting"; "Apple hid this feature."
-
-PERSONAL STAKES
-PS: framing as personal raises relevance.
-EX: "You lose ₴372 every day"; "This trick saves you years."
-
-COUNTERFACTUAL HOOK
-PS: "What if…" forces the brain to imagine alternatives.
-EX: "What if the Internet vanished tomorrow?"; "What if everything's the opposite?"
-
-PROCESSING FLUENCY
-PS: short words, numbers, simple structure = quick readability.
-EX: "24 hours without food"; "×3 in a month."
-
-IMPORTANT:
-All "EX" are examples. They are given to show the essence of the technique (how the style/trigger works).
-You must understand the logic and apply it to the user's topic, but not copy them word-for-word.
-Final titles and thumbnails must be original.
-
-
-Conflict resolution
-
-JSON contract & validation > language/locale rule > levels/quotas > other.
-
-Validation (internal, do not output)
-
-Single language from {{topic}}
-
-Correct number/currency format
-
-Field lengths
-
-CAPS/emoji quotas
-
-Style coverage
-
-ThumbnailText: no ":" or emoji
-
-Title↔thumbnail overlap ≤60%
-
-topPicks = two unique numbers in [1..N]
-
-Process
-
-Immediately generate N final options per the rules above and select the two best: output their indices (1-based) in topPicks.
-
-Output contract (STRICTLY JSON, no extra keys)
-{
-  "audienceProfile": "3–6 benefit-focused sentences (if unclear — start with 'Assumptions: …')",
-  "options": [
-    {"title": "STRING", "thumbnailText": "STRING", "style": "DESCRIPTIVE_STYLE_NAME", "triggers": "PSYCHOLOGICAL_TRIGGERS"}
-  ],
-  "topPicks": [{"index": NUMBER}, {"index": NUMBER}]
-}
-
-IMPORTANT: For each option in the json response, you MUST specify both "style" and "triggers" fields. 
-- "style": Use one of the Hook Styles listed above OR create your own descriptive style name that best describes the psychological approach used in that title.
-- "triggers": List the specific psychological triggers used (e.g., "Curiosity, FOMO, Status", "Loss Aversion, Authority", "Social Proof," etc).
-`;
-
-
-/* ================= USER PROMPT BUILDER ================= */
-function buildUserBlockWithAudience({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel}){
-  const onlyTitles = wantTitles && !wantThumbs ? "true" : "false";
-  const onlyThumbs = wantThumbs && !wantTitles ? "true" : "false";
-  
-  const clickbaitLevelNames = {
-    1: "L1",
-    2: "L2", 
-    3: "L3",
-    4: "L4"
-  };
-  
-  const lines = [
-    `VIDEO_TOPIC: ${escapeForPrompt(topic)}`,
-    `FORMAT: ${escapeForPrompt(format || t.notSpecified)}`,
-    `AUDIENCE: ${escapeForPrompt(audience)}`,
-    `CLICKBAIT_LVL: ${clickbaitLevelNames[clickbaitLevel] || "L3"}`,
-    `N: ${count}`,
-    `ONLY_TITLES: ${onlyTitles}`,
-    `ONLY_THUMBS: ${onlyThumbs}`
-  ];
-  
-  return lines.join('\n');
+.results{
+  padding:16px;
+  animation: panel-slide-right 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s both;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 
-function responseSchema(N) {
-  return {
-    type: "OBJECT",
-    properties: {
-      audienceProfile: { type: "STRING" },
-      options: {
-        type: "ARRAY",
-        minItems: N, // если хочешь зафиксировать ровно N
-        maxItems: N,
-        items: {
-          type: "OBJECT",
-          properties: {
-            title: { type: "STRING" },
-            thumbnailText: { type: "STRING" },
-            style: { type: "STRING" },      // 🔥 добавлено
-            triggers: { type: "STRING" }    // 🔥 добавлено
-          },
-          required: ["title", "thumbnailText", "style", "triggers"] // 🔥 теперь обязательные
-        }
-      },
-      topPicks: {
-        type: "ARRAY",
-        minItems: 2,
-        maxItems: 2,
-        items: {
-          type: "OBJECT",
-          properties: {
-            index: { type: "INTEGER" }
-          },
-          required: ["index"]
-        }
-      }
-    },
-    required: ["audienceProfile", "options", "topPicks"]
-  };
+.improvement-check {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(134, 160, 255, 0.05);
+  border: 1px solid rgba(134, 160, 255, 0.15);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
+  padding: 0 12px;
+  transform: translateY(-10px);
 }
 
-function GENCFG_HQ(N) {
-  return {
-    temperature: 0.85,
-    topP: 0.92,
-    maxOutputTokens: 65535,
-    responseMimeType: "application/json",
-    responseSchema: responseSchema(N),
-    thinkingConfig: { includeThoughts: false, thinkingBudget: 32768 }
-  };
+.improvement-check.visible {
+  max-height: 100px;
+  opacity: 1;
+  margin-top: 12px;
+  padding: 12px;
+  transform: translateY(0);
 }
 
-/* ================= STORAGE ================= */
-const store = {
-  saveInputs(v){ localStorage.setItem("tc_inputs_v7", JSON.stringify(v)); },
-  loadInputs(){ try{ return JSON.parse(localStorage.getItem("tc_inputs_v7"))||{} }catch{ return {} } },
-  addSession(s){ const all = store.loadSessions(); all.unshift(s); localStorage.setItem("tc_sessions_v7", JSON.stringify(all)); },
-  loadSessions(){ try{ return JSON.parse(localStorage.getItem("tc_sessions_v7"))||[] }catch{ return [] } },
-  clearSessions(){ localStorage.setItem("tc_sessions_v7", JSON.stringify([])); },
-  deleteSession(id){ const all = store.loadSessions().filter(x => x.id !== id); localStorage.setItem("tc_sessions_v7", JSON.stringify(all)); },
-  addImprovementSession(s){ const all = store.loadImprovementSessions(); all.unshift(s); localStorage.setItem("tc_improvement_sessions_v1", JSON.stringify(all)); },
-  loadImprovementSessions(){ try{ return JSON.parse(localStorage.getItem("tc_improvement_sessions_v1"))||[] }catch{ return [] } },
-  clearImprovementSessions(){ localStorage.setItem("tc_improvement_sessions_v1", JSON.stringify([])); },
-  deleteImprovementSession(id){ const all = store.loadImprovementSessions().filter(x => x.id !== id); localStorage.setItem("tc_improvement_sessions_v1", JSON.stringify(all)); }
-};
-
-/* ================= UTILS ================= */
-const $ = s => document.querySelector(s);
-const clamp = (n,min,max)=> Math.max(min, Math.min(max, n));
-const clampStr = (s,n)=> (s||"").trim().slice(0,n);
-const MAX_CHARS_TOPIC=800, MAX_CHARS_FORMAT=300, MAX_CHARS_AUDIENCE=300;
-
-// Global operation lock to prevent simultaneous create/improve operations
-let isOperationInProgress = false;
-const toast = (msg)=>{
-  const actualMsg = t[msg] || msg || t.copied;
-  const el=$("#toast");
-  el.textContent=actualMsg;
-  el.classList.add("show");
-  haptic.notification();
-  setTimeout(()=> el.classList.remove("show"), 1600);
-};
-
-function copyToClipboard(text) {
-  if (!text) return;
-  navigator.clipboard.writeText(text).then(() => {
-    toast('copied');
-    haptic.success();
-  }).catch(() => {
-    toast('copyFailed');
-    haptic.error();
-  });
+.improvement-check:hover {
+  background: rgba(134, 160, 255, 0.08);
+  border-color: rgba(134, 160, 255, 0.25);
 }
 
-function showToast(msg) {
-  toast(msg);
-}
-function escapeForPrompt(s){ return (s||"").replace(/[<>]/g, m => ({'<':'&lt;','>':'&gt;'}[m])) }
-function nowStr(){ try{ return new Date().toLocaleString('en-GB', { hour12:false, timeZone:'Europe/London' }); }catch{ return new Date().toLocaleString(); } }
-function joinParts(parts){ return (parts||[]).map(p=> p.text).filter(Boolean).join("") }
-function truncate(s,n){ return s && s.length>n ? s.slice(0,n-1)+'…' : (s||"") }
-function uid(){ return 's_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7) }
-function safeParseJSON(m){ if(!m) return null; try{ return JSON.parse(m) }catch{} const a=m.indexOf("{"), b=m.lastIndexOf("}"); if(a>=0&&b>a){ try{ return JSON.parse(m.slice(a,b+1)) }catch{} } return null }
-
-// Extract first sentence from topic
-function getFirstSentence(text) {
-  if (!text) return '';
-  const match = text.match(/^[^.!?]+[.!?]/);
-  return match ? match[0].trim() : text.split(/\s+/).slice(0, 5).join(' ') + '...';
+.improvement-results {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-/* ================= NORMALIZE OUTPUT ================= */
-function normalizeOutput(o, opts){
-  const { wantTitles, wantThumbs, count, source } = opts;
-  const options = (o.options||[]).slice(0, count).map(x=> {
-    const title = wantTitles ? (x.title||"").trim().slice(0,100) : "";
-    const thumbnailText = wantThumbs ? (x.thumbnailText||"").replace(/:/g,"").trim().slice(0,50).toUpperCase() : "";
-    
-    // Используем только стиль и триггеры от модели, без дополнительного анализа
-    const style = (x.style||"").trim() || "Unknown";
-    const triggers = (x.triggers||"").trim() || "Unknown";
-    
-    return {
-      title,
-      thumbnailText,
-      style,
-      triggers
-    };
-  });
-  while(options.length < count) options.push({ title: wantTitles ? "" : "", thumbnailText: wantThumbs ? "" : "", style: "Unknown", triggers: "Unknown" });
-
-  // Возвращаем все TopPicks (до 2 лучших вариантов)
-  const allTopPicks = Array.isArray(o.topPicks) ? o.topPicks
-              .filter(v => Number.isInteger(v.index))
-              .map(v => ({ index: clamp(parseInt(v.index,10)||1, 1, options.length) }))
-              .slice(0, 2) : [];
-  
-  const tp = allTopPicks; // Возвращаем все доступные topPicks
-
-  return { audienceProfile: (o.audienceProfile||"").trim(), options, topPicks: tp };
+.improvement-result-card {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  padding: 16px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  animation: result-slide-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-/* ================= AUDIENCE ANALYSIS ================= */
-
-/* ================= NETWORK ================= */
-async function callGemini(payload, tries=RETRIES){
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(decryptApiKey(GEMINI_API_KEY))}`;
-  
-  let lastErr;
-  for(let i=0;i<tries;i++){
-    try{
-      const res = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
-      if(!res.ok){ const txt = await res.text().catch(()=> ""); throw new Error(`HTTP ${res.status}: ${txt||res.statusText}`) }
-      
-      const result = await res.json();
-      return result;
-    }catch(err){
-      lastErr = err;
-      console.warn(`⚠️ Gemini API Attempt ${i+1}/${tries} failed:`, err.message);
-      const delay = BASE_DELAY * Math.pow(2, i) + Math.random()*300;
-      await new Promise(r => setTimeout(r, delay));
-    }
+@keyframes result-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  console.error(`❌ Gemini API Failed after ${tries} attempts:`, lastErr.message);
-  throw lastErr;
-}
-
-async function callOpenAI(payload, tries=RETRIES){
-  const url = "https://api.openai.com/v1/chat/completions";
-  const model = payload.model || OPENAI_MODEL;
-  
-  let lastErr;
-  for(let i=0;i<tries;i++){
-    try{
-      const res = await fetch(url, { 
-        method:"POST", 
-        headers:{ 
-          "Content-Type":"application/json",
-          "Authorization": `Bearer ${decryptApiKey(OPENAI_API_KEY)}`
-        }, 
-        body: JSON.stringify(payload) 
-      });
-      if(!res.ok){ const txt = await res.text().catch(()=> ""); throw new Error(`HTTP ${res.status}: ${txt||res.statusText}`) }
-      
-        const result = await res.json();
-        return result;
-    }catch(err){
-      lastErr = err;
-      console.warn(`⚠️ OpenAI API Attempt ${i+1}/${tries} failed:`, err.message);
-      const delay = BASE_DELAY * Math.pow(2, i) + Math.random()*300;
-      await new Promise(r => setTimeout(r, delay));
-    }
-  }
-  console.error(`❌ OpenAI API Failed after ${tries} attempts:`, lastErr.message);
-  throw lastErr;
-}
-
-/* ================= TITLE ANALYSIS ================= */
-function analyzeTitle(title, thumbnail) {
-  const titleLower = title.toLowerCase();
-  const thumbLower = thumbnail.toLowerCase();
-  
-  // More diverse style detection with randomization
-  const styles = [];
-  
-  if (titleLower.includes('почему') || titleLower.includes('как') || titleLower.includes('что')) {
-    styles.push('Q&A');
-  }
-  if (titleLower.includes('vs') || titleLower.includes('против') || titleLower.includes('сравнение')) {
-    styles.push('VS');
-  }
-  if (titleLower.includes('я ') || titleLower.includes('мой ') || titleLower.includes('мы ')) {
-    styles.push('Personal Experience');
-  }
-  if (titleLower.includes('ошибка') || titleLower.includes('не делай') || titleLower.includes('не покупай')) {
-    styles.push('Mistakes');
-  }
-  if (titleLower.includes('секрет') || titleLower.includes('скрывал') || titleLower.includes('правда')) {
-    styles.push('Secret/Truth revealing');
-  }
-  if (titleLower.includes('топ') || titleLower.includes('лучшие') || /\d+/.test(title)) {
-    styles.push('Lists');
-  }
-  if (titleLower.includes('уничтожил') || titleLower.includes('шок') || titleLower.includes('невозможно')) {
-    styles.push('Shock Theses');
-  }
-  if (titleLower.includes('новый') || titleLower.includes('2024') || titleLower.includes('2025')) {
-    styles.push('Trend/Innovation');
-  }
-  if (titleLower.includes('деньги') || titleLower.includes('заработок') || titleLower.includes('доход')) {
-    styles.push('Financial');
-  }
-  if (titleLower.includes('рецепт') || titleLower.includes('готовить') || titleLower.includes('кулинария')) {
-    styles.push('Tutorial');
-  }
-  
-  // Add some randomization to avoid repetition
-  const additionalStyles = ['Curiosity Gap', 'Problem-Solution', 'Before-After', 'Transformation'];
-  if (Math.random() < 0.3) {
-    styles.push(additionalStyles[Math.floor(Math.random() * additionalStyles.length)]);
-  }
-  
-  // Более умное определение стиля
-  let style;
-  if (styles.length > 0) {
-    style = styles[Math.floor(Math.random() * styles.length)];
-  } else {
-    // Если не найдено совпадений, попробуем определить по общим паттернам
-    if (titleLower.includes('?') || titleLower.includes('как') || titleLower.includes('почему') || titleLower.includes('что')) {
-      style = 'Q&A';
-    } else if (titleLower.includes('я ') || titleLower.includes('мой ') || titleLower.includes('мы ')) {
-      style = 'Personal Experience';
-    } else if (/\d+/.test(title) || titleLower.includes('топ') || titleLower.includes('лучшие')) {
-      style = 'Lists';
-    } else if (titleLower.includes('новый') || titleLower.includes('2024') || titleLower.includes('2025')) {
-      style = 'Trend/Innovation';
-    } else {
-      style = 'Curiosity Gap';
-    }
-  }
-  
-  // More diverse trigger detection
-  const triggers = [];
-  if (titleLower.includes('секрет') || titleLower.includes('скрывал') || titleLower.includes('?')) {
-    triggers.push('Curiosity');
-  }
-  if (titleLower.includes('не покупай') || titleLower.includes('ошибка') || titleLower.includes('не делай')) {
-    triggers.push('FOMO');
-  }
-  if (titleLower.includes('я ') || titleLower.includes('мой опыт') || titleLower.includes('мы попробовали')) {
-    triggers.push('Social Proof');
-  }
-  if (titleLower.includes('шок') || titleLower.includes('невозможно') || titleLower.includes('уничтожил')) {
-    triggers.push('Emotional Response');
-  }
-  if (titleLower.includes('лучший') || titleLower.includes('топ') || titleLower.includes('революция')) {
-    triggers.push('Status');
-  }
-  if (titleLower.includes('новый') || titleLower.includes('2024') || titleLower.includes('2025')) {
-    triggers.push('Trend/Urgency');
-  }
-  if (titleLower.includes('деньги') || titleLower.includes('заработок') || titleLower.includes('доход')) {
-    triggers.push('Financial Gain');
-  }
-  if (titleLower.includes('быстро') || titleLower.includes('легко') || titleLower.includes('просто')) {
-    triggers.push('Ease of Use');
-  }
-  if (titleLower.includes('бесплатно') || titleLower.includes('скидка') || titleLower.includes('подарок')) {
-    triggers.push('Value Proposition');
-  }
-  
-  // Add some randomization to triggers
-  const additionalTriggers = ['Urgency', 'Scarcity', 'Authority', 'Reciprocity'];
-  if (Math.random() < 0.4) {
-    triggers.push(additionalTriggers[Math.floor(Math.random() * additionalTriggers.length)]);
-  }
-  
-  // Более умное определение триггеров
-  if (triggers.length === 0) {
-    // Попробуем определить триггер по общим паттернам
-    if (titleLower.includes('?') || titleLower.includes('как') || titleLower.includes('почему') || titleLower.includes('что')) {
-      triggers.push('Curiosity');
-    } else if (titleLower.includes('я ') || titleLower.includes('мой ') || titleLower.includes('мы ')) {
-      triggers.push('Social Proof');
-    } else if (/\d+/.test(title) || titleLower.includes('топ') || titleLower.includes('лучшие')) {
-      triggers.push('Status');
-    } else if (titleLower.includes('новый') || titleLower.includes('2024') || titleLower.includes('2025')) {
-      triggers.push('Trend/Urgency');
-    } else {
-    triggers.push('Curiosity');
-    }
-  }
-  
-  // Generate synergy
-  let synergy = '';
-  synergy = '';
-  
-  return {
-    style: style,
-    triggers: triggers.join(', '),
-    synergy: synergy
-  };
-}
-
-/* ================= RENDER ================= */
-function rowHTML(i, opt, topSet, showTitle, showThumb){
-  const n = i+1; const isTop = topSet.has(n);
-  const titleVal = opt.title || '';
-  const thumbVal = opt.thumbnailText || '';
-  const source = opt.source || '';
-  
-  // Use only style and triggers from model response
-  const styleVal = opt.style || "Unknown";
-  const triggersVal = opt.triggers || "Unknown";
-  const analysis = analyzeTitle(titleVal, thumbVal);
-  const synergyVal = analysis.synergy;
-  
-  const titleHTML = showTitle && titleVal ? `
-    <div class="line">
-      <div class="label">${t.titleLabel}</div>
-      <div class="txt" data-kind="title" role="button" tabindex="0" title="${t.clickToCopy}">${titleVal}</div>
-    </div>` : '';
-  const thumbHTML = showThumb && thumbVal ? `
-    <div class="line">
-      <div class="label">${t.thumbnailLabel}</div>
-      <div class="txt" data-kind="thumb" role="button" tabindex="0" title="${t.clickToCopy}">${thumbVal}</div>
-    </div>` : '';
-  
-  if (!titleHTML && !thumbHTML) return '';
-  
-  // Source indicator removed - no model badges
-  
-  // Analysis section - always show client-generated analysis
-  const analysisHTML = `
-    <div class="title-analysis">
-      <div class="analysis-item">
-        <div class="analysis-label">Стиль:</div>
-        <div class="analysis-value style">${styleVal}</div>
-      </div>
-      <div class="analysis-item">
-        <div class="analysis-label">Триггеры:</div>
-        <div class="analysis-value triggers">${triggersVal}</div>
-      </div>
-      ${synergyVal ? `<div class="synergy-note">${synergyVal}</div>` : ''}
-    </div>`;
-  
-  return `
-  <div class="row${isTop? ' top':''}" data-idx="${n}" style="--row-index: ${i}">
-    <div class="badge" aria-hidden="true">${n}</div>${isTop? `<span class="star" aria-label="${t.topPick}" title="${t.topPick}">★</span>`:''}
-    <div class="pair">
-      ${titleHTML}${thumbHTML}
-      ${analysisHTML}
-    </div>
-  </div>`;
-}
-
-function sessionHTML(session, showCloseButton = true){
-  const { output, view, input } = session;
-  const showTitle = view.wantTitles, showThumb = view.wantThumbs;
-  const topSet = new Set((output.topPicks||[]).map(x=> x.index));
-  const list = (output.options||[]).map((o,i)=> rowHTML(i,o,topSet,showTitle,showThumb)).filter(Boolean).join('');
-  const cardTitle = getFirstSentence(input.topic);
-  
-  const closeButton = showCloseButton ? `
-      <div class="session-actions">
-        <button class="iconbtn close" title="${t.removeResult}" aria-label="${t.removeResult}">
-          <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
-        </button>
-    </div>` : '';
-  
-  return `
-  <article class="session collapsed" role="region" aria-label="Result session" data-id="${session.id}">
-    <div class="session-head">
-      <span class="session-title">${cardTitle}</span>
-      ${closeButton}
-    </div>
-    <div class="audience" data-label="${t.audienceProfile}">${output.audienceProfile||''}</div>
-    <div class="list">${list}</div>
-  </article>`;
-}
-
-function skeletonCard(){
-  const wrap = document.createElement('div');
-  wrap.className = 'session';
-  wrap.innerHTML = `
-    <div class="session-head">
-      <span class="session-title">${t.loading}</span>
-    </div>
-    <div class="skeleton">
-      <div class="pulse"></div><div class="pulse"></div><div class="pulse"></div>
-    </div>`;
-  return wrap;
-}
-
-/* ================= 3D CARD SYSTEM ================= */
-let cardClickHandler = null;
-let improvementCardClickHandler = null;
-
-function setup3DCards() {
-  const stream = $('#stream');
-
-  // Remove old handler if exists
-  if (cardClickHandler) {
-    stream.removeEventListener('click', cardClickHandler);
-  }
-
-  // Update stack indices for collapsed cards
-  function updateStackIndices() {
-    const sessions = [...stream.querySelectorAll('.session')];
-    let stackIndex = 0;
-
-    sessions.forEach(session => {
-      if (session.classList.contains('collapsed')) {
-        session.style.setProperty('--stack-index', stackIndex);
-        stackIndex++;
-      } else {
-        session.style.setProperty('--stack-index', 0);
-      }
-    });
-  }
-
-  // Create new handler
-  cardClickHandler = (e) => {
-    const session = e.target.closest('.session');
-    if (!session || e.target.closest('.iconbtn')) return;
-
-    const isExpanded = session.classList.contains('expanded');
-    const allSessions = [...stream.querySelectorAll('.session')];
-
-    if (isExpanded) {
-      // Collapse the card
-      session.classList.remove('expanded');
-      session.classList.add('collapsed');
-      allSessions.forEach(s => s.classList.remove('pushed-down'));
-    } else {
-      // Expand this card and push others down
-      allSessions.forEach(s => {
-        s.classList.remove('expanded');
-        s.classList.add('collapsed');
-        if (s !== session) {
-          s.classList.add('pushed-down');
-        }
-      });
-      session.classList.remove('collapsed', 'pushed-down');
-      session.classList.add('expanded');
-    }
-
-    haptic.medium();
-    setTimeout(updateStackIndices, 50);
-  };
-
-  // Add new handler
-  stream.addEventListener('click', cardClickHandler);
-
-  updateStackIndices();
-}
-
-function setupImprovement3DCards() {
-  const stream = document.getElementById('improvement-stream');
-  if (!stream) return;
-
-  // Remove old handler if exists
-  if (improvementCardClickHandler) {
-    stream.removeEventListener('click', improvementCardClickHandler);
-  }
-
-  // Update stack indices for collapsed cards
-  function updateStackIndices() {
-    const sessions = [...stream.querySelectorAll('.session')];
-    let stackIndex = 0;
-
-    sessions.forEach(session => {
-      if (session.classList.contains('collapsed')) {
-        session.style.setProperty('--stack-index', stackIndex);
-        stackIndex++;
-      } else {
-        session.style.setProperty('--stack-index', 0);
-      }
-    });
-  }
-
-  // Create new handler
-  improvementCardClickHandler = (e) => {
-    const session = e.target.closest('.session');
-    if (!session || e.target.closest('.iconbtn')) return;
-
-    const isExpanded = session.classList.contains('expanded');
-    const allSessions = [...stream.querySelectorAll('.session')];
-
-    if (isExpanded) {
-      // Collapse the card
-      session.classList.remove('expanded');
-      session.classList.add('collapsed');
-      allSessions.forEach(s => s.classList.remove('pushed-down'));
-    } else {
-      // Expand this card and push others down
-      allSessions.forEach(s => {
-        s.classList.remove('expanded');
-        s.classList.add('collapsed');
-        if (s !== session) {
-          s.classList.add('pushed-down');
-        }
-      });
-      session.classList.remove('collapsed', 'pushed-down');
-      session.classList.add('expanded');
-    }
-
-    haptic.medium();
-    setTimeout(updateStackIndices, 50);
-  };
-
-  // Add new handler
-  stream.addEventListener('click', improvementCardClickHandler);
-
-  updateStackIndices();
-}
-
-/* ================= COPY / CONTROLS ================= */
-function attachCopyHandlers(scope=document){
-  function copyText(el){
-    const text = el?.textContent?.trim() || '';
-    if(!text) return;
-    navigator.clipboard.writeText(text).then(()=>{
-      el.classList.add('copied');
-      setTimeout(()=> el.classList.remove('copied'), 500);
-      toast('copied');
-      haptic.success();
-    }).catch(()=> {
-      toast('copyFailed');
-      haptic.error();
-    });
-  }
-  scope.querySelectorAll('.txt').forEach(el=>{
-    el.onclick = (e) => { 
-      e.stopPropagation(); 
-      copyText(el); 
-    };
-    el.addEventListener('touchstart', ()=> haptic.light());
-    el.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); copyText(el); }});
-  });
-}
-
-function attachSessionControls(scope=document){
-  scope.querySelectorAll('.session .close').forEach(btn=>{
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      const card = btn.closest('.session');
-      const id = card?.dataset?.id;
-      card.style.transform='scale(.95)';
-      card.style.opacity='0';
-      haptic.medium();
-      setTimeout(()=>{
-        card.remove();
-
-        // Определяем, из какого stream удаляется сессия
-        const isImprovementSession = card.closest('#improvement-stream') !== null;
-
-        if(id) {
-          if (isImprovementSession) {
-            store.deleteImprovementSession(id);
-          } else {
-            store.deleteSession(id);
-          }
-        }
-
-        setup3DCards();
-
-        // Проверяем, остались ли сессии, и обрабатываем соответственно
-        const remainingSessions = isImprovementSession ? store.loadImprovementSessions() : store.loadSessions();
-        const resultsPanel = isImprovementSession
-          ? document.querySelector('.improvement-results-panel')
-          : document.querySelector('.panel.results:not(.improvement-results-panel)');
-
-        if (remainingSessions.length === 0 && resultsPanel) {
-          if (isMobileDevice()) {
-            // На мобильных скрываем блок
-            resultsPanel.style.opacity = '0';
-            resultsPanel.style.transform = 'translateY(-20px)';
-            setTimeout(() => {
-              resultsPanel.style.display = 'none';
-            }, 300);
-          } else {
-            // На ПК показываем placeholder
-            const container = isImprovementSession
-              ? document.querySelector('#improvement-stream')
-              : document.querySelector('#stream');
-            container.innerHTML = '';
-            const placeholder = document.createElement('div');
-            placeholder.className = 'history-placeholder';
-            placeholder.innerHTML = `
-              <div class="placeholder-content">
-                <div class="placeholder-icon">📝</div>
-                <div class="placeholder-text">${t.historyPlaceholder}</div>
-              </div>
-            `;
-            container.appendChild(placeholder);
-          }
-        }
-      }, 300);
-    };
-  });
-  scope.querySelectorAll('.sk-close').forEach(btn=>{
-    btn.onclick = (e) => { 
-      e.stopPropagation();
-      const card = btn.closest('.session');
-      card.style.transform='scale(.95)'; 
-      card.style.opacity='0';
-      haptic.light();
-      setTimeout(()=> card?.remove(), 300);
-    };
-  });
-}
-
-/* ================= FLOW ================= */
-function updateCountSlider(value){
-  const countValue = document.getElementById('count-value');
-  const thumb = document.getElementById('count-thumb');
-  if (!countValue || !thumb) return;
-  
-  // Ensure value is even and in range 6-16
-  value = Math.max(6, Math.min(16, value));
-  if (value % 2 !== 0) {
-    value = Math.round(value / 2) * 2;
-  }
-  
-  countValue.textContent = value;
-  
-  // Calculate position (6-16 range maps to 0-100%)
-  const percentage = ((value - 6) / (16 - 6)) * 100;
-  thumb.style.left = percentage + '%';
-  
-  // Save to storage
-  const inputs = store.loadInputs();
-  store.saveInputs({ ...inputs, count: value });
-  
-  // Haptic feedback
-  if (navigator.vibrate) navigator.vibrate(30);
-}
-
-function blinkFields(){
-  ['#topicField','#formatField','#audienceField'].forEach(sel=>{
-    const host = document.querySelector(sel);
-    if(!host) return;
-    host.style.boxShadow='0 0 0 3px rgba(110,231,255,.3), inset 0 0 20px rgba(134,160,255,.1)';
-    setTimeout(()=> host.style.boxShadow='', 500);
-  });
-}
-
-let btnMsgTimer=null;
-let improveBtnMsgTimer=null;
-
-function setBtnBusy(btn, on){
-  if(on){
-    btn.setAttribute('aria-busy','true');
-    btn.classList.add('processing');
-    btn.disabled=true;
-    const msgs = [
-      t.working,
-      t.analyzingTopic,
-      t.understandingAudience,
-      t.findingPatterns,
-      t.craftingTitles,
-      t.optimizingEngagement,
-      t.addingTriggers,
-      t.testingCTR,
-      t.finalizingOptions,
-      t.almostReady
-    ];
-    let i=0;
-    btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
-    clearInterval(btnMsgTimer);
-    btnMsgTimer = setInterval(()=>{
-      i=(i+1)%msgs.length;
-      btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
-    }, 10000); // 10 seconds per status
-  }else{
-    btn.setAttribute('aria-busy','false');
-    btn.classList.remove('processing');
-    btn.disabled=false;
-    clearInterval(btnMsgTimer);
-    btnMsgTimer=null;
-    btn.querySelector('.btn-text').textContent = t.send;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-function setImproveBtnBusy(btn, on){
-  if(on){
-    btn.setAttribute('aria-busy','true');
-    btn.classList.add('processing');
-    btn.disabled=true;
-    const msgs = [
-      t.improvingText || 'Improving',
-      t.analyzingDraft || 'Analyzing your draft',
-      t.findingImprovements || 'Finding improvements',
-      t.optimizingLanguage || 'Optimizing language',
-      t.enhancingPsychology || 'Enhancing psychology',
-      t.polishingResults || 'Polishing results',
-      t.almostReady || 'Almost ready'
-    ];
-    let i=0;
-    btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
-    clearInterval(improveBtnMsgTimer);
-    improveBtnMsgTimer = setInterval(()=>{
-      i=(i+1)%msgs.length;
-      btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
-    }, 8000); // 8 seconds per status
-  }else{
-    btn.setAttribute('aria-busy','false');
-    btn.classList.remove('processing');
-    btn.disabled=false;
-    clearInterval(improveBtnMsgTimer);
-    improveBtnMsgTimer=null;
-    btn.querySelector('.btn-text').textContent = t.improveButton || 'Improve';
+.improvement-result-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, var(--ok), var(--brand-2));
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  filter: blur(15px);
+  z-index: -1;
+}
+
+.improvement-result-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(103, 243, 162, 0.15);
+  border-color: rgba(103, 243, 162, 0.3);
+}
+
+.improvement-result-card:hover::before {
+  opacity: 0.2;
+}
+
+.improvement-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.improvement-result-type {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ok);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.improvement-result-type::before {
+  content: '✨';
+  font-size: 14px;
+}
+
+.improvement-result-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 10px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.improvement-result-text:hover {
+  background: rgba(103, 243, 162, 0.08);
+  transform: translateX(4px);
+}
+
+.improvement-result-text::after {
+  content: '📋';
+  position: absolute;
+  right: 10px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-size: 14px;
+}
+
+.improvement-result-text:hover::after {
+  opacity: 0.6;
+}
+
+.improvement-result-thumbnail {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--brand-2);
+  background: rgba(110, 231, 255, 0.08);
+  border: 1px solid rgba(110, 231, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.improvement-result-thumbnail:hover {
+  background: rgba(110, 231, 255, 0.15);
+  border-color: rgba(110, 231, 255, 0.4);
+  transform: scale(1.02);
+}
+
+.improvement-result-meta {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 12px;
+  color: var(--text-weak);
+  line-height: 1.5;
+}
+
+.improvement-result-meta-item {
+  margin-bottom: 6px;
+}
+
+.improvement-result-meta-item:last-child {
+  margin-bottom: 0;
+}
+
+.improvement-result-meta strong {
+  color: var(--brand);
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+/* New improvement display styles */
+.improvement-section {
+  margin-bottom: 24px;
+}
+
+.improvement-section h3 {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--brand);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.improvement-section h3::before {
+  content: '✨';
+  font-size: 16px;
+}
+
+.improvement-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  animation: result-slide-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.improvement-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(134, 160, 255, 0.3);
+}
+
+.improvement-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.improvement-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.5;
+  cursor: pointer;
+  padding: 12px 16px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  position: relative;
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.improvement-text.title {
+  background: rgba(103, 243, 162, 0.05);
+  border-color: rgba(103, 243, 162, 0.2);
+}
+
+.improvement-text.thumbnail {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--brand-2);
+  background: rgba(110, 231, 255, 0.05);
+  border-color: rgba(110, 231, 255, 0.2);
+}
+
+.improvement-text:hover {
+  transform: translateX(4px);
+  box-shadow: 0 8px 16px rgba(134, 160, 255, 0.15);
+}
+
+.improvement-text.title:hover {
+  background: rgba(103, 243, 162, 0.1);
+  border-color: rgba(103, 243, 162, 0.3);
+}
+
+.improvement-text.thumbnail:hover {
+  background: rgba(110, 231, 255, 0.1);
+  border-color: rgba(110, 231, 255, 0.3);
+}
+
+.improvement-text::after {
+  content: '📋';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-size: 16px;
+}
+
+.improvement-text:hover::after {
+  opacity: 0.6;
+}
+
+.improvement-meta {
+  font-size: 12px;
+  color: var(--text-weak);
+  line-height: 1.5;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+  border-left: 2px solid rgba(134, 160, 255, 0.3);
+}
+
+.improvement-analysis {
+  background: rgba(134, 160, 255, 0.06);
+  border: 1px solid rgba(134, 160, 255, 0.15);
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.improvement-analysis-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--brand);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.improvement-analysis-title::before {
+  content: '🔍';
+  font-size: 14px;
+}
+
+.improvement-analysis-text {
+  color: var(--text-weak);
+  font-weight: 500;
+}
+
+/* ===== HISTORY PLACEHOLDER ===== */
+.history-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  opacity: 0.6;
+}
+
+.placeholder-icon {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+.placeholder-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-weak);
+  max-width: 280px;
+  line-height: 1.4;
+}
+@keyframes panel-slide-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes panel-slide-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ===== ENHANCED CARDS ===== */
+.cards{ display:flex; flex-direction:column; gap:14px }
+.card{ 
+  background: var(--card); 
+  border:1px solid rgba(255,255,255,.1); 
+  border-radius: var(--r-sm); 
+  padding:14px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+/* ===== TITLE ANALYSIS ===== */
+.title-analysis {
+  background: rgba(134, 160, 255, 0.08) !important;
+  border: 1px solid rgba(134, 160, 255, 0.25) !important;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+  margin-bottom: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  display: block !important;
+  visibility: visible !important;
+  backdrop-filter: blur(8px);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.analysis-item {
+  display: flex;
+  margin-bottom: 8px;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.analysis-item:last-child {
+  margin-bottom: 0;
+}
+
+.analysis-label {
+  color: var(--brand);
+  font-weight: 700;
+  min-width: 80px;
+  flex-shrink: 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.analysis-value {
+  color: var(--text-weak);
+  flex: 1;
+  font-weight: 500;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.analysis-value.style {
+  color: var(--brand-2);
+  font-weight: 600;
+}
+
+.analysis-value.triggers {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.synergy-note {
+  background: rgba(255, 184, 92, 0.12);
+  border-left: 3px solid var(--warn);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 12px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--warn);
+  font-style: italic;
+  position: relative;
+  line-height: 1.4;
+}
+
+.synergy-note::before {
+  content: "💡 ";
+  font-style: normal;
+  margin-right: 4px;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, var(--brand), var(--brand-2), var(--brand));
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  filter: blur(15px);
+  z-index: -1;
+}
+.card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(134,160,255,.2), 0 0 30px rgba(110,231,255,.15);
+}
+.card:hover::before { opacity: 0.3; }
+
+.card h3{ 
+  margin:0 0 10px; 
+  font-size:13px; 
+  letter-spacing:.4px; 
+  color:var(--text-weak); 
+  font-weight:800; 
+  text-transform:uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card h3 .req { color: var(--brand-2); }
+
+/* ===== ENHANCED FIELDS ===== */
+.field{ 
+  display:flex; 
+  align-items:center; 
+  gap:10px; 
+  background:#0f1526; 
+  border:2px solid #1f2a44; 
+  border-radius:16px; 
+  padding:14px; 
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+.field::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(134,160,255,0.1), transparent 50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.field:hover::after { opacity: 1; }
+.field:focus-within{ 
+  box-shadow: var(--focus), inset 0 0 20px rgba(134,160,255,.05);
+  border-color: var(--brand);
+  transform: scale(1.02);
+}
+
+.field-clear {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.field-clear:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+.field-clear svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--muted);
+}
+
+textarea,input{ 
+  all:unset; 
+  color:var(--text); 
+  font:inherit; 
+  width:100%; 
+  caret-color: var(--brand);
+  font-size: 16px; /* Prevent zoom on iOS */
+}
+textarea { min-height: 80px; resize: vertical; }
+
+/* ===== CONTROLS ===== */
+.controls{ display:grid; grid-template-columns: 1fr; gap:12px; margin-top: 12px; }
+
+/* ===== COUNT SLIDER ===== */
+.count-slider-container {
+  background: #0f1526;
+  border: 2px solid #1f2a44;
+  border-radius: 16px;
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.count-slider-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.2);
+}
+
+.count-display {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.count-current-value {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--brand);
+  margin-bottom: 4px;
+  text-shadow: 0 0 20px rgba(134, 160, 255, 0.5);
+}
+
+.count-label {
+  font-size: 12px;
+  color: var(--text-weak);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.count-slider-track {
+  position: relative;
+  height: 12px;
+  background: #1f2a44;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.count-slider-track:hover {
+  background: linear-gradient(90deg, #86a0ff 0%, #6ee7ff 100%);
+  box-shadow: 0 0 30px rgba(134, 160, 255, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(134, 160, 255, 0.3);
+}
+
+.count-slider-thumb {
+  position: absolute;
+  top: 50%;
+  left: 33.33%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border-radius: 8px;
+  cursor: grab;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(134, 160, 255, 0.8);
+  z-index: 10;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.count-slider-thumb:hover {
+  transform: translate(-50%, -50%) scale(1.2);
+  box-shadow: 0 12px 40px rgba(134, 160, 255, 1);
+}
+
+.count-slider-thumb:active {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.count-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  gap: 4px;
+}
+
+.count-label-item {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 8px;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.count-label-item:hover {
+  color: var(--brand);
+  background: rgba(134, 160, 255, 0.1);
+}
+
+/* ===== CLICKBAIT DISPLAY ===== */
+.clickbait-display {
+  background: rgba(134, 160, 255, 0.08);
+  border: 1px solid rgba(134, 160, 255, 0.25);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+  text-align: center;
+}
+
+.clickbait-current-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--brand);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clickbait-current-desc {
+  font-size: 12px;
+  color: var(--text-weak);
+  line-height: 1.4;
+}
+
+/* ===== CLICKBAIT SLIDER ===== */
+.clickbait-slider-container {
+  margin-top: 16px;
+}
+
+.clickbait-slider-track {
+  position: relative;
+  height: 12px;
+  background: #1f2a44;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Gradient backgrounds for different levels */
+.clickbait-slider-track.level-1 {
+  background: linear-gradient(90deg, #67f3a2 0%, #4ade80 100%);
+  box-shadow: 0 0 30px rgba(103, 243, 162, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: gradient-pulse-green 0.6s ease-out;
+  border: 2px solid rgba(103, 243, 162, 0.3);
+}
+
+.clickbait-slider-track.level-2 {
+  background: linear-gradient(90deg, #4ade80 0%, #ffb85c 50%);
+  box-shadow: 0 0 30px rgba(255, 184, 92, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: gradient-pulse-yellow 0.6s ease-out;
+  border: 2px solid rgba(255, 184, 92, 0.3);
+}
+
+.clickbait-slider-track.level-3 {
+  background: linear-gradient(90deg, #ffb85c 0%, #ff6b6b 100%);
+  box-shadow: 0 0 30px rgba(255, 107, 107, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: gradient-pulse-orange 0.6s ease-out;
+  border: 2px solid rgba(255, 107, 107, 0.3);
+}
+
+.clickbait-slider-track.level-4 {
+  background: linear-gradient(90deg, #ff6b6b 0%, #dc2626 100%);
+  box-shadow: 0 0 30px rgba(220, 38, 38, 0.7), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: gradient-pulse-red 0.6s ease-out;
+  border: 2px solid rgba(220, 38, 38, 0.4);
+}
+
+/* Keyframe animations for gradient transitions */
+@keyframes gradient-pulse-green {
+  0% { box-shadow: 0 0 0 rgba(103, 243, 162, 0), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(103, 243, 162, 0.8), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+  100% { box-shadow: 0 0 30px rgba(103, 243, 162, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+}
+
+@keyframes gradient-pulse-yellow {
+  0% { box-shadow: 0 0 0 rgba(255, 184, 92, 0), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(255, 184, 92, 0.8), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+  100% { box-shadow: 0 0 30px rgba(255, 184, 92, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+}
+
+@keyframes gradient-pulse-orange {
+  0% { box-shadow: 0 0 0 rgba(255, 107, 107, 0), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(255, 107, 107, 0.8), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+  100% { box-shadow: 0 0 30px rgba(255, 107, 107, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+}
+
+@keyframes gradient-pulse-red {
+  0% { box-shadow: 0 0 0 rgba(220, 38, 38, 0), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(220, 38, 38, 1), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+  100% { box-shadow: 0 0 30px rgba(220, 38, 38, 0.7), inset 0 2px 4px rgba(0, 0, 0, 0.2); }
+}
+
+.clickbait-slider-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  background: #ffffff;
+  border-radius: 8px;
+  cursor: grab;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(134, 160, 255, 0.8);
+  z-index: 10;
+  border: 4px solid rgba(255, 255, 255, 0.95);
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Thumb colors for different levels */
+.clickbait-slider-thumb.level-1 {
+  background: #ffffff;
+  box-shadow: 0 12px 40px rgba(103, 243, 162, 0.8);
+  animation: thumb-pulse-green 0.6s ease-out;
+  border: 4px solid rgba(103, 243, 162, 0.8);
+}
+
+.clickbait-slider-thumb.level-2 {
+  background: #ffffff;
+  box-shadow: 0 12px 40px rgba(255, 184, 92, 0.8);
+  animation: thumb-pulse-yellow 0.6s ease-out;
+  border: 4px solid rgba(255, 184, 92, 0.8);
+}
+
+.clickbait-slider-thumb.level-3 {
+  background: #ffffff;
+  box-shadow: 0 12px 40px rgba(255, 107, 107, 0.8);
+  animation: thumb-pulse-orange 0.6s ease-out;
+  border: 4px solid rgba(255, 107, 107, 0.8);
+}
+
+.clickbait-slider-thumb.level-4 {
+  background: #ffffff;
+  box-shadow: 0 12px 40px rgba(220, 38, 38, 0.9);
+  animation: thumb-pulse-red 0.6s ease-out;
+  border: 4px solid rgba(220, 38, 38, 0.9);
+}
+
+/* Keyframe animations for thumb transitions */
+@keyframes thumb-pulse-green {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.15); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes thumb-pulse-yellow {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.15); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes thumb-pulse-orange {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.15); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes thumb-pulse-red {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.15); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+.clickbait-slider-thumb:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+  box-shadow: 0 16px 48px rgba(134, 160, 255, 1);
+}
+
+.clickbait-slider-thumb:active {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+/* Enhanced hover effects for different levels */
+.clickbait-slider-thumb.level-1:hover {
+  box-shadow: 0 16px 48px rgba(103, 243, 162, 1);
+  transform: translate(-50%, -50%) scale(1.3);
+}
+
+.clickbait-slider-thumb.level-2:hover {
+  box-shadow: 0 16px 48px rgba(255, 184, 92, 1);
+  transform: translate(-50%, -50%) scale(1.3);
+}
+
+.clickbait-slider-thumb.level-3:hover {
+  box-shadow: 0 16px 48px rgba(255, 107, 107, 1);
+  transform: translate(-50%, -50%) scale(1.3);
+}
+
+.clickbait-slider-thumb.level-4:hover {
+  box-shadow: 0 16px 48px rgba(220, 38, 38, 1);
+  transform: translate(-50%, -50%) scale(1.3);
+}
+
+.clickbait-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.clickbait-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.clickbait-label:hover {
+  color: var(--brand);
+}
+.ctrl{ 
+  background:#0f1526; 
+  border:2px solid #1f2a44; 
+  border-radius:16px; 
+  padding:14px; 
+  display:flex; 
+  align-items:center; 
+  justify-content:space-between; 
+  gap:10px;
+  transition: all 0.3s ease;
+}
+.ctrl:hover { 
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.2);
+}
+.ctrl label{ font-size:14px; color:var(--text-weak); font-weight: 600; }
+.ctrl input[type="number"]{ 
+  all:unset; 
+  width:80px; 
+  text-align:center; 
+  background:#0b1221; 
+  border:2px solid #1b2847; 
+  border-radius:12px; 
+  padding:10px 12px; 
+  font-weight:800;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+.ctrl input[type="number"]:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(134,160,255,.2);
+}
+.ctrl input[type="number"]:invalid{ outline:2px solid var(--err); }
+
+/* ===== ENHANCED CHECKBOXES ===== */
+.checks{ display:flex; gap:12px; flex-wrap:wrap }
+.check{
+  display:flex; 
+  align-items:center; 
+  gap:12px; 
+  padding:14px 16px; 
+  border-radius:18px;
+  background:#0f1526; 
+  border:2px solid #253456; 
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-height:52px; 
+  user-select:none; 
+  position:relative; 
+  overflow:hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.check:active { transform: scale(0.95); }
+.check input{ 
+  width:22px; 
+  height:22px; 
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+.check .tag{ font-weight:800; letter-spacing:.3px; font-size: 15px; }
+.check .state{
+  font-size:11px; 
+  padding:5px 10px; 
+  border-radius:999px; 
+  background:linear-gradient(135deg, #1a2240, #253456); 
+  border:1px solid #2a3a5f; 
+  color:#cfe3ff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.check:has(input:checked){
+  background: linear-gradient(135deg, rgba(134,160,255,.15), rgba(110,231,255,.1));
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(134,160,255,.15), 0 8px 20px rgba(134,160,255,.2);
+}
+.check:has(input:not(:checked)){
+  border-color: rgba(255,107,107,.3);
+  box-shadow: 0 0 0 3px rgba(255,107,107,.1);
+}
+.check:has(input:not(:checked)) .state.data-off::before{ content:attr(data-off) }
+.check:has(input:checked) .state.data-on::before{ content:attr(data-on) }
+
+/* Warning animation for forced check */
+.check.forced-check {
+  animation: forced-check-warning 0.6s ease-in-out;
+}
+
+@keyframes forced-check-warning {
+  0% { 
+    background: linear-gradient(135deg, rgba(255,107,107,.15), rgba(255,107,107,.1));
+    border-color: rgba(255,107,107,.3);
+    box-shadow: 0 0 0 3px rgba(255,107,107,.15);
+  }
+  50% { 
+    background: linear-gradient(135deg, rgba(255,107,107,.25), rgba(255,107,107,.2));
+    border-color: rgba(255,107,107,.5);
+    box-shadow: 0 0 0 5px rgba(255,107,107,.3);
+  }
+  100% { 
+    background: linear-gradient(135deg, rgba(134,160,255,.15), rgba(110,231,255,.1));
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(134,160,255,.15);
   }
 }
 
-async function generateDualModels(topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel) {
-  // Создаем промпт для генерации контента только через Gemini
-  const geminiPrompt = buildUserBlockWithAudience({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel});
-  
-  // Формируем полный промпт для отправки
-  const fullPrompt = SYSTEM_PROMPT + '\n\n' + geminiPrompt;
-  
-  
-  // Запрос только к Gemini
-  const geminiResult = await callGemini({
-    contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
-    generationConfig: GENCFG_HQ(count)
-  });
-  
-  const results = [];
-  
-  // Обрабатываем результат Gemini
-  try {
-    const geminiData = geminiResult;
-    const first = (geminiData.candidates||[])[0];
-    const text = joinParts(first?.content?.parts);
-    let parsed = safeParseJSON(text);
-    
-    if (parsed && Array.isArray(parsed.options)) {
-      const normalized = normalizeOutput(parsed, { wantTitles, wantThumbs, count, source: 'Gemini' });
-      // Используем ЦА от Gemini
-      results.push({ source: 'Gemini', data: normalized, order: 1 });
-    }
-  } catch (err) {
-    console.warn('Gemini parsing error:', err);
-  }
-  
-  return results;
+/* Ripple effect for checkboxes */
+.check::after {
+  content: '';
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(255,255,255,0.3), transparent);
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+.check.ripple::after {
+  animation: check-ripple 0.6s ease-out;
+}
+@keyframes check-ripple {
+  to { transform: scale(3); opacity: 0; }
 }
 
-async function generate(){
-  const btn = $("#send");
-  if(btn.getAttribute('aria-busy')==='true'){
-    toast('pleaseWait');
-    haptic.error();
-    return;
-  }
-
-  // Check if another operation is in progress
-  if(isOperationInProgress) {
-    toast('pleaseWait');
-    haptic.error();
-    return;
-  }
-
-  const topic = clampStr($("#topic").value, MAX_CHARS_TOPIC);
-  const format = clampStr($("#format").value, MAX_CHARS_FORMAT);
-  const audience = clampStr($("#audience").value, MAX_CHARS_AUDIENCE);
-  let wantTitles = $("#wantTitles").checked, wantThumbs = $("#wantThumbs").checked;
-  
-  // Get count from slider
-  const countValue = document.getElementById('count-value');
-  let count = parseInt(countValue?.textContent || "8", 10) || 8;
-  count = clamp(count, 6, 16);
-  // Ensure count is even
-  if (count % 2 !== 0) {
-    count = Math.round(count / 2) * 2;
-  }
-  
-  // Get selected clickbait level
-  const clickbaitLevel = getCurrentClickbaitLevel();
-
-  if(!wantTitles && !wantThumbs){ 
-    // Принудительно включаем заголовки, если оба отключены
-    wantTitles = true;
-    $("#wantTitles").checked = true;
-    
-    // Добавляем визуальную анимацию предупреждения
-    const titleCheck = $("#checkTitles");
-    titleCheck.classList.add('forced-check');
-    setTimeout(() => {
-      titleCheck.classList.remove('forced-check');
-    }, 600);
-    
-    toast("atLeastOneComponent");
-    haptic.error();
-  }
-  if(!topic){ 
-    $("#topic").focus(); 
-    toast("topicRequired"); 
-    haptic.error();
-    return; 
-  }
-
-  store.saveInputs({topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel});
-
-  setBtnBusy(btn, true);
-  isOperationInProgress = true;
-  blinkFields();
-  haptic.medium();
-
-  const stream = $("#stream");
-
-  // Remove placeholder if it exists
-  const placeholder = stream.querySelector('.history-placeholder');
-  if (placeholder) {
-    placeholder.remove();
-  }
-
-  const skel = skeletonCard();
-  stream.prepend(skel);
-
-  try {
-    // Используем двойную модель
-    const results = await generateDualModels(topic, format, audience, wantTitles, wantThumbs, count, clickbaitLevel);
-    
-    if (results.length === 0) {
-      throw new Error('No models responded successfully');
-    }
-    
-    // Объединяем результаты от Gemini
-    let combinedOptions = [];
-    let combinedTopPicks = [];
-    let audienceProfile = '';
-    
-    // Берем результат от Gemini
-    const geminiResult = results.find(r => r.source === 'Gemini');
-    if (geminiResult && geminiResult.data) {
-      const { data } = geminiResult;
-      
-      if (data.options) {
-        // Добавляем опции от Gemini
-        data.options.forEach((option, optIndex) => {
-          combinedOptions.push({
-            ...option,
-            source: 'Gemini',
-            originalIndex: optIndex
-          });
-        });
-      }
-      
-      if (data.topPicks) {
-        // Добавляем top picks от Gemini
-        data.topPicks.forEach(pick => {
-          combinedTopPicks.push({
-            index: pick.index,
-            source: 'Gemini'
-          });
-        });
-      }
-      
-      // Берем ЦА от Gemini
-      if (data.audienceProfile) {
-        audienceProfile = data.audienceProfile;
-      }
-    }
-    
-    // Создаем финальный результат
-    const finalOutput = {
-      audienceProfile,
-      options: combinedOptions,
-      topPicks: combinedTopPicks.slice(0, 2) // Берем только первые 2
-    };
-    
-    const session = { 
-      id: uid(), 
-      createdAt: nowStr(), 
-      input:{topic,format,audience}, 
-      view:{ wantTitles, wantThumbs, count }, 
-      output: finalOutput 
-    };
-    store.addSession(session);
-
-    // Показываем блок истории, если он был скрыт или показываем placeholder
-    const resultsPanel = stream.closest('.panel.results');
-    if (resultsPanel && (resultsPanel.style.display === 'none' || stream.querySelector('.history-placeholder'))) {
-      resultsPanel.style.display = '';
-      // Плавное появление
-      setTimeout(() => {
-        resultsPanel.style.opacity = '1';
-        resultsPanel.style.transform = 'translateY(0)';
-      }, 50);
-    }
-
-    const cardWrap = document.createElement('div'); 
-    cardWrap.innerHTML = sessionHTML(session, false); // Создаем без кнопки закрытия
-    const newSession = cardWrap.firstElementChild;
-    stream.replaceChild(newSession, skel);
-    
-    // Re-initialize everything for the new content
-    attachCopyHandlers(stream);
-    attachSessionControls(stream);
-    setup3DCards();
-    
-    // Добавляем кнопку закрытия после завершения генерации
-    setTimeout(() => {
-      const sessionHead = newSession.querySelector('.session-head');
-      if (sessionHead && !sessionHead.querySelector('.session-actions')) {
-        const closeButtonHTML = `
-          <div class="session-actions" style="opacity: 0; animation: fadeInActions 0.5s ease forwards;">
-            <button class="iconbtn close" title="${t.removeResult}" aria-label="${t.removeResult}">
-              <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
-            </button>
-          </div>`;
-        sessionHead.insertAdjacentHTML('beforeend', closeButtonHTML);
-        
-        // Re-attach controls for the new close button
-        attachSessionControls(newSession);
-      }
-    }, 800); // Задержка для появления кнопки после завершения генерации
-    
-    // Auto-expand the new card
-    setTimeout(() => {
-      const allSessions = [...stream.querySelectorAll('.session')];
-      allSessions.forEach(s => {
-        s.classList.add('collapsed');
-        s.classList.remove('expanded');
-        if (s !== newSession) {
-          s.classList.add('pushed-down');
-        }
-      });
-      newSession.classList.remove('collapsed', 'pushed-down');
-      newSession.classList.add('expanded');
-      
-      // Update stack indices after expansion
-      let stackIndex = 0;
-      allSessions.forEach(session => {
-        if (session.classList.contains('collapsed')) {
-          session.style.setProperty('--stack-index', stackIndex);
-          stackIndex++;
-        } else {
-          session.style.setProperty('--stack-index', 0);
-        }
-      });
-    }, 100);
-    
-    haptic.success();
-  } catch(err) {
-    const message = err?.message||'Unknown error';
-    skel.innerHTML = `<div class="session-head">
-        <button class="iconbtn sk-close" title="${t.dismiss}" aria-label="${t.dismiss}">
-          <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
-        </button>
-      </div>
-      <div class="skeleton" role="alert" style="border:2px solid #3e2c2c; background:#1a0f12; color:#ffc7c7">
-        <div><strong>${t.requestFailed}</strong> ${truncate(message,260)}</div>
-      </div>`;
-    attachSessionControls(skel);
-    haptic.error();
-  } finally {
-    setBtnBusy(btn, false);
-    isOperationInProgress = false;
-  }
+/* ===== SEND CONTROLS ===== */
+.send-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
 }
 
-/* ================= INIT ================= */
-// Определяем тип устройства
-function isMobileDevice() {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-         window.innerWidth <= 768;
+.button-group {
+  display: flex;
+  gap: 12px;
+  width: 100%;
 }
 
-function renderAll(){
-  const container = $("#stream"); 
-  const resultsPanel = container.closest('.panel.results');
-  const sessions = store.loadSessions();
-  
-  container.innerHTML = "";
-  
-  if (sessions.length === 0) {
-    if (isMobileDevice()) {
-      // На мобильных скрываем блок истории, если нет данных
-      if (resultsPanel) {
-        resultsPanel.style.opacity = '0';
-        resultsPanel.style.transform = 'translateY(-20px)';
-        setTimeout(() => {
-          resultsPanel.style.display = 'none';
-        }, 300);
-      }
-    } else {
-      // На ПК показываем placeholder
-      if (resultsPanel) {
-        resultsPanel.style.display = '';
-        resultsPanel.style.opacity = '1';
-        resultsPanel.style.transform = 'translateY(0)';
-        
-        // Добавляем placeholder
-        const placeholder = document.createElement('div');
-        placeholder.className = 'history-placeholder';
-        placeholder.innerHTML = `
-          <div class="placeholder-content">
-            <div class="placeholder-icon">📝</div>
-            <div class="placeholder-text">${t.historyPlaceholder}</div>
-          </div>
-        `;
-        container.appendChild(placeholder);
-      }
-    }
-  } else {
-    // Показываем блок истории и рендерим сессии
-    if (resultsPanel) {
-      resultsPanel.style.display = '';
-      // Небольшая задержка для плавного появления
-      setTimeout(() => {
-        resultsPanel.style.opacity = '1';
-        resultsPanel.style.transform = 'translateY(0)';
-      }, 50);
-    }
-    
-    sessions.forEach(s => {
-    const wrap = document.createElement("div"); 
-      wrap.innerHTML = sessionHTML(s, true); // Существующие сессии показываем с кнопкой
-    container.appendChild(wrap.firstElementChild);
-  });
-  attachCopyHandlers(container);
-  attachSessionControls(container);
-  setup3DCards();
+.btn-test {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e) !important;
+  border: 1px solid rgba(255, 107, 107, 0.3) !important;
+}
+
+.btn-test:hover {
+  background: linear-gradient(135deg, #ff5252, #ff7979) !important;
+  border-color: rgba(255, 107, 107, 0.5) !important;
+  box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3) !important;
+}
+
+.btn-test:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.chatgpt-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(134, 160, 255, 0.05);
+  border: 1px solid rgba(134, 160, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.chatgpt-check:hover {
+  background: rgba(134, 160, 255, 0.1);
+  border-color: rgba(134, 160, 255, 0.25);
+}
+
+.chatgpt-check input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--brand);
+  border-radius: 4px;
+  background: transparent;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.chatgpt-check input[type="checkbox"]:checked + .checkmark {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.chatgpt-check input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #0a0d14;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.check-label {
+  color: var(--text-weak);
+  font-size: 14px;
+  font-weight: 500;
+  user-select: none;
+}
+
+/* ===== SUPER ENHANCED BUTTON ===== */
+.btn{
+  --h: 56px; 
+  display:inline-flex; 
+  align-items:center; 
+  justify-content:center; 
+  gap:12px;
+  height:var(--h); 
+  width:100%; 
+  border-radius: calc(var(--h)/2);
+  border:2px solid rgba(255,255,255,.15); 
+  color:#0a0d14; 
+  font-weight:900; 
+  letter-spacing:.5px;
+  font-size: 17px;
+  background: linear-gradient(135deg, #86a0ff, #6ee7ff, #ff6ee7);
+  box-shadow: 
+    0 20px 40px rgba(134,160,255,.4), 
+    inset 0 2px 0 rgba(255,255,255,.6), 
+    0 0 40px rgba(110,231,255,.2);
+  cursor:pointer; 
+  user-select:none; 
+  position:relative; 
+  overflow:hidden;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn::before, .btn::after {
+  content: '';
+  position: absolute;
+  inset: -30px;
+  border-radius: inherit;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.3), transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+.btn::before { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+.btn::after { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.2, 1) infinite 1s; }
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.btn:hover{ 
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 25px 50px rgba(134,160,255,.5), 
+    inset 0 2px 0 rgba(255,255,255,.8), 
+    0 0 50px rgba(110,231,255,.3);
+}
+.btn:active{ 
+  transform: translateY(0) scale(0.96);
+  box-shadow: 
+    0 10px 20px rgba(134,160,255,.3), 
+    inset 0 1px 3px rgba(0,0,0,.2);
+}
+
+.btn.processing {
+  background: linear-gradient(270deg, #86a0ff, #6ee7ff, #ff6ee7, #86a0ff);
+  background-size: 400% 400%;
+  animation: gradient-shift 3s ease infinite;
+}
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.btn .spark{ 
+  width:20px; 
+  height:20px; 
+  fill:#0a0d14;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.8));
+  animation: spark-rotate 2s linear infinite;
+}
+@keyframes spark-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.btn .btn-text{ display:inline-flex; align-items:center; gap:6px }
+
+/* Ripple effect on click */
+.btn-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  transform: scale(0);
+  animation: btn-ripple-effect 0.6s ease-out;
+  pointer-events: none;
+}
+@keyframes btn-ripple-effect {
+  to { transform: scale(4); opacity: 0; }
+}
+
+.dots{ display:inline-block; width:28px; text-align:left }
+.dots::after{ content:""; display:inline-block; width:1ch; animation: dots 1.2s steps(3,end) infinite }
+@keyframes dots{ 0%{content:""} 33%{content:"."} 66%{content:".."} 100%{content:"..."} }
+
+/* ===== 3D SESSIONS ===== */
+#stream,
+#improvement-stream {
+  position: relative;
+  min-height: 200px;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  padding-bottom: 100px;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+.session{
+  padding:0;
+  border:2px solid rgba(255,255,255,.12);
+  border-radius:20px;
+  background: linear-gradient(135deg, #0f1420cc, #0b0f1acc);
+  margin:0 0 10px 0;
+  box-shadow: 0 20px 40px rgba(0,0,0,.4);
+  overflow:hidden;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  position: relative;
+  cursor: pointer;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* 3D Stacked effect when collapsed */
+.session.collapsed {
+  transform: rotateX(20deg) translateZ(calc(var(--stack-index, 0) * -50px)) translateY(calc(var(--stack-index, 0) * 30px));
+  opacity: calc(1 - var(--stack-index, 0) * 0.15);
+  margin-bottom: -60px;
+}
+
+.session.collapsed:hover {
+  transform: rotateX(20deg) translateZ(calc(var(--stack-index, 0) * -50px + 10px)) translateY(calc(var(--stack-index, 0) * 30px - 5px)) scale(1.02);
+}
+
+/* Expanded state */
+.session.expanded {
+  transform: rotateX(0) translateZ(0) translateY(0) !important;
+  opacity: 1 !important;
+  margin-bottom: 20px;
+  z-index: 100;
+}
+
+/* Other cards when one is expanded */
+.session.pushed-down {
+  position: absolute;
+  width: 100%;
+  max-width: 100%;
+  left: 0;
+  right: 0;
+  transform: translateY(50px) scale(0.9);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+@keyframes session-appear {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9) translateY(20px) rotateX(40deg);
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) translateY(0) rotateX(20deg);
   }
 }
 
-function bindUI(){
-  // Apply translations first
-  applyTranslations();
-  
-  // Start loading phrase rotation after translations
-  setTimeout(() => {
-    startLoadingPhraseRotation();
-  }, 100);
-  
-  // Initialize particles background
-  setTimeout(() => {
-    new ParticlesBackground();
-  }, 500);
-  
-  // Initialize pull to refresh
-  new PullToRefresh();
-  
-  // Hide loader
-  setTimeout(()=> {
-    const pl = $("#pageloader"); 
-    if(pl){ 
-      pl.classList.add('hidden');
-      haptic.light();
-    }
-    const app = $("#appRoot"); 
-    if(app){ app.removeAttribute('aria-hidden'); }
-  }, 2200);
+.session-head{
+  display:flex; 
+  align-items:center; 
+  justify-content:space-between; 
+  gap:10px; 
+  padding:10px;
+  background:linear-gradient(180deg,#0e1423,#0b1020);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
 
-  // Load saved inputs
-  const inputs = store.loadInputs();
-  if(inputs.topic) $("#topic").value=inputs.topic;
-  if(inputs.format) $("#format").value=inputs.format;
-  if(inputs.audience) $("#audience").value=inputs.audience;
-  if(typeof inputs.wantTitles==="boolean") $("#wantTitles").checked=inputs.wantTitles;
-  if(typeof inputs.wantThumbs==="boolean") $("#wantThumbs").checked=inputs.wantThumbs;
-  if(inputs.count) {
-    let savedCount = parseInt(inputs.count,10)||8;
-    savedCount = clamp(savedCount, 6, 16);
-    if (savedCount % 2 !== 0) {
-      savedCount = Math.round(savedCount / 2) * 2;
-    }
-    updateCountSlider(savedCount);
-  } else {
-    updateCountSlider(8); // Default value
+.session-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-weak);
+  padding: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.session-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--brand);
+}
+
+.session-time {
+  font-size: 11px;
+  color: var(--text-weak);
+}
+
+.session-draft-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 12px;
+}
+
+.draft-preview {
+  font-size: 12px;
+  color: var(--text-weak);
+  line-height: 1.4;
+}
+
+.draft-preview strong {
+  color: var(--brand-2);
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.session-actions {
+  display: flex;
+  gap: 10px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes fadeInActions {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
   }
-  
-  // Load clickbait level
-  if(inputs.clickbaitLevel) {
-    updateClickbaitSlider(inputs.clickbaitLevel);
-  }
-
-
-  // Count slider handlers
-  initCountSlider();
-
-  // Clear field buttons
-  $("#clearTopic").addEventListener("click", () => {
-    $("#topic").value = '';
-    $("#topic").focus();
-    haptic.light();
-  });
-  $("#clearFormat").addEventListener("click", () => {
-    $("#format").value = '';
-    $("#format").focus();
-    haptic.light();
-  });
-  $("#clearAudience").addEventListener("click", () => {
-    $("#audience").value = '';
-    $("#audience").focus();
-    haptic.light();
-  });
-
-  // Main button with ripple effect
-  const sendBtn = $("#send");
-  sendBtn.addEventListener("click", (e) => {
-    addRippleEffect(sendBtn, e);
-    generate();
-  });
-  sendBtn.addEventListener("touchstart", () => haptic.light());
-  
-  
-  // Enter key submit
-  document.addEventListener("keydown", (e)=>{ 
-    if(e.key==='Enter' && ['topic','format','audience'].includes(document.activeElement?.id)){ 
-      e.preventDefault(); 
-      generate(); 
-    } 
-  });
-
-  // Clear history
-  $("#clear-history").addEventListener("click", ()=>{
-    if(confirm(t.confirmClear)){
-      store.clearSessions();
-      store.saveInputs({}); // Also clear saved inputs
-      // Force clear all localStorage to ensure fresh start
-      localStorage.removeItem("tc_sessions_v7");
-      localStorage.removeItem("tc_inputs_v7");
-      renderAll();
-      toast("historyCleared");
-      haptic.success();
-    }
-  });
-  $("#clear-history").addEventListener("touchstart", () => haptic.light());
-
-  // Clear improvement history
-  $("#clear-improvement-history").addEventListener("click", ()=>{
-    if(confirm(t.confirmClear)){
-      store.clearImprovementSessions();
-      localStorage.removeItem("tc_improvement_sessions_v1");
-      loadImprovementHistory();
-      toast("historyCleared");
-      haptic.success();
-    }
-  });
-  $("#clear-improvement-history").addEventListener("touchstart", () => haptic.light());
-
-  // Checkbox ripple effects and validation
-  const titleCheck = $("#checkTitles");
-  const thumbCheck = $("#checkThumbs");
-  
-  function ensureAtLeastOneChecked(changedCheckbox) {
-    const titleChecked = $("#wantTitles").checked;
-    const thumbChecked = $("#wantThumbs").checked;
-    
-    if (!titleChecked && !thumbChecked) {
-      // Если оба отключены, включаем обратно измененный чекбокс
-      changedCheckbox.checked = true;
-      
-      // Обновляем визуальное состояние
-      if (changedCheckbox.id === 'wantTitles') {
-        titleCheck.classList.add('ripple', 'forced-check');
-        setTimeout(() => {
-          titleCheck.classList.remove('ripple', 'forced-check');
-        }, 600);
-      } else {
-        thumbCheck.classList.add('ripple', 'forced-check');
-        setTimeout(() => {
-          thumbCheck.classList.remove('ripple', 'forced-check');
-        }, 600);
-      }
-      
-      // Показываем уведомление
-      toast('atLeastOneComponent');
-      haptic.error();
-    }
-  }
-  
-  titleCheck.addEventListener("click", () => {
-    titleCheck.classList.add('ripple');
-      haptic.light();
-    setTimeout(() => titleCheck.classList.remove('ripple'), 600);
-    
-    // Проверяем после изменения состояния
-    setTimeout(() => {
-      ensureAtLeastOneChecked($("#wantTitles"));
-    }, 10);
-  });
-  
-  thumbCheck.addEventListener("click", () => {
-    thumbCheck.classList.add('ripple');
-    haptic.light();
-    setTimeout(() => thumbCheck.classList.remove('ripple'), 600);
-    
-    // Проверяем после изменения состояния
-    setTimeout(() => {
-      ensureAtLeastOneChecked($("#wantThumbs"));
-    }, 10);
-  });
-
-  // Initialize clickbait slider
-  initClickbaitSlider();
-
-
-  // Field mouse tracking
-  ["#topicField", "#formatField", "#audienceField"].forEach(id => {
-    const field = $(id);
-    if(field) trackMouseOnField(field);
-  });
-
-  // FAB button
-  $("#fabBtn").addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    haptic.medium();
-  });
-  $("#fabBtn").addEventListener("touchstart", () => haptic.light());
-
-  // FAB scroll visibility
-  let fabTimeout;
-  function updateFabVisibility() {
-    const fab = $("#fabBtn");
-    if (!fab) return;
-    
-    const scrollY = window.scrollY;
-    const showThreshold = 300; // Show after scrolling 300px down
-    
-    if (scrollY > showThreshold) {
-      fab.classList.add('visible');
-    } else {
-      fab.classList.remove('visible');
-    }
-  }
-
-  // Throttled scroll handler
-  function handleScroll() {
-    if (fabTimeout) clearTimeout(fabTimeout);
-    fabTimeout = setTimeout(updateFabVisibility, 10);
-  }
-
-  window.addEventListener('scroll', handleScroll, { passive: true });
-  updateFabVisibility(); // Initial check
-
-  // Brand click
-  $("#brand").addEventListener("click", () => {
-    haptic.light();
-  });
-
-  // Render all sessions
-  renderAll();
-  loadImprovementHistory();
-
-  // Reduce animations on low battery
-  if ('getBattery' in navigator) {
-    navigator.getBattery().then(battery => {
-      if(battery.level < 0.2) {
-        document.body.style.setProperty('--reduce-animations', '1');
-      }
-    });
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
-// Clickbait slider functions
-let currentClickbaitLevel = 3;
+.iconbtn{
+  width:40px; 
+  height:40px; 
+  border-radius:12px; 
+  display:grid; 
+  place-items:center;
+  background:linear-gradient(135deg, #0d1526, #1a2240); 
+  border:2px solid #223456; 
+  color:#cfe3ff; 
+  cursor:pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+}
+.iconbtn:hover{ 
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 8px 20px rgba(134,160,255,.3);
+}
+.iconbtn:active{ 
+  transform: translateY(0) scale(0.95);
+}
+.iconbtn svg{ width:18px; height:18px; fill:#cfe3ff }
 
-function getCurrentClickbaitLevel() {
-  return currentClickbaitLevel;
+.audience{
+  color:var(--text);
+  background:linear-gradient(135deg,#0f1528,#0c1222);
+  border-radius:16px;
+  padding:14px;
+  margin:14px;
+  font-size:15px;
+  position:relative;
+  border:2px solid #2a3a5f;
+  box-shadow: 0 0 0 3px rgba(134,160,255,.1);
+  line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: calc(100% - 28px);
+  box-sizing: border-box;
+}
+.audience::before{
+  content:attr(data-label); 
+  position:absolute; 
+  top:-12px; 
+  left:14px; 
+  font-size:12px; 
+  padding:4px 10px; 
+  border-radius:999px;
+  background:linear-gradient(90deg,#86a0ff33,#6ee7ff33); 
+  color:#eaf2ff; 
+  border:1px solid #3a4f87; 
+  font-weight:900; 
+  letter-spacing:.5px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.2);
 }
 
-function updateClickbaitSlider(level) {
-  currentClickbaitLevel = level;
-  const thumb = document.getElementById('clickbait-thumb');
-  const track = document.querySelector('.clickbait-slider-track');
-  if (!thumb || !track) return;
-  
-  const positions = { 1: 0, 2: 33.33, 3: 66.66, 4: 100 };
-  thumb.style.left = positions[level] + '%';
-  
-  // Update gradient animation classes
-  track.className = 'clickbait-slider-track';
-  thumb.className = 'clickbait-slider-thumb';
-  
-  // Add level-specific classes for gradient animation
-  track.classList.add(`level-${level}`);
-  thumb.classList.add(`level-${level}`);
-  
-  // Update display
-  const titleEl = document.querySelector('.clickbait-current-title');
-  const descEl = document.querySelector('.clickbait-current-desc');
-  if (titleEl && descEl) {
-    const titleKey = `clickbaitLevel${level}Title`;
-    const descKey = `clickbaitLevel${level}Desc`;
-    if (t[titleKey]) titleEl.innerHTML = t[titleKey];
-    if (t[descKey]) descEl.innerHTML = t[descKey];
+.list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding:0 14px 14px 14px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Collapse animation */
+.session.collapsed .audience, 
+.session.collapsed .list{
+  max-height:0; 
+  opacity:0; 
+  overflow:hidden; 
+  padding-top:0; 
+  padding-bottom:0; 
+  margin:0 14px; 
+  border-width:0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.session:not(.collapsed) .audience, 
+.session:not(.collapsed) .list{
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ===== ENHANCED ROWS ===== */
+.row{
+  position:relative;
+  display:block;
+  background:linear-gradient(135deg, #0b1221, #0f1526);
+  border:2px solid #1b2847;
+  border-radius:18px;
+  padding:16px 14px 14px 14px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 8px 20px rgba(0,0,0,.3);
+  animation: row-slide-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(var(--row-index, 0) * 0.05s);
+  transform-origin: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+@keyframes row-slide-in {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px) scale(0.95);
   }
-  
-  // Save to storage
-  store.saveInputs({ clickbaitLevel: level });
-  
-  // Haptic feedback
-  if (navigator.vibrate) navigator.vibrate(50);
-}
-
-function initClickbaitSlider() {
-  const thumb = document.getElementById('clickbait-thumb');
-  const track = document.querySelector('.clickbait-slider-track');
-  const labels = document.querySelectorAll('.clickbait-label');
-  
-  if (!thumb || !track) return;
-  
-  let isDragging = false;
-
-  // Click on track
-  track.addEventListener('click', (e) => {
-    const rect = track.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const percentage = (clickX / rect.width) * 100;
-    
-    let level;
-    if (percentage < 25) level = 1;
-    else if (percentage < 50) level = 2;
-    else if (percentage < 75) level = 3;
-    else level = 4;
-    
-    updateClickbaitSlider(level);
-  });
-
-  // Click on labels
-  labels.forEach(label => {
-    label.addEventListener('click', () => {
-      const level = parseInt(label.getAttribute('data-level'));
-      updateClickbaitSlider(level);
-      haptic.light();
-    });
-    
-    label.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const level = parseInt(label.getAttribute('data-level'));
-      updateClickbaitSlider(level);
-      haptic.light();
-    });
-  });
-
-  // Drag functionality
-  thumb.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    
-    const rect = track.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (mouseX / rect.width) * 100));
-    
-    let level;
-    if (percentage < 25) level = 1;
-    else if (percentage < 75) level = 2;
-    else level = 3;
-    
-    updateClickbaitSlider(level);
-  });
-
-  document.addEventListener('mouseup', () => {
-    isDragging = false;
-  });
-
-  // Touch support
-  thumb.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    e.preventDefault();
-    e.stopPropagation();
-    haptic.light();
-  });
-
-  track.addEventListener('touchstart', (e) => {
-    const rect = track.getBoundingClientRect();
-    const touchX = e.touches[0].clientX - rect.left;
-    const percentage = (touchX / rect.width) * 100;
-    
-    let level;
-    if (percentage < 25) level = 1;
-    else if (percentage < 50) level = 2;
-    else if (percentage < 75) level = 3;
-    else level = 4;
-    
-    updateClickbaitSlider(level);
-    haptic.light();
-  });
-
-  document.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const rect = track.getBoundingClientRect();
-    const touchX = e.touches[0].clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (touchX / rect.width) * 100));
-    
-    let level;
-    if (percentage < 25) level = 1;
-    else if (percentage < 50) level = 2;
-    else if (percentage < 75) level = 3;
-    else level = 4;
-    
-    updateClickbaitSlider(level);
-  });
-
-  document.addEventListener('touchend', (e) => {
-    if (isDragging) {
-    isDragging = false;
-      haptic.light();
-    }
-  });
-  
-  // Initialize with level 3 (maximum)
-  updateClickbaitSlider(3);
-}
-
-// Count slider functions
-function initCountSlider() {
-  const thumb = document.getElementById('count-thumb');
-  const track = document.querySelector('.count-slider-track');
-  const labels = document.querySelectorAll('.count-label-item');
-  
-  if (!thumb || !track) return;
-  
-  let isDragging = false;
-
-  // Click on track
-  track.addEventListener('click', (e) => {
-    const rect = track.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const percentage = (clickX / rect.width) * 100;
-    
-    // Convert percentage to value (6-16 range, even numbers only)
-    const rawValue = 6 + (percentage / 100) * 10;
-    const value = Math.round(rawValue / 2) * 2; // Round to nearest even number
-    const clampedValue = clamp(value, 6, 16);
-    
-    updateCountSlider(clampedValue);
-  });
-
-  // Click on labels
-  labels.forEach(label => {
-    label.addEventListener('click', () => {
-      const value = parseInt(label.getAttribute('data-value'));
-      updateCountSlider(value);
-      haptic.light();
-    });
-    
-    label.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const value = parseInt(label.getAttribute('data-value'));
-      updateCountSlider(value);
-      haptic.light();
-    });
-  });
-
-  // Drag functionality
-  thumb.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    
-    const rect = track.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (mouseX / rect.width) * 100));
-    
-    // Convert percentage to value (6-16 range, even numbers only)
-    const rawValue = 6 + (percentage / 100) * 10;
-    const value = Math.round(rawValue / 2) * 2; // Round to nearest even number
-    const clampedValue = clamp(value, 6, 16);
-    
-    updateCountSlider(clampedValue);
-  });
-
-  document.addEventListener('mouseup', () => {
-    isDragging = false;
-  });
-
-  // Touch support
-  thumb.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    e.preventDefault();
-    e.stopPropagation();
-    haptic.light();
-  });
-
-  track.addEventListener('touchstart', (e) => {
-    const rect = track.getBoundingClientRect();
-    const touchX = e.touches[0].clientX - rect.left;
-    const percentage = (touchX / rect.width) * 100;
-    
-    // Convert percentage to value (6-16 range, even numbers only)
-    const rawValue = 6 + (percentage / 100) * 10;
-    const value = Math.round(rawValue / 2) * 2; // Round to nearest even number
-    const clampedValue = clamp(value, 6, 16);
-    
-    updateCountSlider(clampedValue);
-    haptic.light();
-  });
-
-  document.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const rect = track.getBoundingClientRect();
-    const touchX = e.touches[0].clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (touchX / rect.width) * 100));
-    
-    // Convert percentage to value (6-16 range, even numbers only)
-    const rawValue = 6 + (percentage / 100) * 10;
-    const value = Math.round(rawValue / 2) * 2; // Round to nearest even number
-    const clampedValue = clamp(value, 6, 16);
-    
-    updateCountSlider(clampedValue);
-  });
-
-  document.addEventListener('touchend', (e) => {
-    if (isDragging) {
-      isDragging = false;
-      haptic.light();
-    }
-  });
-  
-  // Initialize with default value
-  updateCountSlider(8);
-}
-
-/* ================= IMPROVEMENT SYSTEM PROMPT ================= */
-const IMPROVEMENT_SYSTEM_PROMPT = `You are an expert in viral YouTube optimization with deep understanding of click psychology, linguistic refinement, and audience adaptation (hundreds of A/B tests).
-
-Goal: take the user's draft title/thumbnail and improve it while preserving their original style and intent. Focus on grammar, psychology, readability, and audience adaptation.
-
-Input data
-
-DRAFT_TITLE: {{draft_title}}
-DRAFT_THUMBNAIL: {{draft_thumbnail}}
-VIDEO_TOPIC: {{topic}} ← optional context for better understanding
-FORMAT: {{format}} ← optional context
-AUDIENCE: {{audience}} ← optional context
-MODE: {{mode}} ← "improve_title" | "improve_thumbnail" | "improve_both"
-GENERATE_THUMBNAIL_FOR_TITLE: {{boolean}} ← if true, create thumbnail text for each improved title
-N: 3 ← always output exactly 3 improved versions
-
-Language & Locale (priority)
-
-The language of the entire output = the language of the draft input.
-Preserve the original language and tone of the user's draft.
-If the draft is in Russian, default region = UA, unless context suggests otherwise.
-Always adapt to the local format of numbers, rules, etc. (e.g., RU/UA → 0,1%; EN/ES → 0.1%).
-
-Core Improvement Principles
-
-PRESERVE USER'S STYLE AND INTENT
-- Maintain the original tone (casual/professional/energetic/dry)
-- Keep the clickbait level of the original draft
-- Preserve key phrases and unique voice elements
-- Don't change entertainment content to professional tone or vice versa
-- If user used emojis → keep similar emoji density (but improve placement)
-- If user avoided emojis → don't add them
-
-GRAMMAR & LANGUAGE
-- Fix spelling errors
-- Correct punctuation
-- Improve sentence structure without changing meaning
-- Remove redundant words
-- Fix awkward phrasing
-- Ensure proper capitalization (but respect intentional CAPS usage)
-
-PSYCHOLOGICAL OPTIMIZATION
-- Strengthen existing psychological triggers (don't add new unrelated ones)
-- Improve hook placement (strongest element in first ~40 characters for titles)
-- Enhance emotional impact without changing the emotion type
-- Add specificity where vague (numbers, names, concrete details)
-- Remove weak filler words
-- Strengthen verbs and action words
-
-READABILITY & CLARITY
-- Simplify complex/awkward constructions
-- Replace overly complex words with clearer alternatives (but don't oversimplify)
-- Ensure the message is immediately clear
-- Remove ambiguity
-- Improve rhythm and flow
-
-AUDIENCE ADAPTATION
-- If AUDIENCE specified → adjust vocabulary complexity to match
-  * Kids/teens → simpler language, more energy
-  * Professionals → clear but sophisticated
-  * General → balanced, accessible
-- Replace jargon with understandable terms (unless audience is specialized)
-- Adjust cultural references if needed
-- Maintain accessibility without dumbing down
-
-LENGTH OPTIMIZATION
-- Titles: aim for 40-80 characters (ideal: 50-65)
-- Thumbnail text: 2-5 words (max 7 for complex topics)
-- If draft is too long → condense without losing meaning
-- If draft is too short → add specificity/context
-
-Title Improvement Rules
-
-STRUCTURE:
-- Strongest hook in first ~40 characters
-- One clear idea only
-- Strong verb + explicit agent + specificity
-- No fabrications or exaggerations beyond original intent
-- Remove generic phrases ("you won't believe," "amazing," "incredible" unless user specifically used them)
-
-SPECIFICITY:
-- Vague numbers → precise numbers ("many" → "372")
-- Generic time → specific time ("long time" → "731 days")
-- Abstract → concrete ("improved a lot" → "×3 growth")
-- General → specific ("in Europe" → "in Germany")
-
-PSYCHOLOGICAL DEPTH:
-- Use original psychological triggers as base
-- Strengthen them with proven patterns
-- Add micro-details for credibility
-- Enhance emotional resonance
-
-EMOJI USAGE (titles only):
-- If draft has 0 emojis → add maximum 1-2 (and only if it genuinely helps)
-- If draft has emojis → optimize placement and relevance
-- Remove excessive or irrelevant emojis
-- Never use emojis in thumbnail text
-
-Thumbnail Text Improvement Rules
-
-CORE RULES:
-- 2-5 words maximum (exception: up to 7 for complex technical topics)
-- Must complement title, NOT duplicate it
-- No colons (:), no emojis, no punctuation except occasional "!", "?" or "%"
-- Must be readable on 320×180px thumbnail
-- High contrast with title (if title asks question → thumbnail states fact)
-
-STYLE:
-- Sharp, punchy, immediate impact
-- Single concept or number
-- CAPS allowed for 1-2 words max (if impactful)
-- Preserve the tone of original draft
-
-PSYCHOLOGICAL FUNCTION:
-- Add urgency, scale, or stakes
-- Provide missing context
-- Enhance curiosity
-- Create contrast or reinforcement
-
-Output Contract (STRICTLY JSON, no extra keys)
-
-FOR MODE = "improve_title" OR "improve_both":
-{
-  "analysis": {
-    "detectedStyle": "brief analysis of user's original style",
-    "identifiedTriggers": "psychological triggers present in the draft",
-    "improvementFocus": "what was improved and why"
-  },
-  "improvedTitles": [
-    {
-      "title": "STRING",
-      "thumbnailText": "STRING or null",
-      "changes": "brief explanation of key improvements",
-      "strengthenedTriggers": "triggers that were enhanced"
-    },
-    {
-      "title": "STRING",
-      "thumbnailText": "STRING or null",
-      "changes": "brief explanation of key improvements",
-      "strengthenedTriggers": "triggers that were enhanced"
-    },
-    {
-      "title": "STRING",
-      "thumbnailText": "STRING or null",
-      "changes": "brief explanation of key improvements",
-      "strengthenedTriggers": "triggers that were enhanced"
-    }
-  ]
-}
-
-FOR MODE = "improve_thumbnail":
-{
-  "analysis": {
-    "detectedStyle": "brief analysis of user's original style",
-    "identifiedPurpose": "what the thumbnail text is trying to achieve",
-    "improvementFocus": "what was improved and why"
-  },
-  "improvedThumbnails": [
-    {
-      "text": "STRING",
-      "changes": "brief explanation of key improvements",
-      "psychologicalFunction": "how this version enhances the title"
-    },
-    {
-      "text": "STRING",
-      "changes": "brief explanation of key improvements",
-      "psychologicalFunction": "how this version enhances the title"
-    },
-    {
-      "text": "STRING",
-      "changes": "brief explanation of key improvements",
-      "psychologicalFunction": "how this version enhances the title"
-    }
-  ]
-}
-
-CRITICAL RULES:
-- NEVER output in markdown format
-- NEVER add explanations outside JSON
-- ONLY valid JSON
-- All text fields in the same language as the input draft
-- "changes" and other explanation fields should be brief (1-2 sentences max)
-- If GENERATE_THUMBNAIL_FOR_TITLE is false → thumbnailText = null for all improved titles
-- Each improved version must be meaningfully different from others
-- All improvements must preserve the user's original intent and style
-`;
-
-/* ================= IMPROVEMENT FEATURE ================= */
-function renderImprovementSession(session) {
-  const stream = document.getElementById('improvement-stream');
-  if (!stream) {
-    console.error('improvement-stream not found!');
-    return;
+  to { 
+    opacity: 1; 
+    transform: translateX(0) scale(1);
   }
-
-  const { id, timestamp, draftTitle, draftThumbnail, mode, generateThumbnail, result } = session;
-  const data = result;
-
-  console.log('Rendering session with data:', data);
-
-  // Create session title
-  let sessionTitle = mode === 'improve_title' ? (t.improvedTitle || 'Improved Title') :
-                     mode === 'improve_thumbnail' ? (t.improvedThumbnail || 'Improved Thumbnail') :
-                     (t.improved || 'Improved');
-
-  // Add draft info to title
-  if (draftTitle) {
-    sessionTitle += ` • ${truncate(draftTitle, 40)}`;
-  }
-
-  // Build list HTML using same structure as create
-  let listHTML = '';
-
-  // Render improved titles
-  if (data.improvedTitles && Array.isArray(data.improvedTitles) && data.improvedTitles.length > 0) {
-    data.improvedTitles.forEach((item, index) => {
-      let metaHTML = '';
-      if (item.changes || item.strengthenedTriggers) {
-        metaHTML = '<div class="meta-info" style="margin-top: 8px; font-size: 12px; color: var(--text-weak); line-height: 1.5;">';
-        if (item.changes) {
-          metaHTML += `<div style="margin-bottom: 4px;"><strong style="color: var(--brand-2);">${t.improved || 'Improved'}:</strong> ${item.changes}</div>`;
-        }
-        if (item.strengthenedTriggers) {
-          metaHTML += `<div style="opacity: 0.8;"><strong style="color: var(--brand-2);">${t.triggers || 'Triggers'}:</strong> ${item.strengthenedTriggers}</div>`;
-        }
-        metaHTML += '</div>';
-      }
-
-      listHTML += `
-        <div class="row" style="--row-index: ${index};">
-          <div class="txt" tabindex="0" role="button" aria-label="Copy title">${item.title}</div>
-          ${item.thumbnailText ? `
-            <div class="txt thumb" tabindex="0" role="button" aria-label="Copy thumbnail text" style="margin-top: 8px;">${item.thumbnailText}</div>
-          ` : ''}
-          ${metaHTML}
-        </div>
-      `;
-    });
-  }
-
-  // Render improved thumbnails
-  if (data.improvedThumbnails && Array.isArray(data.improvedThumbnails) && data.improvedThumbnails.length > 0) {
-    data.improvedThumbnails.forEach((item, index) => {
-      let metaHTML = '';
-      if (item.changes || item.psychologicalFunction) {
-        metaHTML = '<div class="meta-info" style="margin-top: 8px; font-size: 12px; color: var(--text-weak); line-height: 1.5;">';
-        if (item.changes) {
-          metaHTML += `<div style="margin-bottom: 4px;"><strong style="color: var(--brand-2);">${t.improved || 'Improved'}:</strong> ${item.changes}</div>`;
-        }
-        if (item.psychologicalFunction) {
-          metaHTML += `<div style="opacity: 0.8;"><strong style="color: var(--brand-2);">${t.psychology || 'Psychology'}:</strong> ${item.psychologicalFunction}</div>`;
-        }
-        metaHTML += '</div>';
-      }
-
-      listHTML += `
-        <div class="row" style="--row-index: ${index};">
-          <div class="txt thumb" tabindex="0" role="button" aria-label="Copy thumbnail text">${item.text}</div>
-          ${metaHTML}
-        </div>
-      `;
-    });
-  }
-
-  // Create draft info audience-style block
-  let draftInfoHTML = '';
-  if (draftTitle || draftThumbnail) {
-    draftInfoHTML = `<div class="audience" data-label="${t.original || 'Original Draft'}">`;
-    if (draftTitle) draftInfoHTML += `<div><strong>${t.title || 'Title'}:</strong> ${draftTitle}</div>`;
-    if (draftThumbnail) draftInfoHTML += `<div><strong>${t.thumbnail || 'Thumbnail'}:</strong> ${draftThumbnail}</div>`;
-    draftInfoHTML += `</div>`;
-  }
-
-  const card = document.createElement('article');
-  card.className = 'session collapsed';
-  card.setAttribute('role', 'region');
-  card.setAttribute('aria-label', 'Improvement session');
-  card.dataset.id = id;
-  card.innerHTML = `
-    <div class="session-head">
-      <span class="session-title">${sessionTitle}</span>
-    </div>
-    ${draftInfoHTML}
-    <div class="list">${listHTML}</div>
-  `;
-
-  console.log('Prepending card to stream');
-  stream.prepend(card);
-
-  attachCopyHandlers(card);
-  attachSessionControls(card);
-
-  console.log('Card rendered successfully');
+}
+.row:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0,0,0,.4);
 }
 
-function loadImprovementHistory() {
-  const sessions = store.loadImprovementSessions();
-  const stream = document.getElementById('improvement-stream');
-  const resultsPanel = document.querySelector('.improvement-results-panel');
+.row.top{
+  border-color: transparent;
+  background-image:
+    linear-gradient(#0b1221,#0b1221),
+    radial-gradient(200px 80px at 20px 20px, #ffe38d70, transparent 60%),
+    linear-gradient(120deg, #ffec9a, #ffd86a, #ffb347);
+  background-origin: padding-box, border-box, border-box; 
+  background-clip: padding-box, padding-box, border-box;
+  box-shadow: 
+    0 0 0 4px rgba(255,231,150,.2), 
+    0 15px 35px rgba(255,231,150,.15),
+    inset 0 1px 0 rgba(255,255,255,.2);
+  animation: top-glow 2s ease-in-out infinite alternate;
+}
+@keyframes top-glow {
+  from { box-shadow: 0 0 0 4px rgba(255,231,150,.2), 0 15px 35px rgba(255,231,150,.15); }
+  to { box-shadow: 0 0 0 6px rgba(255,231,150,.3), 0 20px 45px rgba(255,231,150,.25); }
+}
 
-  if (!stream) return;
+.badge{
+  position:absolute; 
+  top:10px; 
+  left:10px;
+  min-width:32px; 
+  height:32px; 
+  border-radius:10px; 
+  display:flex; 
+  align-items:center;
+  justify-content:center;
+  font-weight:900; 
+  color:#cfe3ff;
+  line-height:1; 
+  background:linear-gradient(135deg,#233153,#121b2f); 
+  border:2px solid #2a3a5f;
+  box-shadow:0 6px 15px rgba(0,0,0,.3);
+  font-size: 14px;
+}
 
-  stream.innerHTML = '';
+/* Source badges removed - no model indicators */
+.star{ 
+  position:absolute; 
+  top:10px; 
+  left:48px; 
+  font-size:16px; 
+  color:#ffd76a;
+  animation: star-pulse 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(255,215,106,.6));
+}
+@keyframes star-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(10deg); }
+}
 
-  if (sessions.length === 0) {
-    if (isMobileDevice()) {
-      // На мобильных скрываем блок истории, если нет данных
-      if (resultsPanel) {
-        resultsPanel.style.opacity = '0';
-        resultsPanel.style.transform = 'translateY(-20px)';
-        setTimeout(() => {
-          resultsPanel.style.display = 'none';
-        }, 300);
-      }
-    } else {
-      // На ПК показываем placeholder
-      if (resultsPanel) {
-        resultsPanel.style.display = '';
-        resultsPanel.style.opacity = '1';
-        resultsPanel.style.transform = 'translateY(0)';
-      }
+.pair{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:18px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.line{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:linear-gradient(135deg, #0e172a, #111b30);
+  border:1px dashed #203156;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.line:hover {
+  border-style: solid;
+  background:linear-gradient(135deg, #111b30, #141e35);
+}
+.label{ 
+  font-size:12px; 
+  color:#a9b7d0; 
+  letter-spacing:.3px; 
+  font-weight:800;
+  text-transform: uppercase;
+}
+.txt{
+  color:var(--text);
+  word-break:break-word;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+  font-size:15px;
+  line-height:1.5;
+  cursor:pointer;
+  border-radius:12px;
+  padding:10px 12px;
+  position:relative;
+  outline:none;
+  background: linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,.08), rgba(255,255,255,.03));
+  background-size: 200% 100%;
+  animation: subtle-shimmer 3s linear infinite;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+@keyframes subtle-shimmer { 
+  to { background-position: -200% 0; }
+}
+.txt:hover {
+  transform: translateX(4px);
+  box-shadow: 0 0 0 2px rgba(110,231,255,.3);
+  background: linear-gradient(90deg, rgba(134,160,255,.1), rgba(110,231,255,.1));
+}
+.txt:active{ 
+  transform: scale(0.98);
+}
 
-      const placeholder = document.createElement('div');
-      placeholder.className = 'history-placeholder';
-      placeholder.innerHTML = `
-        <div class="placeholder-content">
-          <div class="placeholder-icon">✨</div>
-          <div class="placeholder-text">${t.historyPlaceholder || 'Results will appear here after improvement'}</div>
-        </div>
-      `;
-      stream.appendChild(placeholder);
-    }
-  } else {
-    // Показываем панель результатов
-    if (resultsPanel) {
-      resultsPanel.style.display = '';
-      resultsPanel.style.opacity = '1';
-      resultsPanel.style.transform = 'translateY(0)';
-    }
+/* Copy animation */
+.txt.copied {
+  animation: copy-success 0.5s ease;
+}
+@keyframes copy-success {
+  0% { background: linear-gradient(90deg, rgba(103,243,162,.3), rgba(103,243,162,.2)); }
+  100% { background: linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,.08)); }
+}
 
-    sessions.forEach(session => {
-      renderImprovementSession(session);
-    });
+.tools{ 
+  display:flex; 
+  gap:10px; 
+  flex-wrap:wrap; 
+  justify-content:flex-end; 
+  margin:8px 0 12px;
+}
+.chip{ 
+  height:40px; 
+  padding:0 16px; 
+  border-radius:20px; 
+  background:linear-gradient(135deg, #0e1627, #1a2240); 
+  border:2px solid #2a3a5f; 
+  color:#d6e4ff; 
+  font-weight:800;
+  font-size: 14px;
+  cursor:pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+.chip:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(134,160,255,.3);
+}
+.chip:active{ 
+  transform: translateY(0) scale(0.95);
+}
+.chip.danger{ 
+  border-color:#5f2a2a; 
+  background:linear-gradient(135deg, #1a0f12, #2a1418); 
+  color:#ffc7c7;
+}
 
-    setupImprovement3DCards();
+/* ===== ENHANCED TOAST ===== */
+.toast{ 
+  position:fixed; 
+  left:50%; 
+  bottom:calc(20px + var(--safe-bottom)); 
+  transform:translateX(-50%) translateY(100px); 
+  background:linear-gradient(135deg,#20df92,#6ee7ff); 
+  color:#03141a; 
+  font-weight:900; 
+  font-size:14px; 
+  padding:14px 24px; 
+  border-radius:999px; 
+  box-shadow: 
+    0 20px 40px rgba(110,231,255,.3),
+    0 0 60px rgba(32,223,146,.2); 
+  opacity:0; 
+  pointer-events:none; 
+  z-index:9999;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.toast.show{ 
+  opacity:1; 
+  transform:translateX(-50%) translateY(0);
+}
+
+/* ===== FLOATING ACTION BUTTON ===== */
+.fab {
+  position: fixed;
+  bottom: calc(24px + var(--safe-bottom));
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #86a0ff, #6ee7ff);
+  box-shadow: 
+    0 10px 30px rgba(134,160,255,.4),
+    0 0 40px rgba(110,231,255,.2);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.8);
+}
+
+.fab.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+@keyframes fab-appear {
+  from { 
+    opacity: 0; 
+    transform: scale(0) rotate(-180deg);
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) rotate(0);
+  }
+}
+.fab:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 
+    0 15px 40px rgba(134,160,255,.5),
+    0 0 50px rgba(110,231,255,.3);
+}
+.fab:active {
+  transform: scale(0.95);
+}
+.fab svg {
+  width: 28px;
+  height: 28px;
+  fill: #0a0d14;
+}
+
+/* Pulse animation for FAB */
+.fab::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(134,160,255,.4), transparent);
+  animation: fab-pulse 2s ease-in-out infinite;
+}
+@keyframes fab-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0; }
+}
+
+/* ===== SKELETON LOADING ===== */
+.skeleton{ 
+  border:2px dashed #263a6b; 
+  background:linear-gradient(135deg, #0b1020, #0f1424); 
+  border-radius:16px; 
+  padding:16px; 
+  position:relative;
+}
+.pulse{ 
+  height:14px; 
+  margin:10px 0; 
+  border-radius:8px; 
+  background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.15), rgba(255,255,255,.05)); 
+  background-size:200% 100%; 
+  animation: wave-loading 1.5s linear infinite;
+}
+@keyframes wave-loading { 
+  to { background-position: -200% 0; }
+}
+.sk-close{ position:absolute; right:10px; top:10px }
+
+/* ===== UTILITIES ===== */
+.sr-only{ 
+  position:absolute; 
+  width:1px; 
+  height:1px; 
+  overflow:hidden; 
+  clip:rect(0 0 0 0); 
+  white-space:nowrap; 
+  clip-path: inset(50%);
+}
+:focus-visible{ 
+  outline: 3px solid color-mix(in srgb, var(--brand) 50%, transparent); 
+  outline-offset:3px;
+}
+
+/* ===== SWIPE INDICATOR ===== */
+.swipe-hint {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.3;
+  animation: swipe-hint 2s ease-in-out infinite;
+}
+@keyframes swipe-hint {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(-10px); }
+}
+
+/* ===== REDUCE MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-function bindImprovementFeature() {
-  const draftTitleField = document.getElementById('draftTitle');
-  const draftThumbnailField = document.getElementById('draftThumbnail');
-  const clearDraftTitle = document.getElementById('clearDraftTitle');
-  const clearDraftThumbnail = document.getElementById('clearDraftThumbnail');
-  const generateThumbnailCheck = document.getElementById('checkGenerateThumbnail');
-  const generateThumbnailInput = document.getElementById('generateThumbnailForTitle');
-  const improveBtn = document.getElementById('improveBtn');
-
-  if (!draftTitleField || !draftThumbnailField || !improveBtn) return;
-
-  // Track mouse movement for field effects
-  trackMouseOnField(document.getElementById('draftTitleField'));
-  trackMouseOnField(document.getElementById('draftThumbnailField'));
-
-  // Clear button handlers
-  clearDraftTitle.addEventListener('click', () => {
-    draftTitleField.value = '';
-    draftTitleField.focus();
-    updateImprovementUI();
-    haptic.light();
-  });
-
-  clearDraftThumbnail.addEventListener('click', () => {
-    draftThumbnailField.value = '';
-    draftThumbnailField.focus();
-    updateImprovementUI();
-    haptic.light();
-  });
-
-  // Update UI based on field state
-  function updateImprovementUI() {
-    const hasTitleDraft = draftTitleField.value.trim().length >= 3;
-    const hasThumbnailDraft = draftThumbnailField.value.trim().length >= 3;
-
-    // Show checkbox with animation only when title is entered and thumbnail is empty
-    if (hasTitleDraft && !hasThumbnailDraft) {
-      generateThumbnailCheck.classList.add('visible');
-    } else {
-      generateThumbnailCheck.classList.remove('visible');
-      generateThumbnailInput.checked = false;
-    }
-
-    // Enable button if at least one field has valid input
-    improveBtn.disabled = !(hasTitleDraft || hasThumbnailDraft);
-  }
-
-  // Listen to input changes
-  draftTitleField.addEventListener('input', updateImprovementUI);
-  draftThumbnailField.addEventListener('input', updateImprovementUI);
-
-  // Improve button handler
-  improveBtn.addEventListener('click', async () => {
-    // Check if another operation is in progress
-    if(isOperationInProgress) {
-      toast('pleaseWait');
-      haptic.error();
-      return;
-    }
-
-    const draftTitle = draftTitleField.value.trim();
-    const draftThumbnail = draftThumbnailField.value.trim();
-    const generateThumbnail = generateThumbnailInput.checked;
-
-    // Validate
-    if (draftTitle.length < 3 && draftThumbnail.length < 3) {
-      showToast(t.improvementMinLength || 'Enter at least 3 characters');
-      return;
-    }
-
-    // Determine mode
-    let mode = 'improve_title';
-    if (draftTitle && draftThumbnail) {
-      mode = 'improve_both';
-    } else if (draftThumbnail && !draftTitle) {
-      mode = 'improve_thumbnail';
-    }
-
-    // Get context from main inputs (optional)
-    const topic = document.getElementById('topic')?.value?.trim() || '';
-    const format = document.getElementById('format')?.value?.trim() || '';
-    const audience = document.getElementById('audience')?.value?.trim() || '';
-
-    // Show loading state
-    setImproveBtnBusy(improveBtn, true);
-    isOperationInProgress = true;
-
-    haptic.medium();
-
-    const stream = document.getElementById('improvement-stream');
-    const skel = skeletonCard();
-    stream.prepend(skel);
-
-    try {
-      const result = await callImprovementAPI({
-        mode,
-        draftTitle,
-        draftThumbnail,
-        generateThumbnail,
-        topic,
-        format,
-        audience
-      });
-
-      console.log('Improvement result:', result);
-
-      // Remove skeleton loader
-      skel.remove();
-
-      // Clear loading state
-      const resultsPanel = document.querySelector('.improvement-results-panel');
-
-      // Remove placeholder if it exists
-      const placeholder = stream?.querySelector('.history-placeholder');
-      if (placeholder) {
-        placeholder.remove();
-      }
-
-      // Show results panel
-      if (resultsPanel) {
-        resultsPanel.style.display = '';
-        resultsPanel.style.opacity = '1';
-        resultsPanel.style.transform = 'translateY(0)';
-      }
-
-      // Create session object
-      const session = {
-        id: uid(),
-        timestamp: Date.now(),
-        draftTitle,
-        draftThumbnail,
-        mode,
-        generateThumbnail,
-        result
-      };
-
-      // Save to history
-      console.log('Saving improvement session:', session);
-      store.addImprovementSession(session);
-
-      // Render as card in stream
-      console.log('Rendering improvement session');
-      renderImprovementSession(session);
-
-      // Setup 3D cards and auto-expand the new one
-      setupImprovement3DCards();
-
-      // Auto-expand the newest card and push down others
-      setTimeout(() => {
-        const stream = document.getElementById('improvement-stream');
-        const newestCard = stream?.querySelector('.session');
-        const allSessions = [...stream.querySelectorAll('.session')];
-
-        if (newestCard) {
-          // Collapse all and push down all except newest
-          allSessions.forEach(s => {
-            s.classList.remove('expanded');
-            s.classList.add('collapsed');
-            if (s !== newestCard) {
-              s.classList.add('pushed-down');
-            }
-          });
-
-          // Expand the newest card
-          newestCard.classList.remove('collapsed', 'pushed-down');
-          newestCard.classList.add('expanded');
-        }
-      }, 100);
-
-      haptic.success();
-    } catch (error) {
-      console.error('Improvement error:', error);
-      console.error('Error stack:', error.stack);
-      console.error('Error message:', error.message);
-
-      // Remove skeleton loader on error
-      skel.remove();
-
-      // Show detailed error in alert for debugging
-      alert(`Improvement error: ${error.message}\n\nCheck console for details.`);
-
-      toast('improvementError');
-      haptic.error();
-    } finally {
-      setImproveBtnBusy(improveBtn, false);
-      isOperationInProgress = false;
-      updateImprovementUI();
-    }
-  });
-
-  // Initialize
-  updateImprovementUI();
+/* ===== PULL TO REFRESH ===== */
+.pull-to-refresh {
+  position: fixed;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #86a0ff, #6ee7ff);
+  display: grid;
+  place-items: center;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 9999;
+}
+.pull-to-refresh.visible {
+  top: 20px;
+}
+.pull-to-refresh.refreshing {
+  animation: ptr-spin 1s linear infinite;
+}
+@keyframes ptr-spin {
+  from { transform: translateX(-50%) rotate(0deg); }
+  to { transform: translateX(-50%) rotate(360deg); }
 }
 
-async function callImprovementAPI(params) {
-  const { mode, draftTitle, draftThumbnail, generateThumbnail, topic, format, audience } = params;
+/* ===== MOBILE RESPONSIVE FIXES ===== */
+@media (max-width: 959px) {
+  /* Ensure all containers stay within viewport */
+  .app {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
 
-  // Build user prompt
-  let userPrompt = `MODE: ${mode}\n`;
-  if (draftTitle) userPrompt += `DRAFT_TITLE: ${draftTitle}\n`;
-  if (draftThumbnail) userPrompt += `DRAFT_THUMBNAIL: ${draftThumbnail}\n`;
-  if (topic) userPrompt += `VIDEO_TOPIC: ${topic}\n`;
-  if (format) userPrompt += `FORMAT: ${format}\n`;
-  if (audience) userPrompt += `AUDIENCE: ${audience}\n`;
-  userPrompt += `GENERATE_THUMBNAIL_FOR_TITLE: ${generateThumbnail}\n`;
-  userPrompt += `\nPlease analyze and improve according to the instructions. Output ONLY valid JSON.`;
+  .grid {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
 
-  const fullPrompt = IMPROVEMENT_SYSTEM_PROMPT + '\n\n' + userPrompt;
+  .panel {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
 
-  // Try Gemini first
-  try {
-    const geminiResult = await callGemini({
-      contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
-      generationConfig: {
-        temperature: 0.85,
-        topP: 0.92,
-        maxOutputTokens: 4096,
-        responseMimeType: "application/json"
-      }
-    });
+  /* History cards - prevent overflow */
+  .session {
+    margin-left: 0;
+    margin-right: 0;
+  }
 
-    // Parse Gemini response
-    const first = (geminiResult.candidates || [])[0];
-    const text = joinParts(first?.content?.parts);
+  /* Ensure text breaks properly on small screens */
+  .session-title {
+    max-width: calc(100% - 60px);
+  }
 
-    console.log('Gemini raw response:', text);
+  /* Adjust padding for narrow screens */
+  .row {
+    padding: 12px 10px 10px 10px;
+  }
 
-    const parsed = safeParseJSON(text);
+  .list {
+    padding: 0 10px 10px 10px;
+  }
 
-    if (!parsed) {
-      console.error('Failed to parse Gemini response. Raw text:', text);
-      throw new Error('Failed to parse Gemini response');
-    }
-
-    console.log('Gemini parsed data:', parsed);
-    return parsed;
-  } catch (geminiError) {
-    console.warn('Gemini failed, trying OpenAI:', geminiError);
-
-    // Fallback to OpenAI
-    try {
-      const openaiResult = await callOpenAI({
-        model: OPENAI_MODEL,
-        messages: [{ role: "user", content: fullPrompt }],
-        temperature: 0.8,
-        max_tokens: 2048
-      });
-
-      // Parse OpenAI response
-      const text = openaiResult.choices?.[0]?.message?.content || '';
-
-      console.log('OpenAI raw response:', text);
-
-      const parsed = safeParseJSON(text);
-
-      if (!parsed) {
-        console.error('Failed to parse OpenAI response. Raw text:', text);
-        throw new Error('Failed to parse OpenAI response');
-      }
-
-      console.log('OpenAI parsed data:', parsed);
-      return parsed;
-    } catch (openaiError) {
-      console.error('Both APIs failed. Gemini error:', geminiError.message, 'OpenAI error:', openaiError.message);
-      throw new Error(`All API attempts failed: ${geminiError.message} | ${openaiError.message}`);
-    }
+  .audience {
+    margin: 10px;
+    padding: 12px;
+    max-width: calc(100% - 20px);
   }
 }
 
-/* ================= TAB SWITCHING ================= */
-function bindTabSwitching() {
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
-
-  console.log('bindTabSwitching: Found', tabBtns.length, 'tab buttons and', tabContents.length, 'tab contents');
-
-  if (tabBtns.length === 0) {
-    console.error('No tab buttons found!');
-    return;
+@media (max-width: 640px) {
+  /* Extra safety for very small screens */
+  .app {
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
-  tabBtns.forEach(btn => {
-    console.log('Binding click to tab button:', btn.getAttribute('data-tab'));
-    btn.addEventListener('click', (e) => {
-      console.log('Tab button clicked:', btn.getAttribute('data-tab'));
-      e.preventDefault();
-      e.stopPropagation();
+  .results,
+  .inputs {
+    padding: 12px;
+  }
 
-      const targetTab = btn.getAttribute('data-tab');
+  #stream,
+  #improvement-stream {
+    padding-left: 0;
+    padding-right: 0;
+  }
 
-      // Update buttons
-      tabBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+  .session {
+    font-size: 14px;
+  }
 
-      // Update content
-      tabContents.forEach(content => {
-        const contentTab = content.getAttribute('data-tab-content');
-        if (contentTab === targetTab) {
-          content.classList.add('active');
-          console.log('Showing tab content:', contentTab);
-        } else {
-          content.classList.remove('active');
-        }
-      });
+  .txt {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
 
-      // Haptic feedback
-      haptic.medium();
+  .pair {
+    gap: 10px;
+  }
 
-      // Save current tab to localStorage
-      try {
-        localStorage.setItem('tc_active_tab', targetTab);
-      } catch (e) {
-        console.warn('Failed to save active tab:', e);
-      }
-    });
-  });
-
-  // Restore last active tab
-  try {
-    const savedTab = localStorage.getItem('tc_active_tab');
-    if (savedTab) {
-      // Use setTimeout to ensure DOM is ready
-      setTimeout(() => {
-        const targetBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
-        if (targetBtn) {
-          console.log('Restoring saved tab:', savedTab);
-          targetBtn.click();
-        }
-      }, 100);
-    }
-  } catch (e) {
-    console.warn('Failed to restore active tab:', e);
+  .line {
+    padding: 8px 10px;
   }
 }
 
-// Start app
-bindUI();
-bindImprovementFeature();
-bindTabSwitching();
- 
+/* Ensure no horizontal overflow on any screen size */
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+html {
+  overflow-x: hidden;
+}
