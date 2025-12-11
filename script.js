@@ -349,6 +349,7 @@ class PullToRefresh {
     this.pullDistance = 0;
     this.threshold = 100;
     this.indicator = document.getElementById('pullToRefresh');
+    this.isAtTop = false;
     this.init();
   }
   
@@ -356,36 +357,55 @@ class PullToRefresh {
     let isRefreshing = false;
     
     document.addEventListener('touchstart', (e) => {
-      if(window.scrollY === 0 && !isRefreshing) {
+      // Запоминаем позицию только если мы УЖЕ в самом верху страницы
+      this.isAtTop = window.scrollY <= 0;
+      if(this.isAtTop && !isRefreshing) {
         this.startY = e.touches[0].clientY;
+      } else {
+        this.startY = 0;
       }
-    });
+    }, { passive: true });
     
     document.addEventListener('touchmove', (e) => {
-      if(this.startY && !isRefreshing) {
-        this.pullDistance = e.touches[0].clientY - this.startY;
-        
-        if(this.pullDistance > 0 && this.pullDistance < 200) {
-          const progress = Math.min(this.pullDistance / this.threshold, 1);
-          document.body.style.transform = `translateY(${this.pullDistance * 0.5}px)`;
-          
-          if(this.pullDistance > 30) {
-            this.indicator.classList.add('visible');
-            this.indicator.style.transform = `translateX(-50%) scale(${progress})`;
-          }
-          
-          if(this.pullDistance > this.threshold * 0.5 && this.pullDistance < this.threshold * 0.6) {
-            haptic.light();
-          }
-          if(this.pullDistance > this.threshold && this.pullDistance < this.threshold * 1.1) {
-            haptic.medium();
-          }
-        }
+      // Проверяем что мы начали с верха И всё ещё в верху
+      if(!this.startY || !this.isAtTop || isRefreshing) return;
+      
+      // Если страница проскроллилась — отменяем pull-to-refresh
+      if(window.scrollY > 0) {
+        this.startY = 0;
+        this.pullDistance = 0;
+        document.body.style.transform = '';
+        this.indicator.classList.remove('visible');
+        return;
       }
-    });
+      
+      this.pullDistance = e.touches[0].clientY - this.startY;
+      
+      // Только тянем вниз, не вверх
+      if(this.pullDistance > 0 && this.pullDistance < 200) {
+        const progress = Math.min(this.pullDistance / this.threshold, 1);
+        document.body.style.transform = `translateY(${this.pullDistance * 0.5}px)`;
+        
+        if(this.pullDistance > 30) {
+          this.indicator.classList.add('visible');
+          this.indicator.style.transform = `translateX(-50%) scale(${progress})`;
+        }
+        
+        if(this.pullDistance > this.threshold * 0.5 && this.pullDistance < this.threshold * 0.6) {
+          haptic.light();
+        }
+        if(this.pullDistance > this.threshold && this.pullDistance < this.threshold * 1.1) {
+          haptic.medium();
+        }
+      } else if(this.pullDistance <= 0) {
+        // Тянем вверх — сбрасываем
+        document.body.style.transform = '';
+        this.indicator.classList.remove('visible');
+      }
+    }, { passive: true });
     
     document.addEventListener('touchend', () => {
-      if(this.pullDistance > this.threshold && !isRefreshing) {
+      if(this.pullDistance > this.threshold && !isRefreshing && this.isAtTop) {
         isRefreshing = true;
         haptic.success();
         this.indicator.classList.add('refreshing');
@@ -401,7 +421,8 @@ class PullToRefresh {
       
       this.pullDistance = 0;
       this.startY = 0;
-    });
+      this.isAtTop = false;
+    }, { passive: true });
   }
 }
 
@@ -2394,8 +2415,8 @@ function bindUI(){
     new ParticlesBackground();
   }, 500);
   
-  // Initialize pull to refresh
-  new PullToRefresh();
+  // Pull to refresh disabled for Telegram Mini App
+  // new PullToRefresh();
   
   // Hide loader
   setTimeout(()=> {
