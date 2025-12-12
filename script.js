@@ -437,6 +437,8 @@ const translations = {
     audienceProfile: 'Audience Profile',
     titleLabel: 'Title',
     thumbnailLabel: 'Thumbnail',
+    styleLabel: 'Style',
+    triggersLabel: 'Triggers',
     topPick: 'Top pick',
     clickToCopy: 'Click to copy',
     collapseExpand: 'Collapse/Expand',
@@ -550,6 +552,8 @@ const translations = {
     audienceProfile: 'Perfil de audiencia',
     titleLabel: 'Título',
     thumbnailLabel: 'Miniatura',
+    styleLabel: 'Estilo',
+    triggersLabel: 'Disparadores',
     topPick: 'Mejor opción',
     clickToCopy: 'Clic para copiar',
     collapseExpand: 'Colapsar/Expandir',
@@ -663,6 +667,8 @@ const translations = {
     audienceProfile: 'Профиль аудитории',
     titleLabel: 'Заголовок',
     thumbnailLabel: 'Превью',
+    styleLabel: 'Стиль',
+    triggersLabel: 'Триггеры',
     topPick: 'Лучший вариант',
     clickToCopy: 'Нажмите для копирования',
     collapseExpand: 'Свернуть/Развернуть',
@@ -776,6 +782,8 @@ const translations = {
     audienceProfile: 'Профіль аудиторії',
     titleLabel: 'Заголовок',
     thumbnailLabel: 'Прев\'ю',
+    styleLabel: 'Стиль',
+    triggersLabel: 'Тригери',
     topPick: 'Найкращий варіант',
     clickToCopy: 'Натисніть для копіювання',
     collapseExpand: 'Згорнути/Розгорнути',
@@ -1702,11 +1710,11 @@ function rowHTML(i, opt, topSet, showTitle, showThumb){
   const analysisHTML = `
     <div class="title-analysis">
       <div class="analysis-item">
-        <div class="analysis-label">Стиль:</div>
+        <div class="analysis-label">${t.styleLabel}:</div>
         <div class="analysis-value style">${styleVal}</div>
       </div>
       <div class="analysis-item">
-        <div class="analysis-label">Триггеры:</div>
+        <div class="analysis-label">${t.triggersLabel}:</div>
         <div class="analysis-value triggers">${triggersVal}</div>
       </div>
       ${synergyVal ? `<div class="synergy-note">${synergyVal}</div>` : ''}
