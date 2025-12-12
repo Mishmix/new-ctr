@@ -432,7 +432,7 @@ const translations = {
     polishing: 'Polishing',
     almostReady: 'Almost ready',
     historyCleared: 'History cleared',
-    confirmClear: 'Clear all saved generations? This cannot be undone.',
+    confirmClear: 'Clear all saved results? This cannot be undone.',
     requestFailed: 'Request failed.',
     audienceProfile: 'Audience Profile',
     titleLabel: 'Title',
@@ -545,7 +545,7 @@ const translations = {
     polishing: 'Puliendo',
     almostReady: 'Casi listo',
     historyCleared: 'Historial borrado',
-    confirmClear: '¿Borrar todas las generaciones guardadas? Esto no se puede deshacer.',
+    confirmClear: '¿Borrar todos los resultados guardados? Esto no se puede deshacer.',
     requestFailed: 'Solicitud fallida.',
     audienceProfile: 'Perfil de audiencia',
     titleLabel: 'Título',
@@ -658,7 +658,7 @@ const translations = {
     polishing: 'Дорабатываю',
     almostReady: 'Почти готово',
     historyCleared: 'История очищена',
-    confirmClear: 'Очистить все сохранённые генерации? Это действие нельзя отменить.',
+    confirmClear: 'Очистить всю историю? Это действие нельзя отменить.',
     requestFailed: 'Запрос не удался.',
     audienceProfile: 'Профиль аудитории',
     titleLabel: 'Заголовок',
@@ -771,7 +771,7 @@ const translations = {
     polishing: 'Доопрацьовую',
     almostReady: 'Майже готово',
     historyCleared: 'Історію очищено',
-    confirmClear: 'Очистити всі збережені генерації? Цю дію не можна скасувати.',
+    confirmClear: 'Очистити всю історію? Цю дію не можна скасувати.',
     requestFailed: 'Запит не вдався.',
     audienceProfile: 'Профіль аудиторії',
     titleLabel: 'Заголовок',
@@ -1360,6 +1360,74 @@ const toast = (msg)=>{
   haptic.notification();
   setTimeout(()=> el.classList.remove("show"), 1600);
 };
+
+// Кастомный confirm диалог без показа домена
+function customConfirm(message) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed; inset: 0; z-index: 99999;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      animation: fadeIn 0.2s ease;
+    `;
+    
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+      background: linear-gradient(135deg, #0f1420, #0b0f1a);
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 20px; padding: 24px;
+      max-width: 320px; width: calc(100% - 40px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    `;
+    
+    const text = document.createElement('p');
+    text.textContent = message;
+    text.style.cssText = `
+      color: #e8edf6; font-size: 16px; font-weight: 500;
+      margin: 0 0 20px 0; line-height: 1.5; text-align: center;
+    `;
+    
+    const buttons = document.createElement('div');
+    buttons.style.cssText = `display: flex; gap: 12px; justify-content: center;`;
+    
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = t.dismiss || 'Cancel';
+    cancelBtn.style.cssText = `
+      padding: 12px 24px; border-radius: 12px; font-weight: 700;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      color: #e8edf6; cursor: pointer; font-size: 14px;
+    `;
+    
+    const confirmBtn = document.createElement('button');
+    confirmBtn.textContent = 'OK';
+    confirmBtn.style.cssText = `
+      padding: 12px 24px; border-radius: 12px; font-weight: 700;
+      background: linear-gradient(135deg, #ff6b6b, #ff5252);
+      border: none; color: #fff; cursor: pointer; font-size: 14px;
+    `;
+    
+    const close = (result) => {
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.remove(), 200);
+      haptic.light();
+      resolve(result);
+    };
+    
+    cancelBtn.onclick = () => close(false);
+    confirmBtn.onclick = () => close(true);
+    overlay.onclick = (e) => { if (e.target === overlay) close(false); };
+    
+    buttons.append(cancelBtn, confirmBtn);
+    dialog.append(text, buttons);
+    overlay.append(dialog);
+    document.body.append(overlay);
+    
+    haptic.medium();
+    confirmBtn.focus();
+  });
+}
 
 function copyToClipboard(text) {
   if (!text) return;
@@ -2416,8 +2484,9 @@ function bindUI(){
   });
 
   // Clear history
-  $("#clear-history").addEventListener("click", ()=>{
-    if(confirm(t.confirmClear)){
+  $("#clear-history").addEventListener("click", async ()=>{
+    const confirmed = await customConfirm(t.confirmClear);
+    if(confirmed){
       store.clearSessions();
       store.saveInputs({}); // Also clear saved inputs
       // Force clear all localStorage to ensure fresh start
@@ -2431,8 +2500,9 @@ function bindUI(){
   $("#clear-history").addEventListener("touchstart", () => haptic.light());
 
   // Clear improvement history
-  $("#clear-improvement-history").addEventListener("click", ()=>{
-    if(confirm(t.confirmClear)){
+  $("#clear-improvement-history").addEventListener("click", async ()=>{
+    const confirmed = await customConfirm(t.confirmClear);
+    if(confirmed){
       store.clearImprovementSessions();
       localStorage.removeItem("tc_improvement_sessions_v1");
       loadImprovementHistory();
