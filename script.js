@@ -165,6 +165,18 @@ function decryptApiKey(encryptedKey, shift = 3) {
   if(document.readyState==="complete")schedule(); else window.addEventListener("load",schedule,{once:true});
 })();
 
+/* ================= TELEGRAM DESKTOP DETECTION ================= */
+(function detectTelegramDesktop() {
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    document.body.classList.add('telegram-miniapp');
+    // Telegram Desktop has platform 'tdesktop'
+    if (tg.platform === 'tdesktop' || tg.platform === 'macos' || tg.platform === 'windows') {
+      document.body.classList.add('telegram-desktop');
+    }
+  }
+})();
+
 /* ================= HAPTIC ENGINE ================= */
 class HapticEngine {
   constructor() {
@@ -339,90 +351,6 @@ class ParticlesBackground {
     });
     
     requestAnimationFrame(() => this.animate());
-  }
-}
-
-/* ================= PULL TO REFRESH ================= */
-class PullToRefresh {
-  constructor() {
-    this.startY = 0;
-    this.pullDistance = 0;
-    this.threshold = 100;
-    this.indicator = document.getElementById('pullToRefresh');
-    this.isAtTop = false;
-    this.init();
-  }
-  
-  init() {
-    let isRefreshing = false;
-    
-    document.addEventListener('touchstart', (e) => {
-      // Запоминаем позицию только если мы УЖЕ в самом верху страницы
-      this.isAtTop = window.scrollY <= 0;
-      if(this.isAtTop && !isRefreshing) {
-        this.startY = e.touches[0].clientY;
-      } else {
-        this.startY = 0;
-      }
-    }, { passive: true });
-    
-    document.addEventListener('touchmove', (e) => {
-      // Проверяем что мы начали с верха И всё ещё в верху
-      if(!this.startY || !this.isAtTop || isRefreshing) return;
-      
-      // Если страница проскроллилась — отменяем pull-to-refresh
-      if(window.scrollY > 0) {
-        this.startY = 0;
-        this.pullDistance = 0;
-        document.body.style.transform = '';
-        this.indicator.classList.remove('visible');
-        return;
-      }
-      
-      this.pullDistance = e.touches[0].clientY - this.startY;
-      
-      // Только тянем вниз, не вверх
-      if(this.pullDistance > 0 && this.pullDistance < 200) {
-        const progress = Math.min(this.pullDistance / this.threshold, 1);
-        document.body.style.transform = `translateY(${this.pullDistance * 0.5}px)`;
-        
-        if(this.pullDistance > 30) {
-          this.indicator.classList.add('visible');
-          this.indicator.style.transform = `translateX(-50%) scale(${progress})`;
-        }
-        
-        if(this.pullDistance > this.threshold * 0.5 && this.pullDistance < this.threshold * 0.6) {
-          haptic.light();
-        }
-        if(this.pullDistance > this.threshold && this.pullDistance < this.threshold * 1.1) {
-          haptic.medium();
-        }
-      } else if(this.pullDistance <= 0) {
-        // Тянем вверх — сбрасываем
-        document.body.style.transform = '';
-        this.indicator.classList.remove('visible');
-      }
-    }, { passive: true });
-    
-    document.addEventListener('touchend', () => {
-      if(this.pullDistance > this.threshold && !isRefreshing && this.isAtTop) {
-        isRefreshing = true;
-        haptic.success();
-        this.indicator.classList.add('refreshing');
-        
-        setTimeout(() => {
-          location.reload();
-        }, 1000);
-      } else {
-        document.body.style.transform = '';
-        this.indicator.classList.remove('visible');
-        this.indicator.style.transform = '';
-      }
-      
-      this.pullDistance = 0;
-      this.startY = 0;
-      this.isAtTop = false;
-    }, { passive: true });
   }
 }
 
@@ -2414,9 +2342,6 @@ function bindUI(){
   setTimeout(() => {
     new ParticlesBackground();
   }, 500);
-  
-  // Pull to refresh disabled for Telegram Mini App
-  // new PullToRefresh();
   
   // Hide loader
   setTimeout(()=> {
