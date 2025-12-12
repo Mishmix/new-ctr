@@ -719,7 +719,6 @@ header{
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   transform-style: preserve-3d;
-  overflow: hidden;
 }
 
 /* ===== TITLE ANALYSIS ===== */
@@ -1035,7 +1034,6 @@ textarea { min-height: 80px; resize: vertical; }
 /* ===== CLICKBAIT SLIDER ===== */
 .clickbait-slider-container {
   margin-top: 16px;
-  padding: 20px 16px;
 }
 
 .clickbait-slider-track {
@@ -1114,15 +1112,15 @@ textarea { min-height: 80px; resize: vertical; }
   top: 50%;
   left: 0%;
   transform: translate(-50%, -50%);
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   background: #ffffff;
   border-radius: 8px;
   cursor: grab;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 6px 20px rgba(134, 160, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(134, 160, 255, 0.8);
   z-index: 10;
-  border: 3px solid rgba(255, 255, 255, 0.95);
+  border: 4px solid rgba(255, 255, 255, 0.95);
   touch-action: none;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -1953,25 +1951,22 @@ textarea { min-height: 80px; resize: vertical; }
   flex-wrap:wrap; 
   justify-content:flex-end; 
   margin:8px 0 12px;
-  max-width: 100%;
 }
 .chip{ 
   height:40px; 
-  padding:0 14px; 
+  padding:0 16px; 
   border-radius:20px; 
   background:linear-gradient(135deg, #0e1627, #1a2240); 
   border:2px solid #2a3a5f; 
   color:#d6e4ff; 
   font-weight:800;
-  font-size: 13px;
+  font-size: 14px;
   cursor:pointer;
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
   gap: 6px;
   -webkit-tap-highlight-color: transparent;
-  white-space: nowrap;
-  max-width: 100%;
 }
 .chip:hover {
   transform: translateY(-2px) scale(1.05);
@@ -2216,31 +2211,72 @@ textarea { min-height: 80px; resize: vertical; }
   .app {
     padding-left: 10px;
     padding-right: 10px;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
   .results,
   .inputs {
     padding: 12px;
-    overflow-x: clip;
-    overflow-y: visible;
+    overflow: hidden;
+    max-width: 100%;
   }
 
   #stream,
   #improvement-stream {
     padding-left: 0;
     padding-right: 0;
-    overflow-x: clip;
-    overflow-y: visible;
+    overflow: hidden;
+    max-width: 100%;
   }
 
   .session {
     font-size: 14px;
     overflow: hidden;
+    max-width: 100%;
+  }
+  
+  .list {
+    overflow: hidden;
+    max-width: 100%;
+  }
+  
+  .row {
+    overflow: hidden;
+    max-width: 100%;
+  }
+  
+  .pair {
+    overflow: hidden;
+    max-width: 100%;
+  }
+  
+  .line {
+    overflow: hidden;
+    max-width: 100%;
   }
 
   .txt {
     font-size: 14px;
     padding: 8px 10px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .audience {
+    overflow: hidden;
+    max-width: calc(100% - 20px);
+  }
+  
+  .title-analysis {
+    overflow: hidden;
+    max-width: 100%;
+  }
+  
+  .analysis-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .pair {
@@ -2256,8 +2292,143 @@ textarea { min-height: 80px; resize: vertical; }
 body {
   overflow-x: hidden;
   max-width: 100vw;
+  width: 100%;
 }
 
 html {
   overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+/* Force all generated content to stay within bounds */
+.session *,
+.row *,
+.list *,
+.pair *,
+.line *,
+.audience *,
+.title-analysis * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===== TELEGRAM DESKTOP FIX ===== */
+/* Disable aggressive hover transforms that cause jittering in Telegram Desktop Mini App */
+/* These transforms cause cursor to "leave" element, triggering hover loop */
+
+@media (hover: hover) and (pointer: fine) {
+  /* Reduce transform intensity to prevent jitter */
+  .card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .row:hover {
+    transform: translateY(-1px);
+  }
+  
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  
+  .chip:hover {
+    transform: translateY(-1px);
+  }
+  
+  .iconbtn:hover {
+    transform: scale(1.05);
+  }
+  
+  .session.collapsed:hover {
+    transform: rotateX(20deg) translateZ(calc(var(--stack-index, 0) * -50px)) translateY(calc(var(--stack-index, 0) * 30px));
+  }
+  
+  .improvement-result-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .txt:hover {
+    transform: none;
+  }
+  
+  .fab:hover {
+    transform: scale(1.05);
+  }
+  
+  .count-slider-container:hover,
+  .ctrl:hover {
+    transform: none;
+  }
+}
+
+/* For touch devices and Telegram Mini App - disable hover transforms entirely */
+@media (hover: none), (pointer: coarse) {
+  .card:hover,
+  .row:hover,
+  .btn:hover,
+  .chip:hover,
+  .iconbtn:hover,
+  .session.collapsed:hover,
+  .improvement-result-card:hover,
+  .improvement-result-text:hover,
+  .improvement-text:hover,
+  .txt:hover,
+  .fab:hover,
+  .count-slider-container:hover,
+  .ctrl:hover,
+  .field-clear:hover,
+  .brand:hover .logo,
+  .tab-btn:hover:not(.active),
+  .tab-btn:hover:not(.active) svg {
+    transform: none !important;
+  }
+}
+
+/* Telegram Desktop specific - reduce all hover animations */
+/* Telegram injects specific classes/attributes we can detect */
+.tgme_page .card:hover,
+.tgme_page .row:hover,
+.tgme_page .btn:hover {
+  transform: none !important;
+}
+
+
+/* Telegram Desktop Mini App - disable all hover transforms to prevent jitter */
+body.telegram-desktop .card:hover,
+body.telegram-desktop .row:hover,
+body.telegram-desktop .btn:hover,
+body.telegram-desktop .chip:hover,
+body.telegram-desktop .iconbtn:hover,
+body.telegram-desktop .session.collapsed:hover,
+body.telegram-desktop .improvement-result-card:hover,
+body.telegram-desktop .improvement-result-text:hover,
+body.telegram-desktop .improvement-text:hover,
+body.telegram-desktop .txt:hover,
+body.telegram-desktop .fab:hover,
+body.telegram-desktop .count-slider-container:hover,
+body.telegram-desktop .ctrl:hover,
+body.telegram-desktop .field-clear:hover,
+body.telegram-desktop .brand:hover .logo,
+body.telegram-desktop .tab-btn:hover:not(.active),
+body.telegram-desktop .tab-btn:hover:not(.active) svg,
+body.telegram-desktop .count-slider-thumb:hover,
+body.telegram-desktop .clickbait-slider-thumb:hover,
+body.telegram-desktop .clickbait-slider-thumb.level-1:hover,
+body.telegram-desktop .clickbait-slider-thumb.level-2:hover,
+body.telegram-desktop .clickbait-slider-thumb.level-3:hover,
+body.telegram-desktop .clickbait-slider-thumb.level-4:hover {
+  transform: none !important;
+}
+
+/* Keep only color/shadow changes for Telegram Desktop */
+body.telegram-desktop .card:hover {
+  box-shadow: 0 20px 40px rgba(134,160,255,.2), 0 0 30px rgba(110,231,255,.15);
+}
+
+body.telegram-desktop .btn:hover {
+  box-shadow: 0 20px 50px rgba(134,160,255,.5), 0 0 40px rgba(110,231,255,.3);
+}
+
+body.telegram-desktop .row:hover {
+  box-shadow: 0 12px 30px rgba(0,0,0,.4);
 }
