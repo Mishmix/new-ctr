@@ -1,18 +1,18 @@
 /* ================= CAESAR CIPHER ENCRYPTION ================= */
-// function caesarEncrypt(text, shift = 3) {
-//   return text.replace(/[a-zA-Z]/g, function(char) {
-//     const start = char <= 'Z' ? 65 : 97;
-//     return String.fromCharCode(((char.charCodeAt(0) - start + shift) % 26 + 26) % 26 + start);
-//   });
-// }
+function caesarEncrypt(text, shift = 3) {
+  return text.replace(/[a-zA-Z]/g, function(char) {
+    const start = char <= 'Z' ? 65 : 97;
+    return String.fromCharCode(((char.charCodeAt(0) - start + shift) % 26 + 26) % 26 + start);
+  });
+}
 
-// function caesarDecrypt(text, shift = 3) {
-//   return caesarEncrypt(text, -shift);
-// }
+function caesarDecrypt(text, shift = 3) {
+  return caesarEncrypt(text, -shift);
+}
 
-// function decryptApiKey(encryptedKey, shift = 3) {
-//   return caesarDecrypt(encryptedKey, shift);
-// }
+function decryptApiKey(encryptedKey, shift = 3) {
+  return caesarDecrypt(encryptedKey, shift);
+}
 
 /* ================= ACCESS CONTROL ================= */
 (function(){
@@ -979,7 +979,7 @@ function updateLoadingPhraseOnLanguageChange() {
 }
 
 /* ================= CONFIG ================= */
-const GEMINI_API_KEY = "AIzaSyCqktJzl2CuaEqGExuFbpW972AyPAeqzR0";
+const GEMINI_API_KEY = "DLcdVbD7_m5GOCBQ5xWgL6wp7NhwdQuwIzPakjX";
 const OPENAI_API_KEY = "vn-surm-I1-EsdWxwVOCwhdtB-OP8c3hZwh8Zljwg_9l4A1Q1VcU8qGkn7mg9DvoeXhUHajBFZ76PGjCn3W3EoenIMyY4RZ0gEd7y_i4NboJjliZWetdJt4yOOOCQ1NtINS3XN6wxYEXJ2Sz4REn-AbYQOPz8giPpWBD";
 const GEMINI_MODEL = "gemini-3-pro-preview";
 const OPENAI_MODEL = "gpt-5-chat-latest"; // GPT-5 модель
@@ -1509,7 +1509,7 @@ async function callGemini(payload, tries=RETRIES){
         method:"POST", 
         headers:{ 
           "Content-Type":"application/json",
-          "x-goog-api-key": GEMINI_API_KEY
+          "x-goog-api-key": decryptApiKey(GEMINI_API_KEY)
         }, 
         body: JSON.stringify(payload) 
       });
@@ -1539,7 +1539,7 @@ async function callOpenAI(payload, tries=RETRIES){
         method:"POST", 
         headers:{ 
           "Content-Type":"application/json",
-          "Authorization": `Bearer ${OPENAI_API_KEY}`
+          "Authorization": `Bearer ${decryptApiKey(OPENAI_API_KEY)}`
         }, 
         body: JSON.stringify(payload) 
       });
