@@ -1,18 +1,18 @@
 /* ================= CAESAR CIPHER ENCRYPTION ================= */
-function caesarEncrypt(text, shift = 3) {
-  return text.replace(/[a-zA-Z]/g, function(char) {
-    const start = char <= 'Z' ? 65 : 97;
-    return String.fromCharCode(((char.charCodeAt(0) - start + shift) % 26 + 26) % 26 + start);
-  });
-}
+// function caesarEncrypt(text, shift = 3) {
+//   return text.replace(/[a-zA-Z]/g, function(char) {
+//     const start = char <= 'Z' ? 65 : 97;
+//     return String.fromCharCode(((char.charCodeAt(0) - start + shift) % 26 + 26) % 26 + start);
+//   });
+// }
 
-function caesarDecrypt(text, shift = 3) {
-  return caesarEncrypt(text, -shift);
-}
+// function caesarDecrypt(text, shift = 3) {
+//   return caesarEncrypt(text, -shift);
+// }
 
-function decryptApiKey(encryptedKey, shift = 3) {
-  return caesarDecrypt(encryptedKey, shift);
-}
+// function decryptApiKey(encryptedKey, shift = 3) {
+//   return caesarDecrypt(encryptedKey, shift);
+// }
 
 /* ================= ACCESS CONTROL ================= */
 (function(){
@@ -979,7 +979,7 @@ function updateLoadingPhraseOnLanguageChange() {
 }
 
 /* ================= CONFIG ================= */
-const GEMINI_API_KEY = "DLcdVbFZpxZX_t4VgBNRZbWJbWZkGTQUACD4kSP";
+const GEMINI_API_KEY = "AIzaSyCqktJzl2CuaEqGExuFbpW972AyPAeqzR0";
 const OPENAI_API_KEY = "vn-surm-I1-EsdWxwVOCwhdtB-OP8c3hZwh8Zljwg_9l4A1Q1VcU8qGkn7mg9DvoeXhUHajBFZ76PGjCn3W3EoenIMyY4RZ0gEd7y_i4NboJjliZWetdJt4yOOOCQ1NtINS3XN6wxYEXJ2Sz4REn-AbYQOPz8giPpWBD";
 const GEMINI_MODEL = "gemini-3-pro-preview";
 const OPENAI_MODEL = "gpt-5-chat-latest"; // GPT-5 модель
@@ -1500,12 +1500,19 @@ function normalizeOutput(o, opts){
 
 /* ================= NETWORK ================= */
 async function callGemini(payload, tries=RETRIES){
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(decryptApiKey(GEMINI_API_KEY))}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
   
   let lastErr;
   for(let i=0;i<tries;i++){
     try{
-      const res = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
+      const res = await fetch(url, { 
+        method:"POST", 
+        headers:{ 
+          "Content-Type":"application/json",
+          "x-goog-api-key": GEMINI_API_KEY
+        }, 
+        body: JSON.stringify(payload) 
+      });
       if(!res.ok){ const txt = await res.text().catch(()=> ""); throw new Error(`HTTP ${res.status}: ${txt||res.statusText}`) }
       
       const result = await res.json();
@@ -1532,7 +1539,7 @@ async function callOpenAI(payload, tries=RETRIES){
         method:"POST", 
         headers:{ 
           "Content-Type":"application/json",
-          "Authorization": `Bearer ${decryptApiKey(OPENAI_API_KEY)}`
+          "Authorization": `Bearer ${OPENAI_API_KEY}`
         }, 
         body: JSON.stringify(payload) 
       });
