@@ -979,7 +979,7 @@ function updateLoadingPhraseOnLanguageChange() {
 }
 
 /* ================= CONFIG ================= */
-const GEMINI_API_KEY = "DLcdVbD7_m5GOCBQ5xWgL6wp7NhwdQuwIzPakjX";
+const GEMINI_API_KEY = "DLcdVbD-slBsMN9vH2VnxN4rTsW8KV0Lk9kl8PX";
 const OPENAI_API_KEY = "vn-surm-I1-EsdWxwVOCwhdtB-OP8c3hZwh8Zljwg_9l4A1Q1VcU8qGkn7mg9DvoeXhUHajBFZ76PGjCn3W3EoenIMyY4RZ0gEd7y_i4NboJjliZWetdJt4yOOOCQ1NtINS3XN6wxYEXJ2Sz4REn-AbYQOPz8giPpWBD";
 const GEMINI_MODEL = "gemini-3-pro-preview";
 const OPENAI_MODEL = "gpt-5-chat-latest"; // GPT-5 модель
