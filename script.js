@@ -476,7 +476,34 @@ const translations = {
     ],
     tabCreate: 'Create New',
     tabImprove: 'Improve Draft',
+    tabTags: 'Generate Tags',
     improvementTitle: 'Enhance Your Drafts',
+    tagsTitle: 'Generate Video Tags',
+    tagsTopicLabel: 'Video topic or description',
+    tagsTopicPlaceholder: 'What is your video about?',
+    tagsGoalLabel: 'Optimization Goal',
+    tagsGoalSearch: 'Search',
+    tagsGoalSearchDesc: 'Optimize for search ranking',
+    tagsGoalRecommendations: 'Recommendations',
+    tagsGoalRecommendationsDesc: 'Optimize for suggested videos',
+    tagsGoalBoth: 'Both',
+    tagsGoalBothDesc: 'Balanced approach',
+    tagsButton: 'Get Tags',
+    tagsGenerating: 'Creating tags...',
+    tagsAnalyzingTopic: 'Analyzing topic',
+    tagsFindingKeywords: 'Finding keywords',
+    tagsOptimizingSEO: 'Optimizing for SEO',
+    tagsBuildingStructure: 'Building tag structure',
+    tagsFinishing: 'Finishing up',
+    tagsCopyAll: 'Copy all tags',
+    tagsStatistics: 'Statistics',
+    tagsCharacters: 'characters',
+    tagsTags: 'tags',
+    tagsSuggestedTitle: 'Suggested title',
+    tagsNotes: 'Notes',
+    tagsCopied: 'Tags copied!',
+    tagsError: 'Failed to generate tags. Please try again.',
+    tagsMinLength: 'Enter at least 10 characters',
     draftTitleLabel: 'Draft Title',
     draftTitlePlaceholder: 'Enter your draft title to improve...',
     draftThumbnailLabel: 'Draft Thumbnail Text',
@@ -591,7 +618,34 @@ const translations = {
     ],
     tabCreate: 'Crear Nuevo',
     tabImprove: 'Mejorar Borrador',
+    tabTags: 'Generar Tags',
     improvementTitle: 'Mejora tus borradores',
+    tagsTitle: 'Generar Tags de Video',
+    tagsTopicLabel: 'Tema o descripción del video',
+    tagsTopicPlaceholder: '¿De qué trata tu video?',
+    tagsGoalLabel: 'Objetivo de Optimización',
+    tagsGoalSearch: 'Búsqueda',
+    tagsGoalSearchDesc: 'Optimizar para ranking de búsqueda',
+    tagsGoalRecommendations: 'Recomendaciones',
+    tagsGoalRecommendationsDesc: 'Optimizar para videos sugeridos',
+    tagsGoalBoth: 'Ambos',
+    tagsGoalBothDesc: 'Enfoque equilibrado',
+    tagsButton: 'Obtener Tags',
+    tagsGenerating: 'Creando tags...',
+    tagsAnalyzingTopic: 'Analizando tema',
+    tagsFindingKeywords: 'Buscando palabras clave',
+    tagsOptimizingSEO: 'Optimizando para SEO',
+    tagsBuildingStructure: 'Construyendo estructura de tags',
+    tagsFinishing: 'Finalizando',
+    tagsCopyAll: 'Copiar todos los tags',
+    tagsStatistics: 'Estadísticas',
+    tagsCharacters: 'caracteres',
+    tagsTags: 'tags',
+    tagsSuggestedTitle: 'Título sugerido',
+    tagsNotes: 'Notas',
+    tagsCopied: '¡Tags copiados!',
+    tagsError: 'Error al generar tags. Inténtalo de nuevo.',
+    tagsMinLength: 'Ingresa al menos 10 caracteres',
     draftTitleLabel: 'Borrador del Título',
     draftTitlePlaceholder: 'Ingresa tu borrador de título para mejorar...',
     draftThumbnailLabel: 'Borrador del Texto de Miniatura',
@@ -706,7 +760,34 @@ const translations = {
     ],
     tabCreate: 'Создать новое',
     tabImprove: 'Улучшить черновик',
+    tabTags: 'Создать теги',
     improvementTitle: 'Улучши свои черновики',
+    tagsTitle: 'Создать теги для видео',
+    tagsTopicLabel: 'Тема или описание видео',
+    tagsTopicPlaceholder: 'О чём твоё видео?',
+    tagsGoalLabel: 'Цель оптимизации',
+    tagsGoalSearch: 'Поиск',
+    tagsGoalSearchDesc: 'Оптимизация для поискового топа',
+    tagsGoalRecommendations: 'Рекомендации',
+    tagsGoalRecommendationsDesc: 'Оптимизация для рекомендаций',
+    tagsGoalBoth: 'Оба',
+    tagsGoalBothDesc: 'Сбалансированный подход',
+    tagsButton: 'Получить теги',
+    tagsGenerating: 'Создаю теги...',
+    tagsAnalyzingTopic: 'Анализирую тему',
+    tagsFindingKeywords: 'Ищу ключевые слова',
+    tagsOptimizingSEO: 'Оптимизирую для SEO',
+    tagsBuildingStructure: 'Строю структуру тегов',
+    tagsFinishing: 'Завершаю',
+    tagsCopyAll: 'Копировать все теги',
+    tagsStatistics: 'Статистика',
+    tagsCharacters: 'символов',
+    tagsTags: 'тегов',
+    tagsSuggestedTitle: 'Предложенный заголовок',
+    tagsNotes: 'Заметки',
+    tagsCopied: 'Теги скопированы!',
+    tagsError: 'Не удалось сгенерировать теги. Попробуй ещё раз.',
+    tagsMinLength: 'Введи минимум 10 символов',
     draftTitleLabel: 'Черновик заголовка',
     draftTitlePlaceholder: 'Введи черновик заголовка для улучшения...',
     draftThumbnailLabel: 'Черновик текста превью',
@@ -821,7 +902,34 @@ const translations = {
     ],
     tabCreate: 'Створити нове',
     tabImprove: 'Покращити чернетку',
+    tabTags: 'Створити теги',
     improvementTitle: 'Покращ свої чернетки',
+    tagsTitle: 'Створити теги для відео',
+    tagsTopicLabel: 'Тема або опис відео',
+    tagsTopicPlaceholder: 'Про що твоє відео?',
+    tagsGoalLabel: 'Ціль оптимізації',
+    tagsGoalSearch: 'Пошук',
+    tagsGoalSearchDesc: 'Оптимізація для пошукового топу',
+    tagsGoalRecommendations: 'Рекомендації',
+    tagsGoalRecommendationsDesc: 'Оптимізація для рекомендацій',
+    tagsGoalBoth: 'Обидва',
+    tagsGoalBothDesc: 'Збалансований підхід',
+    tagsButton: 'Отримати теги',
+    tagsGenerating: 'Створюю теги...',
+    tagsAnalyzingTopic: 'Аналізую тему',
+    tagsFindingKeywords: 'Шукаю ключові слова',
+    tagsOptimizingSEO: 'Оптимізую для SEO',
+    tagsBuildingStructure: 'Будую структуру тегів',
+    tagsFinishing: 'Завершую',
+    tagsCopyAll: 'Копіювати всі теги',
+    tagsStatistics: 'Статистика',
+    tagsCharacters: 'символів',
+    tagsTags: 'тегів',
+    tagsSuggestedTitle: 'Запропонований заголовок',
+    tagsNotes: 'Нотатки',
+    tagsCopied: 'Теги скопійовано!',
+    tagsError: 'Не вдалося згенерувати теги. Спробуй ще раз.',
+    tagsMinLength: 'Введи мінімум 10 символів',
     draftTitleLabel: 'Чернетка заголовка',
     draftTitlePlaceholder: 'Введи чернетку заголовка для покращення...',
     draftThumbnailLabel: 'Чернетка тексту прев\'ю',
@@ -982,6 +1090,7 @@ function updateLoadingPhraseOnLanguageChange() {
 const GEMINI_API_KEY = "DLcdVbD-slBsMN9vH2VnxN4rTsW8KV0Lk9kl8PX";
 const OPENAI_API_KEY = "vn-surm-I1-EsdWxwVOCwhdtB-OP8c3hZwh8Zljwg_9l4A1Q1VcU8qGkn7mg9DvoeXhUHajBFZ76PGjCn3W3EoenIMyY4RZ0gEd7y_i4NboJjliZWetdJt4yOOOCQ1NtINS3XN6wxYEXJ2Sz4REn-AbYQOPz8giPpWBD";
 const GEMINI_MODEL = "gemini-3-pro-preview";
+const GEMINI_FLASH_MODEL = "gemini-3-flash-preview";
 const OPENAI_MODEL = "gpt-5-chat-latest"; // GPT-5 модель
 const RETRIES = 5;
 const BASE_DELAY = 800;
@@ -1525,6 +1634,35 @@ async function callGemini(payload, tries=RETRIES){
     }
   }
   console.error(`❌ Gemini API Failed after ${tries} attempts:`, lastErr.message);
+  throw lastErr;
+}
+
+async function callGeminiFlash(payload, tries=RETRIES){
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_FLASH_MODEL}:generateContent`;
+  
+  let lastErr;
+  for(let i=0;i<tries;i++){
+    try{
+      const res = await fetch(url, { 
+        method:"POST", 
+        headers:{ 
+          "Content-Type":"application/json",
+          "x-goog-api-key": decryptApiKey(GEMINI_API_KEY)
+        }, 
+        body: JSON.stringify(payload) 
+      });
+      if(!res.ok){ const txt = await res.text().catch(()=> ""); throw new Error(`HTTP ${res.status}: ${txt||res.statusText}`) }
+      
+      const result = await res.json();
+      return result;
+    }catch(err){
+      lastErr = err;
+      console.warn(`⚠️ Gemini Flash API Attempt ${i+1}/${tries} failed:`, err.message);
+      const delay = BASE_DELAY * Math.pow(2, i) + Math.random()*300;
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  console.error(`❌ Gemini Flash API Failed after ${tries} attempts:`, lastErr.message);
   throw lastErr;
 }
 
@@ -2597,6 +2735,29 @@ function bindUI(){
   });
   $("#fabBtn").addEventListener("touchstart", () => haptic.light());
 
+  // Tab switcher scroll hint
+  const tabSwitcher = document.querySelector('.tab-switcher');
+  const scrollHint = document.querySelector('.tab-scroll-hint');
+  if (tabSwitcher) {
+    function updateTabScrollHint() {
+      const isAtEnd = tabSwitcher.scrollLeft + tabSwitcher.clientWidth >= tabSwitcher.scrollWidth - 10;
+      const canScroll = tabSwitcher.scrollWidth > tabSwitcher.clientWidth;
+      
+      tabSwitcher.classList.toggle('scrolled-end', isAtEnd || !canScroll);
+      
+      if (scrollHint) {
+        scrollHint.style.display = (canScroll && !isAtEnd) ? 'flex' : 'none';
+      }
+    }
+    
+    tabSwitcher.addEventListener('scroll', updateTabScrollHint, { passive: true });
+    // Initial check with delay for layout
+    setTimeout(updateTabScrollHint, 100);
+    setTimeout(updateTabScrollHint, 500);
+    // Check on resize
+    window.addEventListener('resize', updateTabScrollHint);
+  }
+
   // FAB scroll visibility
   let fabTimeout;
   function updateFabVisibility() {
@@ -2630,6 +2791,7 @@ function bindUI(){
   // Render all sessions
   renderAll();
   loadImprovementHistory();
+  loadTagsHistory();
 
   // Reduce animations on low battery
   if ('getBattery' in navigator) {
@@ -3103,6 +3265,217 @@ CRITICAL RULES:
 - All improvements must preserve the user's original intent and style
 `;
 
+/* ================= TAGS SYSTEM PROMPT ================= */
+const TAGS_SYSTEM_PROMPT = `You are an expert in YouTube SEO with deep understanding of semantic mechanics, tag optimization, and algorithm signals (based on extensive research, A/B tests, and expert consensus).
+
+Goal: based on the user's topic and selected optimization goal, generate an optimal set of video tags following proven best practices.
+
+Input data
+
+VIDEO_TOPIC: {{topic}} ← the output language is defined ONLY from here
+GOAL: {{goal|BOTH}} ← SEARCH | RECOMMENDATIONS | BOTH
+FORMAT: {{format}} ← tutorial, review, gaming, entertainment, news, etc.
+CHANNEL_NAME: {{channel|""}} ← for brand tag (optional)
+COMPETITOR_TAGS: {{competitor_tags|""}} ← tags from top videos in niche (optional)
+
+Language & Locale (priority)
+
+The language of ALL tags = the language of the {{topic}} field.
+If the topic is mixed/bilingual — take the first language and stick to it.
+For multilingual reach: 70% primary language, 30% English (only if relevant).
+Include transliterations when applicable: "фотошоп" + "photoshop".
+Adapt number/currency formats to locale (RU/UA → "100 000", EN → "100,000").
+
+Optimization Goals & Strategy
+
+SEARCH (поисковый топ):
+Focus on exact search queries and Google optimization.
+- PRIMARY = exact search query (how people actually type)
+- Include full phrases for Google indexing
+- Question-format tags: "how to X", "what is X", "is X worth it"
+- Modifier tags: "best X", "fastest X", "easiest X", "[year] X"
+- Long-tail priority for low-competition traffic
+- More specific, fewer broad category tags
+
+RECOMMENDATIONS (виральный охват):
+Focus on semantic similarity with top videos, category signals.
+- PRIMARY = category term + content format
+- ~50% tags should match top videos in niche (from competitor_tags if provided)
+- Broad category tags more important than long-tail
+- Series tags if part of series: "[channel]", "[series name]"
+- Fewer misspellings — focus on clean categories
+- Stronger emphasis on RELATED and BROAD positions
+
+BOTH (комбинированный):
+Balanced approach.
+- 40% search optimization (exact queries, long-tail)
+- 40% recommendation optimization (categories, competitor overlap)
+- 20% universal (brand, variations)
+
+Semantic Mechanics (CRITICAL)
+
+COHERENCE RULE: ALL tags MUST be in the same semantic field.
+Each tag either strengthens or dilutes the signal — never mix conflicting categories.
+
+✅ COHERENT: photoshop tutorial + background removal + image editing + adobe tools
+❌ DILUTED: photoshop tutorial + gaming + cooking + travel → FORBIDDEN
+
+EMBEDDING LOGIC:
+Tag "photoshop" + Tag "tutorial" = strengthened signal "photoshop education"
+Tag "photoshop" + Tag "gaming" = diluted signal (category conflict)
+
+Tag Structure Formula (10-12 tags mandatory)
+
+POSITION 1-2: PRIMARY KEYWORD
+├─ Exact search query matching video topic
+├─ MUST align with video title
+├─ Highest algorithmic weight
+└─ 2-3 words optimal
+
+POSITION 3-4: VARIATIONS
+├─ Synonyms and reformulations of PRIMARY
+├─ Different word order if natural
+└─ "how to X" → "X tutorial" → "learn X"
+
+POSITION 5-7: RELATED TERMS
+├─ Connected concepts, tools, sub-topics
+├─ Expands semantic field WITHOUT conflicts
+└─ Skills/tools mentioned in video
+
+POSITION 8-9: BROAD CATEGORIES
+├─ Wide category tags
+├─ Help with classification into general sections
+└─ Genre/niche identifiers
+
+POSITION 10-11: LONG-TAIL / MISSPELLINGS
+├─ Specific long phrases (for SEARCH goal)
+├─ 1-2 common misspellings MAXIMUM
+├─ Patterns: letter omission, transposition, phonetic
+└─ Check via Google autocomplete logic
+
+POSITION 12: BRAND (if channel_name provided)
+└─ Channel name or series name
+
+Specificity Hierarchy (mandatory coverage)
+
+Generate tags across 3-4 levels:
+| Level | Type | Example |
+|-------|------|---------|
+| 1 | Maximum specific | "how to remove background in photoshop 2025" |
+| 2 | Medium | "photoshop background removal" |
+| 3 | Broad | "photoshop tutorial" |
+| 4 | Category | "graphic design" |
+
+Rule: Create a "semantic funnel" from specific to broad.
+
+Tag Writing Rules
+
+FORMAT:
+- Words per tag: 2-3 (optimal)
+- 1 word = too vague (AVOID as standalone)
+- 4+ words = excessive, split into 2 tags
+- Case: lowercase (YouTube normalizes, but lowercase is standard)
+- Separator: comma (counts toward 500 char limit)
+- Total length: 200-350 characters (NOT all 500)
+- Total count: 10-12 tags
+- No quotes needed (YouTube auto-processes phrases)
+- No special characters (may process incorrectly)
+
+WORD ORDER:
+Order = how people actually search.
+✅ "how to remove background" (natural query)
+❌ "background remove how to" (unnatural)
+
+N-GRAM OPTIMIZATION:
+| Type | Example | Effectiveness |
+|------|---------|---------------|
+| 1-gram | "photoshop" | Low (too vague) |
+| 2-gram | "photoshop tutorial" | High ✅ |
+| 3-gram | "photoshop background removal" | High ✅ |
+| 4-gram | "how to remove background photoshop" | Medium |
+| 5+ gram | "how to remove background in photoshop for beginners" | Low (too long) |
+
+Prohibited Practices
+
+❌ Tags from conflicting categories (gaming + cooking + finance)
+❌ More than 2 misspelling tags
+❌ Spam tags: "viral", "trending", "must watch", "amazing"
+❌ Irrelevant popular tags (tag stuffing)
+❌ Exceeding 500 characters total
+❌ Single-word vague tags without context
+❌ Tags longer than 5 words
+❌ Fabricated or misleading tags
+❌ Tags that don't match video content
+
+Validation (internal, do not output)
+
+- Single language from {{topic}} (+ English supplement if multilingual goal)
+- Correct number/locale format
+- Total characters: 200-350 (alert if outside range)
+- Tag count: 10-12
+- Each tag: 2-3 words preferred
+- Semantic coherence: all tags in same field
+- Specificity coverage: at least 3 levels covered
+- No prohibited elements
+- PRIMARY tag aligns with logical video title
+- If SEARCH goal: ≥3 question/long-tail tags
+- If RECOMMENDATIONS goal: ≥40% broad/category tags
+- Misspellings: ≤2
+
+Process
+
+1. Analyze topic → identify core keyword, search intent, semantic field
+2. Determine content format (from {{format}} or infer from topic)
+3. Apply goal-specific strategy (SEARCH/RECOMMENDATIONS/BOTH)
+4. Generate tags following Structure Formula
+5. Verify specificity hierarchy coverage
+6. Check semantic coherence (no conflicts)
+7. Validate against rules
+8. Calculate statistics
+9. Generate suggested title containing PRIMARY tag
+
+Output contract (STRICTLY JSON, no extra keys)
+
+{
+  "topicAnalysis": {
+    "coreKeyword": "STRING — main keyword/phrase identified",
+    "searchIntent": "STRING — learn/buy/compare/watch/discover",
+    "semanticField": "STRING — the unified topic area",
+    "contentFormat": "STRING — tutorial/review/gaming/entertainment/news/other"
+  },
+  "tags": {
+    "primary": ["TAG1", "TAG2"],
+    "variations": ["TAG3", "TAG4"],
+    "related": ["TAG5", "TAG6", "TAG7"],
+    "broad": ["TAG8", "TAG9"],
+    "longTailOrMisspellings": ["TAG10", "TAG11"],
+    "brand": "TAG12 or empty string"
+  },
+  "tagString": "STRING — all tags comma-separated, ready to copy-paste",
+  "statistics": {
+    "totalCharacters": NUMBER,
+    "totalTags": NUMBER,
+    "specificityLevels": NUMBER,
+    "goalAlignment": "STRING — how well tags match selected goal"
+  },
+  "suggestedTitle": "STRING — recommended video title containing PRIMARY tag",
+  "notes": "STRING — any important observations or recommendations"
+}
+
+IMPORTANT REMINDERS
+
+1. ALL tags must be semantically coherent — this is the #1 rule
+2. PRIMARY tag should logically match or be contained in video title
+3. Tag order matters: most important first
+4. 2-3 words per tag is the sweet spot
+5. Don't use all 500 characters — 200-350 is optimal
+6. Misspellings are valuable but limit to 1-2
+7. For SEARCH: prioritize exact queries people type
+8. For RECOMMENDATIONS: prioritize category signals and competitor overlap
+9. Always validate semantic coherence before output
+10. The goal is to help the algorithm correctly classify and recommend the video
+`;
+
 /* ================= IMPROVEMENT FEATURE ================= */
 function renderImprovementSession(session) {
   const stream = document.getElementById('improvement-stream');
@@ -3533,6 +3906,613 @@ async function callImprovementAPI(params) {
   }
 }
 
+/* ================= TAGS FEATURE ================= */
+let currentTagsGoal = 'BOTH';
+let tagsBtnMsgTimer = null;
+
+// Storage for tags sessions
+const tagsStore = {
+  addSession(s){ const all = tagsStore.loadSessions(); all.unshift(s); localStorage.setItem("tc_tags_sessions_v1", JSON.stringify(all)); },
+  loadSessions(){ try{ return JSON.parse(localStorage.getItem("tc_tags_sessions_v1"))||[] }catch{ return [] } },
+  clearSessions(){ localStorage.setItem("tc_tags_sessions_v1", JSON.stringify([])); },
+  deleteSession(id){ const all = tagsStore.loadSessions().filter(x => x.id !== id); localStorage.setItem("tc_tags_sessions_v1", JSON.stringify(all)); },
+  saveInputs(v){ localStorage.setItem("tc_tags_inputs_v1", JSON.stringify(v)); },
+  loadInputs(){ try{ return JSON.parse(localStorage.getItem("tc_tags_inputs_v1"))||{} }catch{ return {} } }
+};
+
+function setTagsBtnBusy(btn, on){
+  if(on){
+    btn.setAttribute('aria-busy','true');
+    btn.classList.add('processing');
+    btn.disabled=true;
+    const msgs = [
+      t.tagsGenerating || 'Generating tags...',
+      t.tagsAnalyzingTopic || 'Analyzing topic',
+      t.tagsFindingKeywords || 'Finding keywords',
+      t.tagsOptimizingSEO || 'Optimizing for SEO',
+      t.tagsBuildingStructure || 'Building tag structure',
+      t.tagsFinishing || 'Finishing up',
+      t.almostReady || 'Almost ready'
+    ];
+    let i=0;
+    btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
+    clearInterval(tagsBtnMsgTimer);
+    tagsBtnMsgTimer = setInterval(()=>{
+      i=(i+1)%msgs.length;
+      btn.querySelector('.btn-text').innerHTML = `${msgs[i]}<span class="dots"></span>`;
+    }, 6000);
+  }else{
+    btn.setAttribute('aria-busy','false');
+    btn.classList.remove('processing');
+    btn.disabled=false;
+    clearInterval(tagsBtnMsgTimer);
+    tagsBtnMsgTimer=null;
+    btn.querySelector('.btn-text').textContent = t.tagsButton || 'Get Tags';
+  }
+}
+
+async function callTagsAPI(params) {
+  const { topic, goal, format } = params;
+
+  // Build user prompt
+  let userPrompt = `VIDEO_TOPIC: ${topic}\n`;
+  userPrompt += `GOAL: ${goal}\n`;
+  if (format) userPrompt += `FORMAT: ${format}\n`;
+  userPrompt += `\nPlease generate optimal YouTube tags according to the instructions. Output ONLY valid JSON.`;
+
+  const fullPrompt = TAGS_SYSTEM_PROMPT + '\n\n' + userPrompt;
+
+  // Use Gemini Flash for tags generation
+  try {
+    const geminiResult = await callGeminiFlash({
+      contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        topP: 0.95,
+        maxOutputTokens: 4096,
+        responseMimeType: "application/json"
+      }
+    });
+
+    // Parse Gemini response
+    const first = (geminiResult.candidates || [])[0];
+    const text = joinParts(first?.content?.parts);
+
+    console.log('Gemini Flash raw response:', text);
+
+    const parsed = safeParseJSON(text);
+
+    if (!parsed) {
+      console.error('Failed to parse Gemini Flash response. Raw text:', text);
+      throw new Error('Failed to parse Gemini Flash response');
+    }
+
+    console.log('Gemini Flash parsed data:', parsed);
+    return parsed;
+  } catch (geminiError) {
+    console.warn('Gemini Flash failed, trying regular Gemini:', geminiError);
+
+    // Fallback to regular Gemini
+    try {
+      const geminiResult = await callGemini({
+        contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
+        generationConfig: {
+          temperature: 0.7,
+          topP: 0.95,
+          maxOutputTokens: 4096,
+          responseMimeType: "application/json"
+        }
+      });
+
+      const first = (geminiResult.candidates || [])[0];
+      const text = joinParts(first?.content?.parts);
+
+      console.log('Gemini fallback raw response:', text);
+
+      const parsed = safeParseJSON(text);
+
+      if (!parsed) {
+        console.error('Failed to parse Gemini fallback response. Raw text:', text);
+        throw new Error('Failed to parse Gemini fallback response');
+      }
+
+      console.log('Gemini fallback parsed data:', parsed);
+      return parsed;
+    } catch (fallbackError) {
+      console.error('All APIs failed. Gemini Flash error:', geminiError.message, 'Gemini error:', fallbackError.message);
+      throw new Error(`All API attempts failed: ${geminiError.message} | ${fallbackError.message}`);
+    }
+  }
+}
+
+function renderTagsSession(session) {
+  const stream = document.getElementById('tags-stream');
+  if (!stream) {
+    console.error('tags-stream not found!');
+    return;
+  }
+
+  const { id, timestamp, topic, goal, result } = session;
+  const data = result;
+
+  // Goal badge text
+  const goalLabels = {
+    'SEARCH': t.tagsGoalSearch || 'Search',
+    'RECOMMENDATIONS': t.tagsGoalRecommendations || 'Recommendations',
+    'BOTH': t.tagsGoalBoth || 'Both'
+  };
+
+  // Build tag string display
+  const tagString = data.tagString || '';
+  
+  // Build statistics
+  const stats = data.statistics || {};
+  const statsText = `${stats.totalCharacters || 0} ${t.tagsCharacters || 'chars'} • ${stats.totalTags || 0} ${t.tagsTags || 'tags'}`;
+
+  // Build categories HTML for the list
+  let listHTML = '';
+  
+  // Main tag string row (copyable)
+  listHTML += `
+    <div class="row" style="--row-index: 0">
+      <div class="badge" aria-hidden="true">📋</div>
+      <div class="pair">
+        <div class="line">
+          <div class="label">${t.tagsCopyAll || 'All Tags'}</div>
+          <div class="txt tags-main-string" data-kind="tags" role="button" tabindex="0" title="${t.clickToCopy || 'Click to copy'}">${tagString}</div>
+        </div>
+        <div class="tags-stats-inline">
+          <span>${statsText}</span>
+          ${stats.goalAlignment ? `<span class="goal-align">• ${stats.goalAlignment}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+
+  // Individual tag categories
+  if (data.tags) {
+    const categories = [
+      { key: 'primary', label: 'Primary', icon: '🎯' },
+      { key: 'variations', label: 'Variations', icon: '🔄' },
+      { key: 'related', label: 'Related', icon: '🔗' },
+      { key: 'broad', label: 'Broad', icon: '📂' },
+      { key: 'longTailOrMisspellings', label: 'Long-tail', icon: '🔍' }
+    ];
+
+    let rowIndex = 1;
+    categories.forEach(cat => {
+      const tags = data.tags[cat.key];
+      if (tags && Array.isArray(tags) && tags.length > 0) {
+        listHTML += `
+          <div class="row" style="--row-index: ${rowIndex}">
+            <div class="badge" aria-hidden="true">${cat.icon}</div>
+            <div class="pair">
+              <div class="line">
+                <div class="label">${cat.label}</div>
+                <div class="tags-chips">
+                  ${tags.map(tag => `<span class="tag-chip" data-tag="${tag}" title="${t.clickToCopy || 'Click to copy'}">${tag}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+          </div>`;
+        rowIndex++;
+      }
+    });
+
+    // Brand tag
+    if (data.tags.brand && data.tags.brand.trim()) {
+      listHTML += `
+        <div class="row" style="--row-index: ${rowIndex}">
+          <div class="badge" aria-hidden="true">🏷️</div>
+          <div class="pair">
+            <div class="line">
+              <div class="label">Brand</div>
+              <div class="tags-chips">
+                <span class="tag-chip brand" data-tag="${data.tags.brand}" title="${t.clickToCopy || 'Click to copy'}">${data.tags.brand}</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+  }
+
+  // Notes
+  if (data.notes) {
+    listHTML += `
+      <div class="row" style="--row-index: 10">
+        <div class="badge" aria-hidden="true">💡</div>
+        <div class="pair">
+          <div class="line">
+            <div class="label">${t.tagsNotes || 'Notes'}</div>
+            <div class="txt notes-text">${data.notes}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  const card = document.createElement('article');
+  card.className = 'session collapsed';
+  card.setAttribute('role', 'region');
+  card.setAttribute('aria-label', 'Tags session');
+  card.dataset.id = id;
+  
+  card.innerHTML = `
+    <div class="session-head">
+      <span class="session-title">${truncate(topic, 50)}</span>
+      <div class="session-meta">
+        <span class="goal-badge-small">${goalLabels[goal] || goal}</span>
+      </div>
+      <div class="session-actions">
+        <button class="iconbtn close" title="${t.removeResult || 'Remove'}" aria-label="${t.removeResult || 'Remove'}">
+          <svg viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29 10.59 10.6l6.3-6.31z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="list">${listHTML}</div>
+  `;
+
+  stream.prepend(card);
+
+  // Attach copy handlers for tags
+  attachTagsCardHandlers(card, id);
+  
+  // Setup 3D cards for tags
+  setupTags3DCards();
+}
+
+function attachTagsCardHandlers(card, sessionId) {
+  // Copy main tag string
+  card.querySelectorAll('.tags-main-string').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const text = el.textContent.trim();
+      copyToClipboard(text);
+      el.classList.add('copied');
+      setTimeout(() => el.classList.remove('copied'), 500);
+      toast(t.tagsCopied || 'Tags copied!');
+      haptic.success();
+    });
+  });
+
+  // Copy individual tag chips
+  card.querySelectorAll('.tag-chip').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const tag = el.dataset.tag || el.textContent;
+      copyToClipboard(tag);
+      el.classList.add('copied');
+      setTimeout(() => el.classList.remove('copied'), 300);
+      toast(t.copied || 'Copied');
+      haptic.light();
+    });
+  });
+
+  // Close button
+  card.querySelectorAll('.close').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.style.transform = 'scale(.95)';
+      card.style.opacity = '0';
+      haptic.medium();
+      setTimeout(() => {
+        card.remove();
+        if (sessionId) {
+          tagsStore.deleteSession(sessionId);
+        }
+        setupTags3DCards();
+        
+        // Check if empty
+        const remainingSessions = tagsStore.loadSessions();
+        if (remainingSessions.length === 0) {
+          loadTagsHistory();
+        }
+      }, 300);
+    });
+  });
+}
+
+let tagsCardClickHandler = null;
+
+function setupTags3DCards() {
+  const stream = document.getElementById('tags-stream');
+  if (!stream) return;
+
+  // Remove old handler if exists
+  if (tagsCardClickHandler) {
+    stream.removeEventListener('click', tagsCardClickHandler);
+  }
+
+  // Update stack indices for collapsed cards
+  function updateStackIndices() {
+    const sessions = [...stream.querySelectorAll('.session')];
+    let stackIndex = 0;
+
+    sessions.forEach(session => {
+      if (session.classList.contains('collapsed')) {
+        session.style.setProperty('--stack-index', stackIndex);
+        stackIndex++;
+      } else {
+        session.style.setProperty('--stack-index', 0);
+      }
+    });
+  }
+
+  // Create new handler
+  tagsCardClickHandler = (e) => {
+    const session = e.target.closest('.session');
+    if (!session || e.target.closest('.iconbtn') || e.target.closest('.tag-chip') || e.target.closest('.tags-main-string')) return;
+
+    const isExpanded = session.classList.contains('expanded');
+    const allSessions = [...stream.querySelectorAll('.session')];
+
+    if (isExpanded) {
+      // Collapse the card
+      session.classList.remove('expanded');
+      session.classList.add('collapsed');
+      allSessions.forEach(s => s.classList.remove('pushed-down'));
+    } else {
+      // Expand this card and push others down
+      allSessions.forEach(s => {
+        s.classList.remove('expanded');
+        s.classList.add('collapsed');
+        if (s !== session) {
+          s.classList.add('pushed-down');
+        }
+      });
+      session.classList.remove('collapsed', 'pushed-down');
+      session.classList.add('expanded');
+    }
+
+    haptic.medium();
+    setTimeout(updateStackIndices, 50);
+  };
+
+  // Add new handler
+  stream.addEventListener('click', tagsCardClickHandler);
+
+  updateStackIndices();
+}
+
+function loadTagsHistory() {
+  const sessions = tagsStore.loadSessions();
+  const stream = document.getElementById('tags-stream');
+  const resultsPanel = document.querySelector('.tags-results-panel');
+
+  if (!stream) return;
+
+  stream.innerHTML = '';
+
+  if (sessions.length === 0) {
+    if (isMobileDevice()) {
+      if (resultsPanel) {
+        resultsPanel.style.opacity = '0';
+        resultsPanel.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+          resultsPanel.style.display = 'none';
+        }, 300);
+      }
+    } else {
+      if (resultsPanel) {
+        resultsPanel.style.display = '';
+        resultsPanel.style.opacity = '1';
+        resultsPanel.style.transform = 'translateY(0)';
+      }
+
+      const placeholder = document.createElement('div');
+      placeholder.className = 'history-placeholder';
+      placeholder.innerHTML = `
+        <div class="placeholder-content">
+          <div class="placeholder-icon">🏷️</div>
+          <div class="placeholder-text">${t.historyPlaceholder || 'Results will appear here after generation'}</div>
+        </div>
+      `;
+      stream.appendChild(placeholder);
+    }
+  } else {
+    if (resultsPanel) {
+      resultsPanel.style.display = '';
+      resultsPanel.style.opacity = '1';
+      resultsPanel.style.transform = 'translateY(0)';
+    }
+
+    sessions.forEach(session => {
+      renderTagsSession(session);
+    });
+
+    setupTags3DCards();
+  }
+}
+
+function bindTagsFeature() {
+  const tagsTopicField = document.getElementById('tagsTopic');
+  const clearTagsTopic = document.getElementById('clearTagsTopic');
+  const tagsBtn = document.getElementById('tagsBtn');
+  const goalBtns = document.querySelectorAll('.goal-btn');
+
+  if (!tagsTopicField || !tagsBtn) return;
+
+  // Track mouse movement for field effects
+  trackMouseOnField(document.getElementById('tagsTopicField'));
+
+  // Load saved tags inputs
+  const savedTagsInputs = tagsStore.loadInputs();
+  if (savedTagsInputs.tagsTopic) {
+    tagsTopicField.value = savedTagsInputs.tagsTopic;
+  }
+  if (savedTagsInputs.tagsGoal) {
+    currentTagsGoal = savedTagsInputs.tagsGoal;
+    goalBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.goal === currentTagsGoal);
+    });
+  }
+
+  // Clear button handler
+  if (clearTagsTopic) {
+    clearTagsTopic.addEventListener('click', () => {
+      tagsTopicField.value = '';
+      tagsTopicField.focus();
+      updateTagsUI();
+      saveTagsInputs();
+      haptic.light();
+    });
+  }
+
+  // Goal selector handlers
+  goalBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      goalBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTagsGoal = btn.dataset.goal;
+      saveTagsInputs();
+      haptic.light();
+    });
+  });
+
+  // Save tags inputs to localStorage
+  function saveTagsInputs() {
+    tagsStore.saveInputs({
+      tagsTopic: tagsTopicField.value,
+      tagsGoal: currentTagsGoal
+    });
+  }
+
+  // Update UI based on field state
+  function updateTagsUI() {
+    const hasTopicDraft = tagsTopicField.value.trim().length >= 10;
+    tagsBtn.disabled = !hasTopicDraft;
+  }
+
+  // Listen to input changes
+  tagsTopicField.addEventListener('input', () => {
+    updateTagsUI();
+    saveTagsInputs();
+  });
+
+  // Tags button handler
+  tagsBtn.addEventListener('click', async () => {
+    if (isOperationInProgress) {
+      toast('pleaseWait');
+      haptic.error();
+      return;
+    }
+
+    const topic = tagsTopicField.value.trim();
+
+    if (topic.length < 10) {
+      toast(t.tagsMinLength || 'Enter at least 10 characters');
+      haptic.error();
+      return;
+    }
+
+    // Show loading state
+    setTagsBtnBusy(tagsBtn, true);
+    isOperationInProgress = true;
+
+    haptic.medium();
+
+    const stream = document.getElementById('tags-stream');
+    const skel = skeletonCard();
+    stream.prepend(skel);
+
+    try {
+      const result = await callTagsAPI({
+        topic,
+        goal: currentTagsGoal,
+        format: ''
+      });
+
+      console.log('Tags result:', result);
+
+      // Remove skeleton loader
+      skel.remove();
+
+      const resultsPanel = document.querySelector('.tags-results-panel');
+
+      // Remove placeholder if it exists
+      const placeholder = stream?.querySelector('.history-placeholder');
+      if (placeholder) {
+        placeholder.remove();
+      }
+
+      // Show results panel
+      if (resultsPanel) {
+        resultsPanel.style.display = '';
+        resultsPanel.style.opacity = '1';
+        resultsPanel.style.transform = 'translateY(0)';
+      }
+
+      // Create session object
+      const session = {
+        id: uid(),
+        timestamp: Date.now(),
+        topic,
+        goal: currentTagsGoal,
+        result
+      };
+
+      // Save to history
+      tagsStore.addSession(session);
+
+      // Render as card in stream
+      renderTagsSession(session);
+
+      // Auto-expand the newest card
+      setTimeout(() => {
+        const newestCard = stream.querySelector('.session');
+        const allSessions = [...stream.querySelectorAll('.session')];
+
+        if (newestCard) {
+          allSessions.forEach(s => {
+            s.classList.remove('expanded');
+            s.classList.add('collapsed');
+            if (s !== newestCard) {
+              s.classList.add('pushed-down');
+            }
+          });
+
+          newestCard.classList.remove('collapsed', 'pushed-down');
+          newestCard.classList.add('expanded');
+        }
+        
+        setupTags3DCards();
+      }, 100);
+
+      haptic.success();
+    } catch (error) {
+      console.error('Tags error:', error);
+
+      // Remove skeleton loader on error
+      skel.remove();
+
+      toast(t.tagsError || 'Failed to generate tags. Please try again.');
+      haptic.error();
+    } finally {
+      setTagsBtnBusy(tagsBtn, false);
+      isOperationInProgress = false;
+      updateTagsUI();
+    }
+  });
+
+  // Clear tags history
+  const clearTagsHistory = document.getElementById('clear-tags-history');
+  if (clearTagsHistory) {
+    clearTagsHistory.addEventListener('click', async () => {
+      const confirmed = await customConfirm(t.confirmClear);
+      if (confirmed) {
+        tagsStore.clearSessions();
+        localStorage.removeItem("tc_tags_sessions_v1");
+        loadTagsHistory();
+        toast("historyCleared");
+        haptic.success();
+      }
+    });
+    clearTagsHistory.addEventListener('touchstart', () => haptic.light());
+  }
+
+  // Initialize
+  updateTagsUI();
+  loadTagsHistory();
+}
+
 /* ================= TAB SWITCHING ================= */
 function bindTabSwitching() {
   const tabBtns = document.querySelectorAll('.tab-btn');
@@ -3602,5 +4582,6 @@ function bindTabSwitching() {
 // Start app
 bindUI();
 bindImprovementFeature();
+bindTagsFeature();
 bindTabSwitching();
  
