@@ -65,6 +65,13 @@
           </svg>
           <span data-i18n="tabImprove">Improve Draft</span>
         </button>
+        <button class="tab-btn" data-tab="tags" id="tabTags">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
+          </svg>
+          <span data-i18n="tabTags">Generate Tags</span>
+        </button>
+        <div class="tab-scroll-hint" aria-hidden="true"></div>
       </div>
     </header>
 
@@ -217,6 +224,67 @@
             <button class="chip danger" id="clear-improvement-history" data-i18n="clearHistory">🗑 Clear history</button>
           </div>
           <div id="improvement-stream"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="tab-content" data-tab-content="tags">
+      <div class="grid">
+        <section class="panel inputs tags-panel" aria-labelledby="tags-title">
+          <h2 id="tags-title" class="sr-only">Generate Tags</h2>
+          <div class="cards">
+            <div class="card">
+              <h3 data-i18n="tagsTopicLabel">Video topic or description <span class="req" aria-hidden="true">*</span></h3>
+              <div class="field" id="tagsTopicField">
+                <textarea id="tagsTopic" rows="4" data-i18n-placeholder="tagsTopicPlaceholder" placeholder="What is your video about?" aria-required="true"></textarea>
+                <div class="field-clear" id="clearTagsTopic" title="Clear field">
+                  <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 data-i18n="tagsGoalLabel">Optimization Goal</h3>
+              <div class="goal-selector" role="group" aria-label="Optimization goal">
+                <button class="goal-btn" data-goal="SEARCH" id="goalSearch">
+                  <div class="goal-icon">🔍</div>
+                  <div class="goal-content">
+                    <span class="goal-title" data-i18n="tagsGoalSearch">Search</span>
+                    <span class="goal-desc" data-i18n="tagsGoalSearchDesc">Optimize for search ranking</span>
+                  </div>
+                </button>
+                <button class="goal-btn active" data-goal="BOTH" id="goalBoth">
+                  <div class="goal-icon">⚡</div>
+                  <div class="goal-content">
+                    <span class="goal-title" data-i18n="tagsGoalBoth">Both</span>
+                    <span class="goal-desc" data-i18n="tagsGoalBothDesc">Balanced approach</span>
+                  </div>
+                </button>
+                <button class="goal-btn" data-goal="RECOMMENDATIONS" id="goalRecommendations">
+                  <div class="goal-icon">📺</div>
+                  <div class="goal-content">
+                    <span class="goal-title" data-i18n="tagsGoalRecommendations">Recommendations</span>
+                    <span class="goal-desc" data-i18n="tagsGoalRecommendationsDesc">Optimize for suggested videos</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <button id="tagsBtn" class="btn btn-tags" aria-busy="false" disabled>
+              <svg class="spark" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
+              </svg>
+              <span class="btn-text" data-i18n="tagsButton">Get Tags</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="panel results tags-results-panel" aria-labelledby="tags-results-title">
+          <h2 id="tags-results-title" class="sr-only">Tags Results</h2>
+          <div class="tools">
+            <button class="chip danger" id="clear-tags-history" data-i18n="clearHistory">🗑 Clear history</button>
+          </div>
+          <div id="tags-stream"></div>
         </section>
       </div>
     </div>
